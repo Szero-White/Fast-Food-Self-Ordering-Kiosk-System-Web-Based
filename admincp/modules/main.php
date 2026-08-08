@@ -39,6 +39,16 @@
         else if($tam=='quanlyweb' && $query=="capnhat"){
             include(__DIR__ . "/thongtinweb/quanly.php");
         }
+        else if($tam=='quanlyhinhanh' && $query=="capnhat"){
+            include(__DIR__ . "/quanlyhinhanh/quanly.php");
+        }
+        else if($tam=='quanlybanner' && $query=="them"){
+            include(__DIR__ . "/quanlybanner/them.php");
+            include(__DIR__ . "/quanlybanner/lietke.php");
+        }
+        else if($tam=='quanlybanner' && $query=="sua"){
+            include(__DIR__ . "/quanlybanner/sua.php");
+        }
         else if($tam=='quanlynguoidung' && $query=="lietke"){
             include(__DIR__ . "/quanlynguoidung/lietke.php");
         }
