@@ -49,29 +49,35 @@
                     while ($row = mysqli_fetch_array($query_lietke_lh)) {
                         $status_class = $row['trangthai'] == 'chua_xem' ? 'pending' : 'active';
                         $status_text = $row['trangthai'] == 'chua_xem' ? 'Chưa xem' : 'Đã xem';
+                        $idLienHe = (int)$row['id_lienhe'];
+                        $tenLienHe = htmlspecialchars($row['ten'] ?: '(Chưa có tên)', ENT_QUOTES, 'UTF-8');
+                        $emailLienHe = htmlspecialchars($row['email'] ?: '(Chưa có email)', ENT_QUOTES, 'UTF-8');
+                        $sdtLienHe = htmlspecialchars($row['sodienthoai'] ?: '(Chưa có SĐT)', ENT_QUOTES, 'UTF-8');
+                        $loaiLienHe = htmlspecialchars($row['loai'] ?: '(Chưa phân loại)', ENT_QUOTES, 'UTF-8');
+                        $noiDungRutGon = htmlspecialchars(mb_substr($row['noidung'] ?: '', 0, 50, 'UTF-8'), ENT_QUOTES, 'UTF-8');
                     ?>
                     <tr>
-                        <td><strong>#<?php echo $row['id_lienhe'] ?></strong></td>
+                        <td><strong>#<?php echo $idLienHe; ?></strong></td>
                         <td>
                             <div class="d-flex align-items-center gap-2">
                                 <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                                     <i class="fas fa-user" style="color: white; font-size: 12px;"></i>
                                 </div>
-                                <span style="font-weight: 500;"><?php echo $row['ten'] ?></span>
+                                <span style="font-weight: 500;"><?php echo $tenLienHe; ?></span>
                             </div>
                         </td>
-                        <td><?php echo $row['email'] ?></td>
-                        <td><?php echo $row['sodienthoai'] ?></td>
-                        <td><span class="badge" style="background: rgba(102,126,234,0.1); color: #667eea; padding: 6px 12px; border-radius: 20px;"><?php echo $row['loai'] ?></span></td>
-                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><?php echo substr($row['noidung'], 0, 50) . '...' ?></td>
+                        <td><?php echo $emailLienHe; ?></td>
+                        <td><?php echo $sdtLienHe; ?></td>
+                        <td><span class="badge" style="background: rgba(102,126,234,0.1); color: #667eea; padding: 6px 12px; border-radius: 20px;"><?php echo $loaiLienHe; ?></span></td>
+                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><?php echo $noiDungRutGon; ?>...</td>
                         <td><?php echo date('d/m/Y H:i', strtotime($row['ngaygui'])) ?></td>
                         <td><span class="status-badge <?php echo $status_class ?>"><?php echo $status_text ?></span></td>
                         <td>
                             <div class="action-group" style="justify-content: center;">
-                                <a href="?action=quanlylienhe&query=sua&idlienhe=<?php echo $row['id_lienhe'] ?>" class="btn-action view" title="Xem chi tiết">
+                                <a href="?action=quanlylienhe&query=sua&idlienhe=<?php echo $idLienHe; ?>" class="btn-action view" title="Xem chi tiết">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="modules/quanlylienhe/xuly.php?idlienhe=<?php echo $row['id_lienhe'] ?>" class="btn-action delete" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa?')">
+                                <a href="modules/quanlylienhe/xuly.php?idlienhe=<?php echo $idLienHe; ?>" class="btn-action delete" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa?')">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </div>

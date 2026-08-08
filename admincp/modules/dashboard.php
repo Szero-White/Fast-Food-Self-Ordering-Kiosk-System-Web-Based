@@ -4,6 +4,16 @@ $sql_sp = "SELECT COUNT(*) as tong FROM tbl_sanpham";
 $query_sp = mysqli_query($mysqli, $sql_sp);
 $row_sp = mysqli_fetch_assoc($query_sp);
 
+$sql_sp_chua_phan_loai = "
+    SELECT COUNT(*) as tong
+    FROM tbl_sanpham
+    LEFT JOIN tbl_danhmuc ON tbl_sanpham.id_danhmuc = tbl_danhmuc.id_danhmuc
+    WHERE tbl_danhmuc.id_danhmuc IS NULL
+";
+$query_sp_chua_phan_loai = mysqli_query($mysqli, $sql_sp_chua_phan_loai);
+$row_sp_chua_phan_loai = mysqli_fetch_assoc($query_sp_chua_phan_loai);
+$tongSpChuaPhanLoai = (int) ($row_sp_chua_phan_loai['tong'] ?? 0);
+
 $sql_bv = "SELECT COUNT(*) as tong FROM tbl_baiviet";
 $query_bv = mysqli_query($mysqli, $sql_bv);
 $row_bv = mysqli_fetch_assoc($query_bv);
@@ -12,9 +22,10 @@ $sql_lh = "SELECT COUNT(*) as tong FROM tbl_lienhe WHERE trangthai = 'chua_xem'"
 $query_lh = mysqli_query($mysqli, $sql_lh);
 $row_lh = mysqli_fetch_assoc($query_lh);
 
-$sql_dh = "SELECT COUNT(*) as tong FROM tbl_donhang WHERE trangthai = 'moi'";
+$sql_dh = "SELECT COUNT(*) as tong FROM tbl_donhang WHERE trangthai = 0";
 $query_dh = mysqli_query($mysqli, $sql_dh);
 $row_dh = mysqli_fetch_assoc($query_dh);
+$tongDonHangMoi = (int) ($row_dh['tong'] ?? 0);
 ?>
 
 <!-- Welcome Banner -->
@@ -48,6 +59,11 @@ $row_dh = mysqli_fetch_assoc($query_dh);
         </div>
         <div class="stat-body">
             <h3><?php echo $row_sp['tong']; ?></h3>
+            <?php if ($tongSpChuaPhanLoai > 0) { ?>
+                <small style="display: inline-block; margin-top: 4px; color: #c0392b; font-weight: 700;">
+                    <?php echo $tongSpChuaPhanLoai; ?> món chưa phân loại
+                </small>
+            <?php } ?>
             <p>Tổng món ăn</p>
         </div>
     </div>
@@ -73,11 +89,11 @@ $row_dh = mysqli_fetch_assoc($query_dh);
                 <i class="fas fa-shopping-cart"></i>
             </div>
             <div class="stat-trend down">
-                <i class="fas fa-arrow-down"></i> 3 mới
+                <i class="fas fa-arrow-down"></i> <?php echo $tongDonHangMoi; ?> mới
             </div>
         </div>
         <div class="stat-body">
-            <h3><?php echo $row_dh['tong']; ?></h3>
+            <h3><?php echo $tongDonHangMoi; ?></h3>
             <p>Đơn hàng mới</p>
         </div>
     </div>

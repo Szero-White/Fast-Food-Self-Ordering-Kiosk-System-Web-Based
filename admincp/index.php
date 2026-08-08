@@ -2,12 +2,17 @@
 session_start();
 if (!isset($_SESSION['dangnhap'])) {
     header('Location:login.php');
+    exit;
 }
 
 if (isset($_GET['dangxuat']) && $_GET['dangxuat'] == 1) {
-    unset($_SESSION['dangnhap']);
+    $_SESSION = [];
+    session_destroy();
     header('Location:login.php');
+    exit;
 }
+
+$adminName = htmlspecialchars((string)$_SESSION['dangnhap'], ENT_QUOTES, 'UTF-8');
 ?>
 
 <!DOCTYPE html>
@@ -39,7 +44,7 @@ if (isset($_GET['dangxuat']) && $_GET['dangxuat'] == 1) {
                 <i class="fas fa-user-shield"></i>
             </div>
             <div class="user-info">
-                <h6><?php echo $_SESSION['dangnhap']; ?></h6>
+                <h6><?php echo $adminName; ?></h6>
                 <span>Quản trị viên</span>
             </div>
         </div>
@@ -65,7 +70,7 @@ if (isset($_GET['dangxuat']) && $_GET['dangxuat'] == 1) {
                     <i class="fas fa-bars"></i>
                 </button>
                 <div class="breadcrumb">
-                    <h4 id="pageTitle">Dashboard</h4>
+                    <h4 id="pageTitle">Tổng quan</h4>
                 </div>
             </div>
             <div class="header-right">
@@ -81,7 +86,7 @@ if (isset($_GET['dangxuat']) && $_GET['dangxuat'] == 1) {
                 </div>
                 <div class="user-dropdown">
                     <button class="user-btn">
-                        <span><?php echo $_SESSION['dangnhap']; ?></span>
+                        <span><?php echo $adminName; ?></span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
                 </div>

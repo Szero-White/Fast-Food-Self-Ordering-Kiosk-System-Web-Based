@@ -24,7 +24,9 @@ if (isset($_POST['dangnhap'])) {
     }
 
     if ($passwordOk) {
+        session_regenerate_id(true);
         $_SESSION['dangnhap'] = $admin['username'];
+        $_SESSION['admin_id'] = (int)$admin['id_admin'];
         header("Location:index.php");
         exit;
     } else {
@@ -278,7 +280,7 @@ if (isset($_POST['dangnhap'])) {
                 <div class="logo-icon">
                     <i class="fas fa-hamburger"></i>
                 </div>
-                <h2>FastFood Admin</h2>
+                <h2>Quản trị FastFood</h2>
                 <p>Quản lý nhà hàng của bạn</p>
             </div>
 

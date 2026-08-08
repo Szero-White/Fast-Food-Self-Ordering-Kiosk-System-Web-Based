@@ -1,6 +1,9 @@
 <?php
-$sql_sua_sp = "SELECT * FROM tbl_sanpham WHERE id_sanpham = '$_GET[idsanpham]' limit 1";
-$query_sua_sp = mysqli_query($mysqli, $sql_sua_sp);
+$idSanPham = (int)($_GET['idsanpham'] ?? 0);
+$stmt = mysqli_prepare($mysqli, 'SELECT * FROM tbl_sanpham WHERE id_sanpham = ? LIMIT 1');
+mysqli_stmt_bind_param($stmt, 'i', $idSanPham);
+mysqli_stmt_execute($stmt);
+$query_sua_sp = mysqli_stmt_get_result($stmt);
 ?>
 
 <!-- Page Header -->
@@ -20,25 +23,29 @@ $query_sua_sp = mysqli_query($mysqli, $sql_sua_sp);
 
 <?php
 while ($row = mysqli_fetch_array($query_sua_sp)) {
+$tenSanPham = htmlspecialchars($row['tensanpham'], ENT_QUOTES, 'UTF-8');
+$maSanPham = htmlspecialchars($row['masp'], ENT_QUOTES, 'UTF-8');
+$tomTat = htmlspecialchars($row['tomtat'], ENT_QUOTES, 'UTF-8');
+$noiDung = htmlspecialchars($row['noidung'], ENT_QUOTES, 'UTF-8');
 ?>
 <!-- Edit Product Form -->
 <div class="content-card">
     <div class="card-header-custom">
-        <h5><i class="fas fa-utensils me-2" style="color: #ff6b6b;"></i>Sửa: <?php echo $row['tensanpham'] ?></h5>
+        <h5><i class="fas fa-utensils me-2" style="color: #ff6b6b;"></i>Sửa: <?php echo $tenSanPham; ?></h5>
     </div>
     <div class="card-body-custom">
-        <form method="POST" action="modules/quanlysp/xuly.php?idsanpham=<?php echo $row['id_sanpham'] ?>" enctype="multipart/form-data">
+        <form method="POST" action="modules/quanlysp/xuly.php?idsanpham=<?php echo $idSanPham; ?>" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group-custom">
                         <label class="form-label-custom">Tên món ăn <span style="color: #e74c3c;">*</span></label>
-                        <input type="text" name="tensanpham" class="form-control-custom" value="<?php echo $row['tensanpham'] ?>" required>
+                        <input type="text" name="tensanpham" class="form-control-custom" value="<?php echo $tenSanPham; ?>" required>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group-custom">
                         <label class="form-label-custom">Mã món <span style="color: #e74c3c;">*</span></label>
-                        <input type="text" name="masp" class="form-control-custom" value="<?php echo $row['masp'] ?>" required>
+                        <input type="text" name="masp" class="form-control-custom" value="<?php echo $maSanPham; ?>" required>
                     </div>
                 </div>
             </div>
@@ -47,19 +54,19 @@ while ($row = mysqli_fetch_array($query_sua_sp)) {
                 <div class="col-md-4">
                     <div class="form-group-custom">
                         <label class="form-label-custom">Giá (VNĐ) <span style="color: #e74c3c;">*</span></label>
-                        <input type="number" name="giasp" class="form-control-custom" value="<?php echo $row['giasp'] ?>" required>
+                        <input type="number" name="giasp" class="form-control-custom" value="<?php echo (int)$row['giasp']; ?>" required>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group-custom">
                         <label class="form-label-custom">Số lượng <span style="color: #e74c3c;">*</span></label>
-                        <input type="number" name="soluong" class="form-control-custom" value="<?php echo $row['soluong'] ?>" required>
+                        <input type="number" name="soluong" class="form-control-custom" value="<?php echo (int)$row['soluong']; ?>" required>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group-custom">
                         <label class="form-label-custom">Thứ tự hiển thị</label>
-                        <input type="number" name="thutu" class="form-control-custom" value="<?php echo $row['thutu'] ?>">
+                        <input type="number" name="thutu" class="form-control-custom" value="<?php echo (int)$row['thutu']; ?>">
                     </div>
                 </div>
             </div>
@@ -73,7 +80,7 @@ while ($row = mysqli_fetch_array($query_sua_sp)) {
                     while ($row_danhmuc = mysqli_fetch_array($query_danhmuc)) {
                         $selected = ($row_danhmuc['id_danhmuc'] == $row['id_danhmuc']) ? 'selected' : '';
                     ?>
-                    <option value="<?php echo $row_danhmuc['id_danhmuc'] ?>" <?php echo $selected ?>><?php echo $row_danhmuc['tendanhmuc'] ?></option>
+                    <option value="<?php echo (int)$row_danhmuc['id_danhmuc']; ?>" <?php echo $selected ?>><?php echo htmlspecialchars($row_danhmuc['tendanhmuc'], ENT_QUOTES, 'UTF-8'); ?></option>
                     <?php
                     }
                     ?>
@@ -82,12 +89,12 @@ while ($row = mysqli_fetch_array($query_sua_sp)) {
 
             <div class="form-group-custom">
                 <label class="form-label-custom">Tóm tắt</label>
-                <textarea rows="4" name="tomtat" class="form-control-custom"><?php echo $row['tomtat'] ?></textarea>
+                <textarea rows="4" name="tomtat" class="form-control-custom"><?php echo $tomTat; ?></textarea>
             </div>
 
             <div class="form-group-custom">
                 <label class="form-label-custom">Nội dung chi tiết</label>
-                <textarea rows="8" name="noidung" class="form-control-custom" data-editor><?php echo $row['noidung'] ?></textarea>
+                <textarea rows="8" name="noidung" class="form-control-custom" data-editor><?php echo $noiDung; ?></textarea>
             </div>
 
             <div class="form-group-custom">
@@ -100,7 +107,7 @@ while ($row = mysqli_fetch_array($query_sua_sp)) {
                     <div class="col-md-8">
                         <div class="image-upload" onclick="document.getElementById('hinhanh').click()">
                             <i class="fas fa-cloud-upload-alt"></i>
-                            <p>Click để chọn hình ảnh mới</p>
+                            <p>Bấm để chọn hình ảnh mới</p>
                             <small style="color: #aaa;">Để trống nếu không đổi hình</small>
                             <input type="file" name="hinhanh" id="hinhanh" accept="image/*" style="display: none;">
                         </div>
@@ -121,4 +128,5 @@ while ($row = mysqli_fetch_array($query_sua_sp)) {
 </div>
 <?php
 }
+mysqli_stmt_close($stmt);
 ?>

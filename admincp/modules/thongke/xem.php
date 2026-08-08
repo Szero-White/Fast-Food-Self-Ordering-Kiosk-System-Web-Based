@@ -3,6 +3,16 @@ $sql_tong_sp = "SELECT COUNT(*) as tong FROM tbl_sanpham";
 $query_tong_sp = mysqli_query($mysqli, $sql_tong_sp);
 $row_tong_sp = mysqli_fetch_assoc($query_tong_sp);
 
+$sql_sp_chua_phan_loai = "
+    SELECT COUNT(*) as tong
+    FROM tbl_sanpham
+    LEFT JOIN tbl_danhmuc ON tbl_sanpham.id_danhmuc = tbl_danhmuc.id_danhmuc
+    WHERE tbl_danhmuc.id_danhmuc IS NULL
+";
+$query_sp_chua_phan_loai = mysqli_query($mysqli, $sql_sp_chua_phan_loai);
+$row_sp_chua_phan_loai = mysqli_fetch_assoc($query_sp_chua_phan_loai);
+$tongSpChuaPhanLoai = (int) ($row_sp_chua_phan_loai['tong'] ?? 0);
+
 $sql_tong_bv = "SELECT COUNT(*) as tong FROM tbl_baiviet";
 $query_tong_bv = mysqli_query($mysqli, $sql_tong_bv);
 $row_tong_bv = mysqli_fetch_assoc($query_tong_bv);
@@ -58,6 +68,11 @@ $row_doanhthu_transfer = mysqli_fetch_assoc($query_doanhthu_transfer);
                     <div>
                         <p style="color: #888; font-size: 14px; margin-bottom: 8px;">Tổng sản phẩm</p>
                         <h3 style="font-weight: 700; color: #333; margin: 0; font-size: 32px;"><?php echo $row_tong_sp['tong'] ?></h3>
+                        <?php if ($tongSpChuaPhanLoai > 0) { ?>
+                            <p style="color: #c0392b; font-size: 13px; font-weight: 700; margin: 4px 0 0 0;">
+                                <?php echo $tongSpChuaPhanLoai; ?> món chưa phân loại
+                            </p>
+                        <?php } ?>
                     </div>
                     <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-utensils" style="color: white; font-size: 24px;"></i>

@@ -1,6 +1,9 @@
 <?php
-$sql_sua_bv = "SELECT * FROM tbl_baiviet WHERE id_bv = '$_GET[idbaiviet]' limit 1";
-$query_sua_bv = mysqli_query($mysqli, $sql_sua_bv);
+$idBaiViet = (int)($_GET['idbaiviet'] ?? 0);
+$stmt = mysqli_prepare($mysqli, 'SELECT * FROM tbl_baiviet WHERE id_bv = ? LIMIT 1');
+mysqli_stmt_bind_param($stmt, 'i', $idBaiViet);
+mysqli_stmt_execute($stmt);
+$query_sua_bv = mysqli_stmt_get_result($stmt);
 ?>
 
 <!-- Page Header -->
@@ -20,17 +23,20 @@ $query_sua_bv = mysqli_query($mysqli, $sql_sua_bv);
 
 <?php
 while ($row = mysqli_fetch_array($query_sua_bv)) {
+$tenBaiViet = htmlspecialchars($row['tenbaiviet'], ENT_QUOTES, 'UTF-8');
+$tomTat = htmlspecialchars($row['tomtat'], ENT_QUOTES, 'UTF-8');
+$noiDung = htmlspecialchars($row['noidung'], ENT_QUOTES, 'UTF-8');
 ?>
 <!-- Edit Article Form -->
 <div class="content-card">
     <div class="card-header-custom">
-        <h5><i class="fas fa-newspaper me-2" style="color: #11998e;"></i>Sửa: <?php echo $row['tenbaiviet'] ?></h5>
+        <h5><i class="fas fa-newspaper me-2" style="color: #11998e;"></i>Sửa: <?php echo $tenBaiViet; ?></h5>
     </div>
     <div class="card-body-custom">
-        <form method="POST" action="modules/quanlybaiviet/xuly.php?idbaiviet=<?php echo $row['id_bv'] ?>" enctype="multipart/form-data">
+        <form method="POST" action="modules/quanlybaiviet/xuly.php?idbaiviet=<?php echo $idBaiViet; ?>" enctype="multipart/form-data">
             <div class="form-group-custom">
                 <label class="form-label-custom">Tiêu đề bài viết <span style="color: #e74c3c;">*</span></label>
-                <input type="text" name="tenbaiviet" class="form-control-custom" value="<?php echo $row['tenbaiviet'] ?>" required>
+                <input type="text" name="tenbaiviet" class="form-control-custom" value="<?php echo $tenBaiViet; ?>" required>
             </div>
 
             <div class="form-group-custom">
@@ -42,7 +48,7 @@ while ($row = mysqli_fetch_array($query_sua_bv)) {
                     while ($row_danhmucbv = mysqli_fetch_array($query_danhmucbv)) {
                         $selected = ($row_danhmucbv['id_baiviet'] == $row['id_danhmuc']) ? 'selected' : '';
                     ?>
-                    <option value="<?php echo $row_danhmucbv['id_baiviet'] ?>" <?php echo $selected ?>><?php echo $row_danhmucbv['tendanhmucbv'] ?></option>
+                    <option value="<?php echo (int)$row_danhmucbv['id_baiviet']; ?>" <?php echo $selected ?>><?php echo htmlspecialchars($row_danhmucbv['tendanhmucbv'], ENT_QUOTES, 'UTF-8'); ?></option>
                     <?php
                     }
                     ?>
@@ -51,12 +57,12 @@ while ($row = mysqli_fetch_array($query_sua_bv)) {
 
             <div class="form-group-custom">
                 <label class="form-label-custom">Tóm tắt</label>
-                <textarea rows="4" name="tomtat" class="form-control-custom" data-editor><?php echo $row['tomtat'] ?></textarea>
+                <textarea rows="4" name="tomtat" class="form-control-custom" data-editor><?php echo $tomTat; ?></textarea>
             </div>
 
             <div class="form-group-custom">
                 <label class="form-label-custom">Nội dung chi tiết</label>
-                <textarea rows="10" name="noidung" class="form-control-custom" data-editor><?php echo $row['noidung'] ?></textarea>
+                <textarea rows="10" name="noidung" class="form-control-custom" data-editor><?php echo $noiDung; ?></textarea>
             </div>
 
             <div class="form-group-custom">
@@ -69,7 +75,7 @@ while ($row = mysqli_fetch_array($query_sua_bv)) {
                     <div class="col-md-8">
                         <div class="image-upload" onclick="document.getElementById('hinhanh').click()">
                             <i class="fas fa-cloud-upload-alt"></i>
-                            <p>Click để chọn hình ảnh mới</p>
+                            <p>Bấm để chọn hình ảnh mới</p>
                             <small style="color: #aaa;">Để trống nếu không đổi hình</small>
                             <input type="file" name="hinhanh" id="hinhanh" accept="image/*" style="display: none;">
                         </div>
@@ -90,4 +96,5 @@ while ($row = mysqli_fetch_array($query_sua_bv)) {
 </div>
 <?php
 }
+mysqli_stmt_close($stmt);
 ?>

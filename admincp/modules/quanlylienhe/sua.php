@@ -1,6 +1,9 @@
 <?php
-$sql_sua_lh = "SELECT * FROM tbl_lienhe WHERE id_lienhe = '$_GET[idlienhe]' LIMIT 1";
-$query_sua_lh = mysqli_query($mysqli, $sql_sua_lh);
+$idLienHe = (int)($_GET['idlienhe'] ?? 0);
+$stmt = mysqli_prepare($mysqli, 'SELECT * FROM tbl_lienhe WHERE id_lienhe = ? LIMIT 1');
+mysqli_stmt_bind_param($stmt, 'i', $idLienHe);
+mysqli_stmt_execute($stmt);
+$query_sua_lh = mysqli_stmt_get_result($stmt);
 ?>
 
 <!-- Page Header -->
@@ -28,9 +31,17 @@ $query_sua_lh = mysqli_query($mysqli, $sql_sua_lh);
         while ($row = mysqli_fetch_array($query_sua_lh)) {
             // Cập nhật trạng thái thành đã xem
             if ($row['trangthai'] == 'chua_xem') {
-                $sql_update = "UPDATE tbl_lienhe SET trangthai = 'da_xem' WHERE id_lienhe = '$row[id_lienhe]'";
-                mysqli_query($mysqli, $sql_update);
+                $stmtUpdate = mysqli_prepare($mysqli, "UPDATE tbl_lienhe SET trangthai = 'da_xem' WHERE id_lienhe = ?");
+                mysqli_stmt_bind_param($stmtUpdate, 'i', $row['id_lienhe']);
+                mysqli_stmt_execute($stmtUpdate);
+                mysqli_stmt_close($stmtUpdate);
             }
+            $tenLienHe = htmlspecialchars($row['ten'] ?: '(Chưa có tên)', ENT_QUOTES, 'UTF-8');
+            $emailLienHe = htmlspecialchars($row['email'] ?: '(Chưa có email)', ENT_QUOTES, 'UTF-8');
+            $sdtLienHe = htmlspecialchars($row['sodienthoai'] ?: '(Chưa có SĐT)', ENT_QUOTES, 'UTF-8');
+            $loaiLienHe = htmlspecialchars($row['loai'] ?: '(Chưa phân loại)', ENT_QUOTES, 'UTF-8');
+            $noiDungLienHe = htmlspecialchars($row['noidung'] ?: '(Chưa có nội dung)', ENT_QUOTES, 'UTF-8');
+            $mailtoLienHe = htmlspecialchars($row['email'] ?: '', ENT_QUOTES, 'UTF-8');
         ?>
         <div class="row">
             <div class="col-lg-5">
@@ -45,7 +56,7 @@ $query_sua_lh = mysqli_query($mysqli, $sql_sua_lh);
                             </div>
                             <div>
                                 <small style="color: #888;">Họ tên</small>
-                                <div class="info-value"><?php echo $row['ten'] ?: '(Chưa có tên)' ?></div>
+                                <div class="info-value"><?php echo $tenLienHe; ?></div>
                             </div>
                         </div>
                         <div class="d-flex align-items-center gap-3">
@@ -54,7 +65,7 @@ $query_sua_lh = mysqli_query($mysqli, $sql_sua_lh);
                             </div>
                             <div>
                                 <small style="color: #888;">Email</small>
-                                <div class="info-value"><?php echo $row['email'] ?: '(Chưa có email)' ?></div>
+                                <div class="info-value"><?php echo $emailLienHe; ?></div>
                             </div>
                         </div>
                         <div class="d-flex align-items-center gap-3">
@@ -63,7 +74,7 @@ $query_sua_lh = mysqli_query($mysqli, $sql_sua_lh);
                             </div>
                             <div>
                                 <small style="color: #888;">Số điện thoại</small>
-                                <div class="info-value"><?php echo $row['sodienthoai'] ?: '(Chưa có SĐT)' ?></div>
+                                <div class="info-value"><?php echo $sdtLienHe; ?></div>
                             </div>
                         </div>
                         <div class="d-flex align-items-center gap-3">
@@ -72,7 +83,7 @@ $query_sua_lh = mysqli_query($mysqli, $sql_sua_lh);
                             </div>
                             <div>
                                 <small style="color: #888;">Loại liên hệ</small>
-                                <div class="info-value"><?php echo $row['loai'] ?: '(Chưa phân loại)' ?></div>
+                                <div class="info-value"><?php echo $loaiLienHe; ?></div>
                             </div>
                         </div>
                         <div class="d-flex align-items-center gap-3">
@@ -93,7 +104,7 @@ $query_sua_lh = mysqli_query($mysqli, $sql_sua_lh);
                         <i class="fas fa-comment-alt me-2" style="color: #4facfe;"></i>Nội dung tin nhắn
                     </h6>
                     <div style="background: #f8f9fa; border-radius: 12px; padding: 20px; min-height: 200px; line-height: 1.8;">
-                        <?php echo nl2br($row['noidung'] ?: '(Chưa có nội dung)') ?>
+                        <?php echo nl2br($noiDungLienHe); ?>
                     </div>
                 </div>
             </div>
@@ -103,12 +114,13 @@ $query_sua_lh = mysqli_query($mysqli, $sql_sua_lh);
             <a href="?action=quanlylienhe&query=lietke" class="btn-custom btn-custom-secondary text-decoration-none d-inline-flex align-items-center">
                 <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
             </a>
-            <a href="mailto:<?php echo $row['email'] ?>" class="btn-custom btn-custom-primary text-decoration-none d-inline-flex align-items-center">
+            <a href="mailto:<?php echo $mailtoLienHe; ?>" class="btn-custom btn-custom-primary text-decoration-none d-inline-flex align-items-center">
                 <i class="fas fa-reply me-2"></i>Trả lời email
             </a>
         </div>
         <?php
         }
+        mysqli_stmt_close($stmt);
         ?>
     </div>
 </div>

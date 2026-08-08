@@ -1,24 +1,28 @@
 <?php
-    include(__DIR__ . '/../../config/config.php');
+include(__DIR__ . '/../../config/config.php');
 
-    $tendanhmucbv = $_POST['tendanhmucbaiviet'];
-    $thutu = $_POST['thutu'];
+$tendanhmucbv = trim($_POST['tendanhmucbaiviet'] ?? '');
+$thutu = (int)($_POST['thutu'] ?? 0);
 
-    if(isset($_POST['themdanhmucbaiviet'])){
-        $sql_them = "INSERT INTO tbl_danhmucbaiviet(tendanhmucbv,thutu) 
-            VALUES('".$tendanhmucbv."','".$thutu."')";
-        mysqli_query($mysqli,$sql_them);
-        header('Location:../../index.php?action=quanlydanhmucbaiviet&query=them');
-    }
-    elseif(isset($_POST['suadanhmucbaiviet'])){
-        $sql_update = "UPDATE tbL_danhmucbaiviet SET tendanhmucbv = '".$tendanhmucbv."',thutu = '".$thutu."' WHERE id_baiviet = '$_GET[idbaiviet]'";
-        mysqli_query($mysqli,$sql_update);
-        header('Location:../../index.php?action=quanlydanhmucbaiviet&query=them');
-    }
-    else{
-        $id = $_GET['idbaiviet'];
-        $sql_xoa = "DELETE FROM tbl_danhmucbaiviet WHERE id_baiviet ='".$id."'";
-        mysqli_query($mysqli,$sql_xoa);
-        header('Location:../../index.php?action=quanlydanhmucbaiviet&query=them');
-    }
+if (isset($_POST['themdanhmucbaiviet'])) {
+    $stmt = mysqli_prepare($mysqli, 'INSERT INTO tbl_danhmucbaiviet(tendanhmucbv, thutu) VALUES (?, ?)');
+    mysqli_stmt_bind_param($stmt, 'si', $tendanhmucbv, $thutu);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+} elseif (isset($_POST['suadanhmucbaiviet'])) {
+    $id = (int)($_GET['idbaiviet'] ?? 0);
+    $stmt = mysqli_prepare($mysqli, 'UPDATE tbl_danhmucbaiviet SET tendanhmucbv = ?, thutu = ? WHERE id_baiviet = ?');
+    mysqli_stmt_bind_param($stmt, 'sii', $tendanhmucbv, $thutu, $id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+} else {
+    $id = (int)($_GET['idbaiviet'] ?? 0);
+    $stmt = mysqli_prepare($mysqli, 'DELETE FROM tbl_danhmucbaiviet WHERE id_baiviet = ?');
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+}
+
+header('Location:../../index.php?action=quanlydanhmucbaiviet&query=them');
+exit;
 ?>

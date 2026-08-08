@@ -59,7 +59,7 @@
                     <div class="col-md-8">
                         <div class="image-upload" onclick="document.getElementById('hinhanh').click()">
                             <i class="fas fa-cloud-upload-alt"></i>
-                            <p>Click để chọn hình ảnh hoặc kéo thả vào đây</p>
+                            <p>Bấm để chọn hình ảnh hoặc kéo thả vào đây</p>
                             <small style="color: #aaa;">Hỗ trợ: JPG, PNG (Tối đa 2MB)</small>
                             <input type="file" name="hinhanh" id="hinhanh" accept="image/*" style="display: none;" onchange="previewImageBV(this)">
                         </div>

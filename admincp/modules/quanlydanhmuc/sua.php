@@ -1,6 +1,9 @@
 <?php
-$sql_sua_danhmucsp = "SELECT * FROM tbl_danhmuc WHERE id_danhmuc = '$_GET[iddanhmuc]' limit 1";
-$query_sua_danhmucsp = mysqli_query($mysqli, $sql_sua_danhmucsp);
+$idDanhMuc = (int)($_GET['iddanhmuc'] ?? 0);
+$stmt = mysqli_prepare($mysqli, 'SELECT * FROM tbl_danhmuc WHERE id_danhmuc = ? LIMIT 1');
+mysqli_stmt_bind_param($stmt, 'i', $idDanhMuc);
+mysqli_stmt_execute($stmt);
+$query_sua_danhmucsp = mysqli_stmt_get_result($stmt);
 ?>
 
 <!-- Page Header -->
@@ -20,24 +23,25 @@ $query_sua_danhmucsp = mysqli_query($mysqli, $sql_sua_danhmucsp);
 
 <?php
 while ($dong = mysqli_fetch_array($query_sua_danhmucsp)) {
+$tenDanhMuc = htmlspecialchars($dong['tendanhmuc'], ENT_QUOTES, 'UTF-8');
 ?>
 <!-- Edit Category Form -->
 <div class="row">
     <div class="col-lg-6">
         <div class="content-card">
             <div class="card-header-custom">
-                <h5><i class="fas fa-folder me-2" style="color: #667eea;"></i>Sửa: <?php echo $dong['tendanhmuc'] ?></h5>
+                <h5><i class="fas fa-folder me-2" style="color: #667eea;"></i>Sửa: <?php echo $tenDanhMuc; ?></h5>
             </div>
             <div class="card-body-custom">
-                <form method="POST" action="modules/quanlydanhmuc/xuly.php?iddanhmuc=<?php echo $_GET['iddanhmuc'] ?>">
+                <form method="POST" action="modules/quanlydanhmuc/xuly.php?iddanhmuc=<?php echo $idDanhMuc; ?>">
                     <div class="form-group-custom">
                         <label class="form-label-custom">Tên danh mục <span style="color: #e74c3c;">*</span></label>
-                        <input type="text" name="tendanhmuc" class="form-control-custom" value="<?php echo $dong['tendanhmuc'] ?>" required>
+                        <input type="text" name="tendanhmuc" class="form-control-custom" value="<?php echo $tenDanhMuc; ?>" required>
                     </div>
 
                     <div class="form-group-custom">
                         <label class="form-label-custom">Thứ tự hiển thị</label>
-                        <input type="number" name="thutu" class="form-control-custom" value="<?php echo $dong['thutu'] ?>">
+                        <input type="number" name="thutu" class="form-control-custom" value="<?php echo (int)$dong['thutu']; ?>">
                         <small style="color: #888;">Số nhỏ hơn sẽ hiển thị trước</small>
                     </div>
 
@@ -56,4 +60,5 @@ while ($dong = mysqli_fetch_array($query_sua_danhmucsp)) {
 </div>
 <?php
 }
+mysqli_stmt_close($stmt);
 ?>

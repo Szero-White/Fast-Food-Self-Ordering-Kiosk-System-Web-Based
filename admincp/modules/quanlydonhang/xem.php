@@ -1,11 +1,23 @@
 <?php
-$sql_xem = "SELECT * FROM tbl_donhang WHERE id = '$_GET[iddonhang]' LIMIT 1";
-$query_xem = mysqli_query($mysqli, $sql_xem);
+$idDonHang = (int)($_GET['iddonhang'] ?? 0);
+$stmtOrder = mysqli_prepare($mysqli, 'SELECT * FROM tbl_donhang WHERE id = ? LIMIT 1');
+mysqli_stmt_bind_param($stmtOrder, 'i', $idDonHang);
+mysqli_stmt_execute($stmtOrder);
+$query_xem = mysqli_stmt_get_result($stmtOrder);
 $row = mysqli_fetch_array($query_xem);
 
 // Lấy chi tiết đơn hàng
-$sql_ct = "SELECT * FROM tbl_chitietdonhang WHERE id_donhang = '$_GET[iddonhang]'";
-$query_ct = mysqli_query($mysqli, $sql_ct);
+$stmtOrderDetail = mysqli_prepare($mysqli, 'SELECT * FROM tbl_chitietdonhang WHERE id_donhang = ?');
+mysqli_stmt_bind_param($stmtOrderDetail, 'i', $idDonHang);
+mysqli_stmt_execute($stmtOrderDetail);
+$query_ct = mysqli_stmt_get_result($stmtOrderDetail);
+
+if (!$row) {
+    echo '<div class="content-card"><div class="card-body-custom">Đơn hàng không tồn tại.</div></div>';
+    mysqli_stmt_close($stmtOrder);
+    mysqli_stmt_close($stmtOrderDetail);
+    return;
+}
 
 $status_text = '';
 $status_color = '';
