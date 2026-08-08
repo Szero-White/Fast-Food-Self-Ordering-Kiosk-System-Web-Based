@@ -1,20 +1,29 @@
 <?php
-// Xu ly gui lien he
-if(isset($_POST['gui_lienhe'])) {
-    $ten = mysqli_real_escape_string($mysqli, $_POST['ten']);
-    $email = mysqli_real_escape_string($mysqli, $_POST['email']);
-    $sodienthoai = mysqli_real_escape_string($mysqli, $_POST['sodienthoai']);
-    $loai = mysqli_real_escape_string($mysqli, $_POST['loai']);
-    $noidung = mysqli_real_escape_string($mysqli, $_POST['noidung']);
-    
-    $sql = "INSERT INTO tbl_lienhe (ten, email, sodienthoai, loai, noidung, ngaygui, trangthai) 
-            VALUES ('$ten', '$email', '$sodienthoai', '$loai', '$noidung', NOW(), 'chua_xem')";
-    
-    if(mysqli_query($mysqli, $sql)) {
-        $thanhcong = "Cam on ban da lien he! Chung toi se phan hoi trong thoi gian som nhat.";
+// Xử lý gửi liên hệ
+if (isset($_POST['gui_lienhe'])) {
+    $ten = trim($_POST['ten'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $sodienthoai = trim($_POST['sodienthoai'] ?? '');
+    $loai = trim($_POST['loai'] ?? '');
+    $noidung = trim($_POST['noidung'] ?? '');
+    $trangthai = 'chua_xem';
+    $thongtinlienhe = '';
+    $hinhanh = '';
+
+    $stmt = mysqli_prepare(
+        $mysqli,
+        'INSERT INTO tbl_lienhe (thongtinlienhe, hinhanh, ngaygui, trangthai, ten, email, sodienthoai, loai, noidung)
+         VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?)'
+    );
+    mysqli_stmt_bind_param($stmt, 'ssssssss', $thongtinlienhe, $hinhanh, $trangthai, $ten, $email, $sodienthoai, $loai, $noidung);
+
+    if (mysqli_stmt_execute($stmt)) {
+        $thanhcong = 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.';
     } else {
-        $loi = "Co loi xay ra, vui long thu lai sau.";
+        $loi = 'Có lỗi xảy ra, vui lòng thử lại sau.';
     }
+
+    mysqli_stmt_close($stmt);
 }
 ?>
 
@@ -212,13 +221,13 @@ if(isset($_POST['gui_lienhe'])) {
     
     <div class="contact-grid">
         <div class="contact-info">
-            <h3>Thong Tin Lien He</h3>
+            <h3>Thông tin liên hệ</h3>
             
             <div class="info-item">
                 <div class="info-icon">📍</div>
                 <div class="info-content">
-                    <h4>Dia Chi</h4>
-                    <p>Quan 7, TP. Ho Chi Minh</p>
+                    <h4>Địa chỉ</h4>
+                    <p>Quận 7, TP. Hồ Chí Minh</p>
                 </div>
             </div>
             
@@ -241,13 +250,13 @@ if(isset($_POST['gui_lienhe'])) {
             <div class="info-item">
                 <div class="info-icon">🕐</div>
                 <div class="info-content">
-                    <h4>Gio Lam Viec</h4>
-                    <p>9:00 - 22:00 (Hang ngay)</p>
+                    <h4>Giờ làm việc</h4>
+                    <p>9:00 - 22:00 (Hằng ngày)</p>
                 </div>
             </div>
             
             <div class="social-links">
-                <h4>Ket Noi Voi Chung Toi</h4>
+                <h4>Kết nối với chúng tôi</h4>
                 <a href="#">📘</a>
                 <a href="#">📸</a>
                 <a href="#">🐦</a>
@@ -271,40 +280,40 @@ if(isset($_POST['gui_lienhe'])) {
             <form method="POST" action="">
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="ten">Ho va Ten *</label>
-                        <input type="text" id="ten" name="ten" required placeholder="Nhap ho ten">
+                        <label for="ten">Họ và tên *</label>
+                        <input type="text" id="ten" name="ten" required placeholder="Nhập họ tên">
                     </div>
                     <div class="form-group">
                         <label for="email">Email *</label>
-                        <input type="email" id="email" name="email" required placeholder="Nhap email">
+                        <input type="email" id="email" name="email" required placeholder="Nhập email">
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="sodienthoai">So Dien Thoai</label>
-                        <input type="tel" id="sodienthoai" name="sodienthoai" placeholder="Nhap so dien thoai">
+                        <label for="sodienthoai">Số điện thoại</label>
+                        <input type="tel" id="sodienthoai" name="sodienthoai" placeholder="Nhập số điện thoại">
                     </div>
                     <div class="form-group">
-                        <label for="loai">Loai Lien He *</label>
+                        <label for="loai">Loại liên hệ *</label>
                         <select id="loai" name="loai" required>
-                            <option value="">-- Chon loai --</option>
-                            <option value="gap_loi">⚠️ Gap loi website</option>
-                            <option value="don_hang">📦 Van de don hang</option>
-                            <option value="gop_y">💡 Gop y cai tien</option>
-                            <option value="hop_tac">🤝 Hop tac kinh doanh</option>
-                            <option value="khac">📝 Khac</option>
+                            <option value="">-- Chọn loại --</option>
+                            <option value="gap_loi">⚠️ Gặp lỗi website</option>
+                            <option value="don_hang">📦 Vấn đề đơn hàng</option>
+                            <option value="gop_y">💡 Góp ý cải tiến</option>
+                            <option value="hop_tac">🤝 Hợp tác kinh doanh</option>
+                            <option value="khac">📝 Khác</option>
                         </select>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="noidung">Noi Dung *</label>
-                    <textarea id="noidung" name="noidung" required placeholder="Mo ta chi tiet van de cua ban..."></textarea>
+                    <label for="noidung">Nội dung *</label>
+                    <textarea id="noidung" name="noidung" required placeholder="Mô tả chi tiết vấn đề của bạn..."></textarea>
                 </div>
                 
                 <button type="submit" name="gui_lienhe" class="btn-submit">
-                    📤 Gui Lien He
+                    📤 Gửi liên hệ
                 </button>
             </form>
         </div>

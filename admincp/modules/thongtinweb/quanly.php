@@ -46,7 +46,7 @@ if (!$dong) {
                             <input type="file" name="hinhanh" id="hinhanh" style="display: none;" accept="image/*">
                             <label for="hinhanh" style="cursor: pointer; display: block;">
                                 <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #11998e; margin-bottom: 15px;"></i>
-                                <p style="color: #666; margin-bottom: 10px;">Click để chọn ảnh mới</p>
+                                <p style="color: #666; margin-bottom: 10px;">Bấm để chọn ảnh mới</p>
                                 <p style="color: #888; font-size: 13px;">hoặc kéo thả ảnh vào đây</p>
                             </label>
                         </div>
