@@ -136,55 +136,33 @@ FastFood Kiosk là hệ thống **mô phỏng máy tự order** trong cửa hàn
 ## 📁 Cấu Trúc Dự Án
 
 ```
-52200271_NguyenCongToan/
+Fast-Food-Self-Ordering-Kiosk-System-Web-Based/
 │
-├── 📄 52200271_NguyenCongToan.docx    # Báo cáo đồ án (Word)
-├── 📄 52200271_NguyenCongToan.pdf     # Báo cáo đồ án (PDF)
-├── 🗄️ web_sqli.sql                    # Cơ sở dữ liệu MySQL
+├── 🗄️ web_sqli.sql                    # Database MySQL
+├── ⚙️ config/
+│   └── database.php                   # Kết nối database dùng chung
 │
-└── 📁 web_mysqli/                     # Source code chính
-    │
-    ├── 🔐 admincp/                    # 🛡️ KHU VỰC QUẢN TRỊ
-    │   ├── ⚙️ config/
-    │   │   └── config.php             # Kết nối database
-    │   ├── 🎨 css_admin/
-    │   │   ├── admin_style.css        # Style giao diện
-    │   │   └── admin_script.js        # JavaScript xử lý
-    │   ├── 📦 modules/                # Các module quản lý
-    │   │   ├── 📊 dashboard.php       # Bảng điều khiển
-    │   │   ├── 🍔 quanlysp/           # Quản lý sản phẩm
-    │   │   ├── 📁 quanlydanhmuc/      # Quản lý danh mục
-    │   │   ├── 📰 quanlybaiviet/      # Quản lý bài viết
-    │   │   ├── 📦 quanlydonhang/      # Quản lý đơn hàng
-    │   │   ├── 📈 thongke/            # Thống kê báo cáo
-    │   │   └── ⚙️ thongtinweb/         # Cấu hình website
-    │   ├── 🔑 login.php               # Trang đăng nhập
-    │   └── 🏠 index.php               # Dashboard chính
-    │
-    └── 👤 view/                       # 🖥️ KHU VỰC KHÁCH HÀNG (KIOSK)
-        ├── ⚙️ config/
-        │   └── config.php             # Kết nối database
-        ├── 🎨 css/
-        │   └── styl.css               # Style giao diện kiosk
-        ├── 📁 pages/                  # Các trang giao diện
-        │   ├── 🧩 header.php          # Header chung
-        │   ├── 🧩 menu.php            # Menu điều hướng
-        │   ├── 🧩 footer.php          # Footer chung
-        │   ├── 🧩 main.php            # Router trang chính
-        │   └── 📁 main/               # Nội dung các trang
-        │       ├── 🏠 welcome.php     # Màn hình chờ
-        │       ├── 🍕 index.php       # Trang chọn món
-        │       ├── 🛒 giohang.php     # Giỏ hàng
-        │       ├── 💳 thanhtoan.php   # Thanh toán
-        │       ├── 🎉 camon.php       # Hoàn tất đơn hàng
-        │       ├── 🗂️ sanpham.php    # Chi tiết sản phẩm
-        │       ├── 📂 danhmuc.php     # Lọc theo danh mục
-        │       └── 🔄 reset_session.php # API reset phiên
-        ├── 🖼️ images/                 # Hình ảnh món ăn
-        ├── 📤 uploads/                # Thư mục upload ảnh
-        ├── 📜 js/
-        │   └── timeout.js             # Xử lý auto timeout
-        └── 🏠 index.php               # Entry point kiosk
+├── 🔐 admincp/                        # Khu vực quản trị
+│   ├── ⚙️ config/
+│   │   └── config.php                 # Wrapper config cho admin
+│   ├── 🎨 css_admin/
+│   │   ├── admin_style.css            # Style giao diện admin
+│   │   └── admin_script.js            # JavaScript admin
+│   ├── 📦 modules/                    # Các module quản lý
+│   ├── 🔑 login.php                   # Trang đăng nhập
+│   └── 🏠 index.php                   # Dashboard chính
+│
+└── 👤 view/                           # Khu vực khách hàng/kiosk
+    ├── ⚙️ config/
+    │   └── config.php                 # Wrapper config cho kiosk
+    ├── 🎨 css/
+    │   └── styl.css                   # Style giao diện kiosk
+    ├── 📁 pages/                      # Layout và các trang giao diện
+    ├── 🖼️ images/                     # Hình ảnh tĩnh
+    ├── 📤 uploads/                    # Ảnh món ăn dùng bởi database
+    ├── 📜 js/
+    │   └── timeout.js                 # Xử lý auto timeout
+    └── 🏠 index.php                   # Entry point kiosk
 ```
 
 ---
