@@ -18,24 +18,24 @@
 
 **Trang Đăng Nhập Admin:**
 
-<img src="./view/images/admin-login.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/assets/screenshots/admin-login.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
 
 **Dashboard Admin (Trang Chủ):**
 
-<img src="./view/images/admin-dashboard.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/assets/screenshots/admin-dashboard.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
 
 ### 👥 Khu Vực Customer (Kiosk)
 
 **Trang Chào Mừng (Welcome):**
 
-<img src="./view/images/customer-welcome.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/assets/screenshots/customer-welcome.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
 
 **Trang Chủ - Chọn Món (Menu):**
 
-<img src="./view/images/customer-menu-1.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
-<img src="./view/images/customer-menu-2.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
-<img src="./view/images/customer-menu-3.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
-<img src="./view/images/customer-menu-4.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/assets/screenshots/customer-menu-1.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/assets/screenshots/customer-menu-2.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/assets/screenshots/customer-menu-3.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/assets/screenshots/customer-menu-4.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
 
 ---
 
@@ -158,7 +158,7 @@ Fast-Food-Self-Ordering-Kiosk-System-Web-Based/
     ├── 🎨 css/
     │   └── styl.css                   # Style giao diện kiosk
     ├── 📁 pages/                      # Layout và các trang giao diện
-    ├── 🖼️ images/                     # Hình ảnh tĩnh
+    ├── 🖼️ assets/                     # Hình ảnh tĩnh đã phân loại
     ├── 📜 js/
     │   └── timeout.js                 # Xử lý auto timeout
     └── 🏠 index.php                   # Entry point kiosk
@@ -545,3 +545,5 @@ tbl_chitietdonhang (
 - Runtime uploaded images are ignored by Git. Keep only `.gitkeep` and `.htaccess` in the repository.
 - Existing seed images referenced by `web_sqli.sql` should be uploaded to `storage/uploads/` on the demo server.
 - Uploaded image validation allows JPG, PNG, and WEBP up to 5MB.
+- Static UI assets are organized in `view/assets/` by purpose: `brand`, `banners`, `placeholders`, `screenshots`, and `seed/uploads`.
+- Admin can manage content images through CRUD modules: product images, article images, introduction image, site logo, and homepage banners.

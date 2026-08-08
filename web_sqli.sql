@@ -75,6 +75,77 @@ INSERT INTO `tbl_baiviet` (`id_bv`, `tenbaiviet`, `tomtat`, `noidung`, `hinhanh`
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tbl_banner`
+--
+
+CREATE TABLE `tbl_banner` (
+  `id_banner` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) NOT NULL,
+  `subtitle` varchar(255) DEFAULT NULL,
+  `image_path` varchar(255) NOT NULL,
+  `image_source` enum('asset','upload') NOT NULL DEFAULT 'asset',
+  `link` varchar(255) DEFAULT NULL,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id_banner`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tbl_banner`
+--
+
+INSERT INTO `tbl_banner` (`id_banner`, `title`, `subtitle`, `image_path`, `image_source`, `link`, `sort_order`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 'FastFood Kiosk', 'Đặt món nhanh, trải nghiệm như kiosk tại cửa hàng.', 'banners/BANNER+BOGO3+SING+NEW.jpg', 'asset', NULL, 1, 1, current_timestamp(), current_timestamp()),
+(2, 'Món ngon mỗi ngày', 'Hiển thị banner theo dữ liệu quản trị, không cần sửa code.', 'banners/0fb9079d3185fd513de3f57ca8d8cec2a429c34d.jpeg', 'asset', NULL, 2, 1, current_timestamp(), current_timestamp()),
+(3, 'Ưu đãi nổi bật', 'Admin có thể cập nhật banner trực tiếp trên trang quản trị.', 'banners/BANNER+LIME+(1).png', 'asset', NULL, 3, 1, current_timestamp(), current_timestamp());
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_banner_setting`
+--
+
+CREATE TABLE `tbl_banner_setting` (
+  `id` tinyint(1) NOT NULL DEFAULT 1,
+  `visible_limit` int(11) NOT NULL DEFAULT 0,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tbl_banner_setting`
+--
+
+INSERT INTO `tbl_banner_setting` (`id`, `visible_limit`, `updated_at`) VALUES
+(1, 0, current_timestamp());
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tbl_site_asset`
+--
+
+CREATE TABLE `tbl_site_asset` (
+  `asset_key` varchar(100) NOT NULL,
+  `label` varchar(200) NOT NULL,
+  `image_path` varchar(255) NOT NULL,
+  `image_source` enum('asset','upload') NOT NULL DEFAULT 'asset',
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`asset_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tbl_site_asset`
+--
+
+INSERT INTO `tbl_site_asset` (`asset_key`, `label`, `image_path`, `image_source`, `updated_at`) VALUES
+('site_logo', 'Logo trang web', 'brand/logo.jpg', 'asset', current_timestamp());
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tbl_chatbot_history`
 --
 
@@ -88,64 +159,6 @@ CREATE TABLE `tbl_chatbot_history` (
   `user_agent` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tbl_chatbot_history`
---
-
-INSERT INTO `tbl_chatbot_history` (`id`, `user_message`, `bot_response`, `matched_keyword`, `response_type`, `user_ip`, `user_agent`, `created_at`) VALUES
-(1, 'Khuyến mãi', '🎊 Hiện tại không có khuyến mãi nào.', 'khuyen mai', 'api_promo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:20:24'),
-(2, 'Địa chỉ', '📍 Cửa hàng của chúng tôi tại: Quận 7, Thành phố Hồ Chí Minh. Hotline: 1900 6099.', 'dia chi', 'static', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:20:27'),
-(3, 'Khuyến mãi', '🎉 Khuyến mãi:\n1. GIẢM 50% TỔNG HÓA ĐƠN & FREESHIP\n', 'khuyen mai', 'api_promo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:24:30'),
-(4, 'Giá món ăn', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Rice - 25,000đ\n2. Pepsi - 25,000đ\n3. Pizza Hai San - 120,000đ\n4. Salat - 45,000đ\n5. Coca Cola - 15,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:24:34'),
-(5, 'Thực đơn có gì?', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Rice - 25,000đ\n2. Pepsi - 25,000đ\n3. Pizza Hai San - 120,000đ\n4. Salat - 45,000đ\n5. Coca Cola - 15,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:24:36'),
-(6, 'Địa chỉ', '📍 Cửa hàng của chúng tôi tại: Quận 7, Thành phố Hồ Chí Minh. Hotline: 1900 6099.', 'dia chi', 'static', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:24:42'),
-(7, 'Thực đơn có gì?', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Rice - 25,000đ\n2. Pepsi - 25,000đ\n3. Pizza Hai San - 120,000đ\n4. Salat - 45,000đ\n5. Coca Cola - 15,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:25:26'),
-(8, 'hi', 'Hi! 👋 FastFood AI đây. Bạn muốn hỏi gì?', 'hi', 'static', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:34:10'),
-(9, 'helo', 'Xin lỗi, tôi chưa hiểu ý bạn lắm 😅 Bạn thử hỏi bằng tiếng Việt không dấu hoặc dùng các từ khóa như:<br>• \"Thực đơn có gì?\"<br>• \"Giá pizza bao nhiêu?\"<br>• \"Còn gà rán không?\"<br>• \"Khuyến mãi hiện tại\"<br>• \"Địa chỉ cửa hàng\"<br>• \"Giờ mở cửa\"', '', 'fallback', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:34:14'),
-(10, 'salat', 'Xin lỗi, tôi chưa hiểu ý bạn lắm 😅 Bạn thử hỏi bằng tiếng Việt không dấu hoặc dùng các từ khóa như:<br>• \"Thực đơn có gì?\"<br>• \"Giá pizza bao nhiêu?\"<br>• \"Còn gà rán không?\"<br>• \"Khuyến mãi hiện tại\"<br>• \"Địa chỉ cửa hàng\"<br>• \"Giờ mở cửa\"', '', 'fallback', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:34:24'),
-(11, 'có món gì ngon', 'Xin lỗi, tôi chưa hiểu ý bạn lắm 😅 Bạn thử hỏi bằng tiếng Việt không dấu hoặc dùng các từ khóa như:<br>• \"Thực đơn có gì?\"<br>• \"Giá pizza bao nhiêu?\"<br>• \"Còn gà rán không?\"<br>• \"Khuyến mãi hiện tại\"<br>• \"Địa chỉ cửa hàng\"<br>• \"Giờ mở cửa\"', '', 'fallback', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:34:32'),
-(12, 'Giờ mở cửa', '⏰ Cửa hàng mở cửa từ 9:00 sáng đến 22:00 tối, cả tuần kể cả ngày lễ. Đến sớm để chọn món ngon nhé!', 'gio mo cua', 'static', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:34:40'),
-(13, 'Còn gà rán không', 'Không tìm thấy món này.', '', 'api_stock', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:34:47'),
-(14, 'mon gi ngon', 'Xin lỗi, tôi chưa hiểu ý bạn lắm 😅 Bạn thử hỏi bằng tiếng Việt không dấu hoặc dùng các từ khóa như:<br>• \"Thực đơn có gì?\"<br>• \"Giá pizza bao nhiêu?\"<br>• \"Còn gà rán không?\"<br>• \"Khuyến mãi hiện tại\"<br>• \"Địa chỉ cửa hàng\"<br>• \"Giờ mở cửa\"', '', 'fallback', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:34:55'),
-(15, 'Thực đơn có gì', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Rice - 25,000đ\n2. Pepsi - 25,000đ\n3. Pizza Hai San - 120,000đ\n4. Salat - 45,000đ\n5. Coca Cola - 15,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:35:05'),
-(16, 'Thực đơn có gì?', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:37:22'),
-(17, '5 món khác', 'Xin lỗi, tôi chưa hiểu ý bạn lắm 😅 Bạn thử hỏi bằng tiếng Việt không dấu hoặc dùng các từ khóa như:<br>• \"Thực đơn có gì?\"<br>• \"Giá pizza bao nhiêu?\"<br>• \"Còn gà rán không?\"<br>• \"Khuyến mãi hiện tại\"<br>• \"Địa chỉ cửa hàng\"<br>• \"Giờ mở cửa\"', '', 'fallback', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:37:36'),
-(18, 'Địa chỉ', '📍 Cửa hàng của chúng tôi tại: Quận 7, Thành phố Hồ Chí Minh. Hotline: 1900 6099.', 'dia chi', 'static', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-06 10:52:48'),
-(19, 'Địa chỉ', '📍 Cửa hàng của chúng tôi tại: Quận 7, Thành phố Hồ Chí Minh. Hotline: 1900 1234.', 'dia chi', 'static', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 05:21:29'),
-(20, 'lien he', '📞 Hotline: 1900 1234 | 📍 Địa chỉ: Quận 7, TP.HCM | 📧 Email: congtoan2k4@gmail.com', 'lien he', 'static', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 05:21:34'),
-(21, 'Khuyến mãi', '🎉 Khuyến mãi:\n1. GIẢM 50% TỔNG HÓA ĐƠN & FREESHIP\n', 'khuyen mai', 'api_promo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 05:36:46'),
-(22, 'Địa chỉ', '📍 Cửa hàng của chúng tôi tại: Quận 7, Thành phố Hồ Chí Minh. Hotline: 1900 1234.', 'dia chi', 'static', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 05:36:48'),
-(23, 'Thực đơn có gì?', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 05:36:50'),
-(24, 'Địa chỉ', '📍 Cửa hàng của chúng tôi tại: Quận 7, Thành phố Hồ Chí Minh. Hotline: 1900 6099.', 'dia chi', 'static', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 05:43:15'),
-(25, 'so dien thoai', 'Xin lỗi, tôi chưa hiểu ý bạn lắm 😅 Bạn thử hỏi bằng tiếng Việt không dấu hoặc dùng các từ khóa như:<br>• \"Thực đơn có gì?\"<br>• \"Giá pizza bao nhiêu?\"<br>• \"Còn gà rán không?\"<br>• \"Khuyến mãi hiện tại\"<br>• \"Địa chỉ cửa hàng\"<br>• \"Giờ mở cửa\"', '', 'fallback', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 05:43:21'),
-(26, 'Khuyến mãi', '🎉 Khuyến mãi:\n1. GIẢM 50% TỔNG HÓA ĐƠN & FREESHIP\n', 'khuyen mai', 'api_promo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 05:43:24'),
-(27, 'Giá món ăn', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 05:43:26'),
-(28, 'Thực đơn có gì?', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 05:43:27'),
-(29, 'Thực đơn có gì?', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.118.1 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36', '2026-05-07 06:01:23'),
-(30, 'Thực đơn có gì?', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.118.1 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36', '2026-05-07 06:01:24'),
-(31, 'Địa chỉ', '📍 Cửa hàng của chúng tôi tại: Quận 7, Thành phố Hồ Chí Minh. Hotline: 1900 6099.', 'dia chi', 'static', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.118.1 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36', '2026-05-07 06:01:26'),
-(32, 'Giá món ăn', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.118.1 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36', '2026-05-07 06:01:26'),
-(33, 'Khuyến mãi', '🎉 Khuyến mãi:\n1. GIẢM 50% TỔNG HÓA ĐƠN & FREESHIP\n', 'khuyen mai', 'api_promo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.118.1 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36', '2026-05-07 06:01:26'),
-(34, 'Giá món ăn', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.118.1 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36', '2026-05-07 06:01:27'),
-(35, 'Khuyến mãi', '🎉 Khuyến mãi:\n1. GIẢM 50% TỔNG HÓA ĐƠN & FREESHIP\n', 'khuyen mai', 'api_promo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.118.1 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36', '2026-05-07 06:01:27'),
-(36, 'Địa chỉ', '📍 Cửa hàng của chúng tôi tại: Quận 7, Thành phố Hồ Chí Minh. Hotline: 1900 6099.', 'dia chi', 'static', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.118.1 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36', '2026-05-07 06:01:27'),
-(37, 'Giá món ăn', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.118.1 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36', '2026-05-07 06:01:28'),
-(38, 'Khuyến mãi', '🎉 Khuyến mãi:\n1. GIẢM 50% TỔNG HÓA ĐƠN & FREESHIP\n', 'khuyen mai', 'api_promo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.118.1 Chrome/142.0.7444.265 Electron/39.8.8 Safari/537.36', '2026-05-07 06:01:28'),
-(39, 'Địa chỉ', '📍 Cửa hàng của chúng tôi tại: Quận 7, Thành phố Hồ Chí Minh. Hotline: 1900 6099.', 'dia chi', 'static', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 23:41:03'),
-(40, 'Thực đơn có gì?', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 23:41:03'),
-(41, 'Giá món ăn', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 23:41:03'),
-(42, 'Thực đơn có gì?', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 23:41:04'),
-(43, 'Khuyến mãi', '🎉 Khuyến mãi:\n1. GIẢM 50% TỔNG HÓA ĐƠN & FREESHIP\n', 'khuyen mai', 'api_promo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 23:41:04'),
-(44, 'Giá món ăn', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 23:41:05'),
-(45, 'Thực đơn có gì?', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 23:41:05'),
-(46, 'Địa chỉ', '📍 Cửa hàng của chúng tôi tại: Quận 7, Thành phố Hồ Chí Minh. Hotline: 1900 6099.', 'dia chi', 'static', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 23:41:06'),
-(47, 'Khuyến mãi', '🎉 Khuyến mãi:\n1. GIẢM 50% TỔNG HÓA ĐƠN & FREESHIP\n', 'khuyen mai', 'api_promo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 23:41:06'),
-(48, 'Giá món ăn', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 23:41:07'),
-(49, 'Thực đơn có gì?', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 23:41:07'),
-(50, 'Địa chỉ', '📍 Cửa hàng của chúng tôi tại: Quận 7, Thành phố Hồ Chí Minh. Hotline: 1900 6099.', 'dia chi', 'static', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-07 23:41:07'),
-(51, 'Thực đơn có gì?', '🍕 Hiện tại chúng tôi có 10 món đang bán:\n1. Salad gà giòn tươi mát - 45,000đ\n2. Rice - 25,000đ\n3. Pepsi - 25,000đ\n4. Pizza Hai San - 120,000đ\n5. Salat - 45,000đ\n... và 5 món khác!', 'thuc don', 'api_products', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-09 00:25:13'),
-(52, 'Khuyến mãi', '🎉 Khuyến mãi:\n1. GIẢM 50% TỔNG HÓA ĐƠN & FREESHIP\n', 'khuyen mai', 'api_promo', '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/147.0.0.0', '2026-05-09 00:25:23');
 
 -- --------------------------------------------------------
 
@@ -162,35 +175,6 @@ CREATE TABLE `tbl_chitietdonhang` (
   `soluong` int(11) NOT NULL,
   `thanhtien` decimal(15,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `tbl_chitietdonhang`
---
-
-INSERT INTO `tbl_chitietdonhang` (`id`, `id_donhang`, `id_sanpham`, `ten_sanpham`, `gia`, `soluong`, `thanhtien`) VALUES
-(29, 15, 31, 'Salat', 45000.00, 1, 45000.00),
-(30, 16, 31, 'Salat', 45000.00, 1, 45000.00),
-(31, 16, 20, '5 - Tenders', 25000.00, 1, 25000.00),
-(32, 16, 38, 'Rice', 25000.00, 1, 25000.00),
-(33, 17, 21, 'Trà Đào', 25000.00, 1, 25000.00),
-(34, 17, 3, '2 Viên Khoai Môn', 60000.00, 1, 60000.00),
-(35, 18, 2, '1 Bánh Trứng', 6000.00, 6, 36000.00),
-(36, 19, 39, 'Salad gà giòn tươi mát', 45000.00, 1, 45000.00),
-(37, 19, 37, 'Pepsi', 25000.00, 1, 25000.00),
-(38, 19, 32, 'Pizza Hai San', 120000.00, 1, 120000.00),
-(39, 20, 39, 'Salad gà giòn tươi mát', 45000.00, 1, 45000.00),
-(40, 20, 37, 'Pepsi', 25000.00, 7, 175000.00),
-(41, 20, 22, 'Mì Ý Gà Viên', 25000.00, 1, 25000.00),
-(42, 21, 37, 'Pepsi', 25000.00, 2, 50000.00),
-(43, 22, 37, 'Pepsi', 25000.00, 1, 25000.00),
-(44, 23, 37, 'Pepsi', 25000.00, 1, 25000.00),
-(45, 24, 39, 'Salad gà giòn tươi mát', 45000.00, 1, 45000.00),
-(46, 25, 18, 'ChoCoA', 225000.00, 1, 225000.00),
-(47, 26, 10, '5 Gà Miếng Nuggets', 200000.00, 1, 200000.00),
-(48, 27, 8, '4 - Cherrow', 25000.00, 1, 25000.00),
-(58, 30, 21, 'Trà Đào', 25000.00, 1, 25000.00),
-(59, 30, 12, 'CBO-A_HD', 250000.00, 6, 1500000.00),
-(60, 30, 39, 'Salad gà giòn tươi mát', 45000.00, 1, 45000.00);
 
 -- --------------------------------------------------------
 
@@ -210,7 +194,7 @@ CREATE TABLE `tbl_danhmuc` (
 
 INSERT INTO `tbl_danhmuc` (`id_danhmuc`, `tendanhmuc`, `thutu`) VALUES
 (1, 'Pizza - Mì Ý', 0),
-(2, 'Combo', 0),
+(2, 'Phần ăn kết hợp', 0),
 (3, 'Thức Ăn Nhẹ', 0),
 (4, 'Món Thêm', 0),
 (12, 'Nước uống', 3),
@@ -260,17 +244,6 @@ CREATE TABLE `tbl_donhang` (
   `start_time` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `tbl_donhang`
---
-
-INSERT INTO `tbl_donhang` (`id`, `madon`, `tenkhach`, `sdt`, `tongtien`, `phiship`, `ngaydat`, `trangthai`, `email`, `diachi`, `phuongthuc`, `ghichu`, `session_id`, `start_time`) VALUES
-(15, 'FF20260504225626540', 'Khach Kiosk', NULL, 45000.00, 0.00, '2026-05-05 05:56:26', 1, NULL, NULL, 'transfer', NULL, NULL, NULL),
-(16, 'FF20260504234049154', 'Khach Kiosk', NULL, 95000.00, 0.00, '2026-05-05 06:40:49', 2, NULL, NULL, 'cash', NULL, NULL, NULL),
-(17, 'FF20260506103820731', 'Khach Kiosk', NULL, 85000.00, 0.00, '2026-05-06 17:38:20', 1, NULL, NULL, 'cash', NULL, NULL, NULL),
-(18, 'FF20260507064950653', 'Khach Kiosk', NULL, 36000.00, 0.00, '2026-05-07 13:49:50', 0, NULL, NULL, 'transfer', NULL, NULL, NULL),
-(30, 'FF20260509001620245', 'Khach Kiosk', NULL, 1570000.00, 0.00, '2026-05-09 07:16:20', 1, NULL, NULL, 'transfer', NULL, NULL, NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -289,7 +262,7 @@ CREATE TABLE `tbl_gioithieu` (
 --
 
 INSERT INTO `tbl_gioithieu` (`id`, `noidung`, `hinhanh`, `ngaycapnhat`) VALUES
-(1, 'FastFood Restaurant là chuỗi nhà hàng thức ăn nhanh hàng đầu tại Thành phố Hồ Chí Minh. Chúng tôi tự hào mang đến cho khách hàng những món ăn ngon, chất lượng với giá cả hợp lý.\r\n\r\nVới hơn 10 năm kinh nghiệm trong ngành ẩm thực, chúng tôi đã phục vụ hàng triệu khách hàng và nhận được nhiều phản hồi tích cực. Cam kết của chúng tôi là luôn đặt chất lượng món ăn và sự hài lòng của khách hàng lên hàng đầu.', '1777938726_2-2.png', '2026-05-05 06:52:06');
+(1, 'Nhà hàng FastFood là chuỗi thức ăn nhanh hàng đầu tại Thành phố Hồ Chí Minh. Chúng tôi tự hào mang đến cho khách hàng những món ăn ngon, chất lượng với giá cả hợp lý.\r\n\r\nVới hơn 10 năm kinh nghiệm trong ngành ẩm thực, chúng tôi đã phục vụ hàng triệu khách hàng và nhận được nhiều phản hồi tích cực. Cam kết của chúng tôi là luôn đặt chất lượng món ăn và sự hài lòng của khách hàng lên hàng đầu.', '1777938726_2-2.png', '2026-05-05 06:52:06');
 
 -- --------------------------------------------------------
 
@@ -382,24 +355,24 @@ INSERT INTO `tbl_sanpham` (`id_sanpham`, `tensanpham`, `masp`, `giasp`, `soluong
 (9, '4 Bánh Trứng', '08', '250000', 50, '4 Bánh Trứng', '', '4-eggtart.jpg', 0, 4),
 (10, '5 Gà Miếng Nuggets', '09', '200000', 50, '5 Gà Miếng Nuggets', '', 'Burger-Zinger.jpg', 0, 3),
 (11, '5 - Pumcheese', '10', '204000', 50, '5 - Pumcheese', '', '5-Pumcheese.jpg', 0, 3),
-(12, 'CBO-A_HD', '11', '250000', 50, 'CBO-A_HD', '', '1715133992_CBO-A_HD.jpg', 0, 2),
-(13, 'CBO-B_HD', '12', '250000', 50, 'CBO-B_HD', '', 'CBO-B_HD.jpg', 0, 2),
+(12, 'Phần ăn A', '11', '250000', 50, 'Phần ăn tiết kiệm cho bữa ăn nhanh đầy đủ.', 'Phần ăn A gồm nhiều món ăn nhanh được phối hợp sẵn, phù hợp khi đi theo nhóm.', '1715133992_CBO-A_HD.jpg', 0, 2),
+(13, 'Phần ăn B', '12', '250000', 50, 'Phần ăn tiết kiệm cho nhóm bạn hoặc gia đình.', 'Phần ăn B gồm nhiều món ăn nhanh được phối hợp sẵn, tiện lợi cho nhóm.', 'CBO-B_HD.jpg', 0, 2),
 (14, '7Up Lon', '13', '20000', 50, '7Up Lon', '', '1715134104_7UP_CAN.jpg', 0, 4),
 (15, 'Pepsi Lon', '14', '20000', 50, 'Pepsi Lon', '', '1715134125_PEPSI_CAN.jpg', 0, 4),
 (16, 'Pizza Ngập Vị Phô Mai', '15', '255000', 50, 'Pizza Ngập Vị Phô Mai Hảo Hạng - Cheesy Madness', '', 'CHEESY+MADNESS+NO+NEW+PC.jpg', 0, 1),
 (17, 'Pizza Hải Sản Xốt', '16', '255000', 50, 'Pizza Hải Sản Xốt ', '', '1715134438_LIME+PESTO+-+ANH+SP+(2).png', 0, 1),
 (18, 'ChoCoA', '17', '225000', 50, 'ChoCoA', '', '1715134560_ChoCoA.jpg', 0, 2),
 (19, 'Pizza New York Bò', '18', '225000', 50, 'Pizza New York Bò ', '', '1715134612_Menu+BG+1.jpg', 0, 1),
-(20, '5 - Tenders', '19', '25000', 50, '5 - Tenders', '', '1715134684_5-TENDERS.jpg', 0, 3),
+(20, 'Gà rán giòn 5 miếng', '19', '25000', 50, 'Gà rán giòn rụm, dùng kèm xốt tùy chọn.', 'Gà rán 5 miếng, lớp vỏ giòn, thịt mềm và đậm vị.', '1715134684_5-TENDERS.jpg', 0, 3),
 (21, 'Trà Đào', '20', '25000', 50, 'Trà Đào', '', '1715137276_Peach-Tea.jpg', 0, 12),
 (22, 'Mì Ý Gà Viên', '21', '25000', 50, 'Mì Ý Gà Viên', '', '1715137333_MI-Y-GA-ZINGER.jpg', 0, 1),
-(26, 'NANBAN', '35', '23000', 23, 'Không biết nữa ', 'Có gì ăn nấy', '1777712104_NANBAN.jpg', 4, 9),
-(27, 'BJ', '36', '37000', 2, 'Có không mà biết', 'Chưa ăn má\r\n', '1777712177_BJ.jpg', 34, 9),
-(30, 'Coca Cola', 'DRINK001', '15000', 100, 'Nuoc ngot Coca Cola', 'Nuoc ngot co gas', '1714658200_AQUAFINA.jpg', 3, 12),
-(31, 'Salat', 'BUR001', '45000', 50, 'Burger bo tuoi ngon', 'Burger bo voi thit bo 100% tuoi', '1777933524_Soup-Rong-Bien.jpg', 1, 1),
-(32, 'Pizza Hai San', 'PIZ001', '120000', 30, 'Pizza hai san tuoi', 'Pizza voi hai san tuoi ngon', '1777933507_Pizza+Extra+Topping+(4).jpg', 2, 2),
+(26, 'Cơm gà sốt Nanban', '35', '23000', 23, 'Cơm gà sốt Nanban kiểu Nhật, ăn kèm bắp ngọt và rau tươi.', 'Cơm gà sốt Nanban gồm cơm nóng, gà chiên phủ sốt béo nhẹ, bắp ngọt và rau tươi. Món ăn phù hợp cho bữa trưa nhanh nhưng vẫn đầy đủ năng lượng.', '1777712104_NANBAN.jpg', 4, 2),
+(27, 'Đùi gà nướng sốt cay', '36', '37000', 2, 'Đùi gà nướng mềm, phủ sốt cay nhẹ và ăn kèm rau tươi.', 'Đùi gà nướng sốt cay có lớp da thơm, thịt mềm và vị đậm đà. Phù hợp dùng riêng hoặc gọi kèm combo.', '1777712177_BJ.jpg', 34, 3),
+(30, 'Aquafina', 'DRINK001', '15000', 100, 'Nước suối Aquafina tinh khiết.', 'Nước suối Aquafina tinh khiết, đóng chai tiện lợi.', '1714658200_AQUAFINA.jpg', 3, 12),
+(31, 'Súp Rong Biển', 'BUR001', '45000', 50, 'Súp rong biển thanh nhẹ, dùng kèm bữa chính.', 'Súp rong biển thanh nhẹ, vị vừa ăn, phù hợp dùng kèm pizza và mì Ý.', '1777933524_Soup-Rong-Bien.jpg', 1, 1),
+(32, 'Pizza Hải Sản', 'PIZ001', '120000', 30, 'Pizza hải sản tươi với phô mai béo ngậy và xốt đậm vị.', 'Pizza hải sản tươi, phủ phô mai và xốt đặc trưng, phù hợp cho bữa ăn nhóm.', '1777933507_Pizza+Extra+Topping+(4).jpg', 2, 2),
 (37, 'Pepsi', '200', '25000', 50, 'Pepsi uống là suy', 'Pepsi', '1777933988_pepsi-zero.jpg', 0, 12),
-(38, 'Rice', '56', '25000', 50, 'Món không ăn không tốn tiền, ăn thì tốn cơm + tiền', 'Món không ăn không tốn tiền, ăn thì tốn cơm + tiền, nền trắng thấy hấp dẫn rồi ăn liền luôn nha, ăn nữa ăn mãi rồi cũng hợp thiếu sẽ đói', '1777938034_Rice.jpg', 67, 22),
+(38, 'Cơm trắng', '56', '25000', 50, 'Cơm trắng nóng dẻo, dùng kèm các món chính trong thực đơn.', 'Cơm trắng nóng dẻo, phù hợp dùng kèm gà rán, pizza và các món ăn nhanh khác.', '1777938034_Rice.jpg', 67, 22),
 (39, 'Salad gà giòn tươi mát', 'SALAD001', '45000', 50, 'Món salad gà giòn kết hợp rau xanh tươi mát, cà chua và hạt dinh dưỡng, mang đến hương vị thanh nhẹ nhưng vẫn đủ no.', 'Salad gà giòn là sự kết hợp hoàn hảo giữa rau xanh tươi, cà chua, các loại hạt và những miếng gà chiên giòn hấp dẫn. Món ăn không chỉ ngon miệng mà còn cung cấp đầy đủ dinh dưỡng, phù hợp cho bữa ăn nhẹ hoặc người yêu thích phong cách ăn uống lành mạnh.\r\n\r\nPhần rau được chọn lọc kỹ lưỡng, giữ được độ tươi và giòn tự nhiên. Gà chiên có lớp vỏ giòn rụm bên ngoài, bên trong mềm và đậm vị. Khi kết hợp cùng sốt salad nhẹ, món ăn tạo nên sự cân bằng giữa vị béo, giòn và thanh mát.\r\n\r\nĐây là lựa chọn lý tưởng cho những ai muốn ăn ngon nhưng không quá ngấy, phù hợp cho cả bữa trưa nhanh hoặc bữa tối nhẹ nhàng.', '1778063836_SALAD-HAT-GA-VIEN.jpg', 69, 22);
 
 --
@@ -496,13 +469,13 @@ ALTER TABLE `tbl_baiviet`
 -- AUTO_INCREMENT for table `tbl_chatbot_history`
 --
 ALTER TABLE `tbl_chatbot_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `tbl_chitietdonhang`
 --
 ALTER TABLE `tbl_chitietdonhang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `tbl_danhmuc`
@@ -520,7 +493,7 @@ ALTER TABLE `tbl_danhmucbaiviet`
 -- AUTO_INCREMENT for table `tbl_donhang`
 --
 ALTER TABLE `tbl_donhang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `tbl_gioithieu`
