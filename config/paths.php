@@ -25,6 +25,16 @@ function public_url(string $path): string
     return app_base_url() . '/' . ltrim($path, '/');
 }
 
+function asset_url(string $path): string
+{
+    return public_url('view/assets/' . ltrim($path, '/'));
+}
+
+function asset_path(string $path): string
+{
+    return PROJECT_ROOT . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, ltrim($path, '/'));
+}
+
 function encode_url_path(string $path): string
 {
     $segments = array_filter(explode('/', str_replace('\\', '/', $path)), 'strlen');
@@ -42,16 +52,21 @@ function clean_upload_path(string $filename): string
     return implode('/', $parts);
 }
 
-function upload_url(?string $filename, string $fallback = 'view/images/news-placeholder.jpg'): string
+function upload_url(?string $filename, string $fallback = 'placeholders/news-placeholder.jpg'): string
 {
     $filename = clean_upload_path((string)$filename);
 
     if ($filename === '') {
-        return public_url($fallback);
+        return asset_url($fallback);
     }
 
     if (!is_file(upload_path($filename))) {
-        return public_url($fallback);
+        $seedPath = 'seed/uploads/' . basename($filename);
+        if (is_file(asset_path($seedPath))) {
+            return asset_url($seedPath);
+        }
+
+        return asset_url($fallback);
     }
 
     return public_url('storage/uploads/' . encode_url_path($filename));

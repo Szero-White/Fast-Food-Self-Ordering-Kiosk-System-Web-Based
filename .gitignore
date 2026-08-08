@@ -10,7 +10,8 @@ tmp/
 temp/
 
 # Runtime uploads
-/storage/uploads/*
+/storage/uploads/**
+!/storage/uploads/
 !/storage/uploads/.gitkeep
 !/storage/uploads/.htaccess
 !/storage/uploads/products/
@@ -19,6 +20,8 @@ temp/
 !/storage/uploads/posts/.gitkeep
 !/storage/uploads/site/
 !/storage/uploads/site/.gitkeep
+!/storage/uploads/banners/
+!/storage/uploads/banners/.gitkeep
 /admincp/uploads/*
 !/admincp/uploads/.gitkeep
 /view/uploads/*
