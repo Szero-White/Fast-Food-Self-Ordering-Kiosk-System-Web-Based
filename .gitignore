@@ -1,0 +1,23 @@
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Logs and runtime noise
+*.log
+logs/
+tmp/
+temp/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Office temporary files
+~$*.docx
+~$*.xlsx
+~$*.pptx
+
+# Codex/local agent workspace files
+.agents/

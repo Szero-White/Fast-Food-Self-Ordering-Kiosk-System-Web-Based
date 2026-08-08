@@ -18,24 +18,24 @@
 
 **Trang Đăng Nhập Admin:**
 
-<img src="./web_mysqli/view/images/admin-login.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/images/admin-login.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
 
 **Dashboard Admin (Trang Chủ):**
 
-<img src="./web_mysqli/view/images/admin-dashboard.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/images/admin-dashboard.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
 
 ### 👥 Khu Vực Customer (Kiosk)
 
 **Trang Chào Mừng (Welcome):**
 
-<img src="./web_mysqli/view/images/customer-welcome.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/images/customer-welcome.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
 
 **Trang Chủ - Chọn Món (Menu):**
 
-<img src="./web_mysqli/view/images/customer-menu-1.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
-<img src="./web_mysqli/view/images/customer-menu-2.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
-<img src="./web_mysqli/view/images/customer-menu-3.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
-<img src="./web_mysqli/view/images/customer-menu-4.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/images/customer-menu-1.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/images/customer-menu-2.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/images/customer-menu-3.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/images/customer-menu-4.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
 
 ---
 
@@ -209,8 +209,8 @@ FastFood Kiosk là hệ thống **mô phỏng máy tự order** trong cửa hàn
 
 ```bash
 # Nếu dùng Git
-git clone https://github.com/Szero-White/FastFood_Menu_Advertisement_Web.git
-cd FastFood_Menu_Advertisement_Web
+git clone https://github.com/Szero-White/Fast-Food-Self-Ordering-Kiosk-System-Web-Based.git
+cd Fast-Food-Self-Ordering-Kiosk-System-Web-Based
 
 # Hoặc giải nén file ZIP vào thư mục
 ```
@@ -225,31 +225,18 @@ cd FastFood_Menu_Advertisement_Web
 5. Click **"Go"**
 
 
-## 🖥️ CÁCH CHẠY 2 TRANG ADMIN & CUSTOMER
+## 🖥️ CÁCH CHẠY ADMIN & CUSTOMER
 
-### 🚀 CÁCH : Chạy 2 Server Riêng Biệt (Khuyến nghị cho Test)
+### 🚀 Khuyến nghị: Chạy bằng XAMPP
 
-**💡 Ưu điểm:** Test đồng thời 2 trang, không bị xung đột session
+Đặt project trong thư mục `htdocs`, ví dụ: `C:\xampp\htdocs\web_mysqli`.
+Mở XAMPP Control Panel và start **Apache** + **MySQL**.
 
-#### Terminal 1 - Customer Server (Port 8000)
-```bash
-cd web_mysqli/view
-php -S localhost:8000
-```
-→ Truy cập: `http://localhost:8000`
-
-#### Terminal 2 - Admin Server (Port 8001) 
-```bash
-cd web_mysqli/admincp
-php -S localhost:8001
-```
-→ Truy cập: `http://localhost:8001/login.php`
-
-**Tổng kết URL khi chạy 2 server:**
+**Tổng kết URL khi chạy bằng XAMPP:**
 | Trang | URL | Mô tả |
 |-------|-----|-------|
-| 🖥️ **Customer** | `http://localhost:8000` | Kiosk đặt món + Chatbot AI |
-| 🔐 **Admin** | `http://localhost:8001` | Quản lý hệ thống |
+| 🖥️ **Customer** | `http://localhost/web_mysqli/view/` | Kiosk đặt món + Chatbot AI |
+| 🔐 **Admin** | `http://localhost/web_mysqli/admincp/login.php` | Quản lý hệ thống |
 
 ---
 
@@ -259,9 +246,9 @@ php -S localhost:8001
 
 | Bước | Thao tác | URL | Kết quả mong đợi |
 |------|----------|-----|------------------|
-| 1 | Mở Admin | `http://localhost:8001` | Trang login hiện ra |
+| 1 | Mở Admin | `http://localhost/web_mysqli/admincp/login.php` | Trang login hiện ra |
 | 2 | Đăng nhập | Nhập: **toan** / **123456** | Vào Dashboard |
-| 3 | Mở Customer | `http://localhost:8000` | Màn hình Welcome |
+| 3 | Mở Customer | `http://localhost/web_mysqli/view/` | Màn hình Welcome |
 | 4 | Bấm "BẮT ĐẦU" | Ở Customer | Vào trang chọn món |
 | 5 | Chatbot | Click icon 🤖 ở góc phải | Chatbot mở, hỏi "Thực đơn" |
 | 6 | Chọn món | Thêm Burger vào giỏ | Giỏ hàng cập nhật |
@@ -298,7 +285,7 @@ Chatbot AI được tích hợp vào trang Customer, hỗ trợ khách hàng t�
 
 ### 📊 Quản Lý Chatbot (Admin)
 
-Truy cập: `http://localhost:8001/index.php?action=quanlychatbot&query=lietke`
+Truy cập: `http://localhost/web_mysqli/admincp/index.php?action=quanlychatbot&query=lietke`
 
 | Chức năng | Mô tả |
 |-----------|-------|
@@ -426,7 +413,7 @@ echo json_encode(['success' => true]);
 ### 🔑 Đăng Nhập Admin
 
 ```
-📍 URL: http://localhost:8080/admincp/login.php
+📍 URL: http://localhost/web_mysqli/admincp/login.php
 
 👤 Tài khoản mặc định:
    - Username: toan
