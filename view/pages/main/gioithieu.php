@@ -127,7 +127,7 @@ $row_gioithieu = mysqli_fetch_array($query_gioithieu);
                 <?php echo $row_gioithieu['noidung']; ?>
             </div>
         <?php } else { ?>
-            <p>FastFood Restaurant là chuỗi nhà hàng thức ăn nhanh hàng đầu tại Thành phố Hồ Chí Minh. Chúng tôi tự hào mang đến cho khách hàng những món ăn ngon, chất lượng với giá cả hợp lý.</p>
+            <p>Nhà hàng FastFood là chuỗi thức ăn nhanh hàng đầu tại Thành phố Hồ Chí Minh. Chúng tôi tự hào mang đến cho khách hàng những món ăn ngon, chất lượng với giá cả hợp lý.</p>
             <p>Với hơn 10 năm kinh nghiệm trong ngành ẩm thực, chúng tôi đã phục vụ hàng triệu khách hàng và nhận được nhiều phản hồi tích cực. Cam kết của chúng tôi là luôn đặt chất lượng món ăn và sự hài lòng của khách hàng lên hàng đầu.</p>
         <?php } ?>
         <?php if(isset($row_gioithieu['hinhanh']) && !empty($row_gioithieu['hinhanh'])) { ?>

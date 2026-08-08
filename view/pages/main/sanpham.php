@@ -72,7 +72,7 @@
             <div class="chitiet_sanpham">
                 <h3>Tên sản phẩm : <?php echo $row_chitiet['tensanpham'] ?></h3>
                 <p>Mã sản phẩm : <?php echo $row_chitiet['masp'] ?></p>
-                <p>Giá sản phẩm : <?php echo number_format($row_chitiet['giasp'], 0, ',', '.'); ?>d</p>
+                <p>Giá sản phẩm: <?php echo number_format($row_chitiet['giasp'], 0, ',', '.'); ?>đ</p>
                 <p>Số lượng sản phẩm : <?php echo $row_chitiet['soluong'] ?></p>
                 <p>Danh mục sản phẩm : <?php echo $row_chitiet['tendanhmuc'] ?></p>
                 

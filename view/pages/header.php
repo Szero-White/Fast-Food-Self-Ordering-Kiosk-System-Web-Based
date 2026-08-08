@@ -168,6 +168,8 @@
 </style>
 
 <?php
+require_once __DIR__ . '/../../config/site_asset_repository.php';
+
 $sql_danhmuc = "SELECT * FROM tbl_danhmuc ORDER BY id_danhmuc DESC";
 $query_danhmuc = mysqli_query($mysqli, $sql_danhmuc);
 
@@ -179,7 +181,7 @@ $current_page = $_GET['quanly'] ?? 'index';
 <header class="glass-header">
     <div class="glass-container">
         <a href="index.php?quanly=index" class="glass-logo">
-            <img src="images/1200_50/logo.jpg" alt="FastFood Logo">
+            <img src="<?php echo htmlspecialchars(site_asset_url($mysqli, 'site_logo'), ENT_QUOTES, 'UTF-8'); ?>" alt="FastFood Logo">
             <span>FastFood</span>
         </a>
 

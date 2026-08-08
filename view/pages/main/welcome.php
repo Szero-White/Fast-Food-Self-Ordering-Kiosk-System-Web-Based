@@ -93,8 +93,9 @@
     </style>
 </head>
 <body>
+    <?php require_once __DIR__ . '/../../../config/site_asset_repository.php'; ?>
     <div class="logo-container">
-        <img src="images/1200_50/logo.jpg" alt="FastFood Logo">
+        <img src="<?php echo htmlspecialchars(site_asset_url($mysqli, 'site_logo'), ENT_QUOTES, 'UTF-8'); ?>" alt="FastFood Logo">
     </div>
     
     <h1>🍔 FastFood Kiosk</h1>

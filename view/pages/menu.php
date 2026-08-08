@@ -1,3 +1,8 @@
+<?php
+require_once __DIR__ . '/../../config/banner_repository.php';
+$banners = get_active_banners($mysqli);
+?>
+
 <style>
   #carouselExampleInterval {
       max-width: 84rem;
@@ -13,24 +18,24 @@
   }
 </style>
 
-<div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active" data-bs-interval="2000">
-      <img src="images/1200_50/BANNER+BOGO3+SING+NEW.jpg" class="d-block" alt="...">
+<?php if (!empty($banners)) { ?>
+  <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <?php foreach ($banners as $index => $banner) { ?>
+        <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>" data-bs-interval="2000">
+          <img src="<?php echo htmlspecialchars(banner_image_url($banner), ENT_QUOTES, 'UTF-8'); ?>" class="d-block" alt="<?php echo htmlspecialchars($banner['title'], ENT_QUOTES, 'UTF-8'); ?>">
+        </div>
+      <?php } ?>
     </div>
-    <div class="carousel-item" data-bs-interval="2000">
-      <img src="images/1200_50/0fb9079d3185fd513de3f57ca8d8cec2a429c34d.jpeg" class="d-block" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="images/1200_50/BANNER+LIME+(1).png" class="d-block" alt="...">
-    </div>
+    <?php if (count($banners) > 1) { ?>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Trước</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Sau</span>
+      </button>
+    <?php } ?>
   </div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
-</div>
+<?php } ?>

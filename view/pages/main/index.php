@@ -1,9 +1,9 @@
 <?php
-// Lay danh muc cho bo loc
+// Lấy danh mục cho bộ lọc
 $sql_dm = "SELECT * FROM tbl_danhmuc ORDER BY id_danhmuc DESC";
 $query_dm = mysqli_query($mysqli, $sql_dm);
 
-// Lay san pham noi bat
+// Lấy sản phẩm nổi bật
 $sql_featured = "SELECT * FROM tbl_sanpham ORDER BY id_sanpham DESC LIMIT 4";
 $query_featured = mysqli_query($mysqli, $sql_featured);
 
@@ -11,25 +11,37 @@ $query_featured = mysqli_query($mysqli, $sql_featured);
 $page = isset($_GET['trang']) ? max(1, (int)$_GET['trang']) : 1;
 $begin = ($page - 1) * 8;
 
-// Bo loc danh muc
+// Bộ lọc danh mục
 $filter = "";
 if (isset($_GET['danhmuc']) && $_GET['danhmuc'] != "") {
     $id_dm = (int)$_GET['danhmuc'];
     $filter = " AND tbl_sanpham.id_danhmuc = $id_dm";
 }
 
-// Tim kiem
+// Tìm kiếm
 $search = "";
 if (isset($_GET['search']) && $_GET['search'] != "") {
     $keyword = mysqli_real_escape_string($mysqli, trim($_GET['search']));
     $search = " AND tbl_sanpham.tensanpham LIKE '%$keyword%'";
 }
 
-$sql_pro = "SELECT * FROM tbl_sanpham, tbl_danhmuc WHERE tbl_sanpham.id_danhmuc = tbl_danhmuc.id_danhmuc $filter $search ORDER BY tbl_sanpham.id_sanpham DESC LIMIT $begin,8";
+$sql_pro = "
+    SELECT tbl_sanpham.*, tbl_danhmuc.tendanhmuc
+    FROM tbl_sanpham
+    INNER JOIN tbl_danhmuc ON tbl_sanpham.id_danhmuc = tbl_danhmuc.id_danhmuc
+    WHERE 1=1 $filter $search
+    ORDER BY tbl_sanpham.id_sanpham DESC
+    LIMIT $begin,8
+";
 $query_pro = mysqli_query($mysqli, $sql_pro);
 
-// Dem tong san pham
-$count_query = mysqli_query($mysqli, "SELECT COUNT(*) AS total FROM tbl_sanpham WHERE 1=1 $filter $search");
+// Đếm tổng sản phẩm
+$count_query = mysqli_query($mysqli, "
+    SELECT COUNT(*) AS total
+    FROM tbl_sanpham
+    INNER JOIN tbl_danhmuc ON tbl_sanpham.id_danhmuc = tbl_danhmuc.id_danhmuc
+    WHERE 1=1 $filter $search
+");
 $count_result = mysqli_fetch_assoc($count_query);
 $row_count = $count_result['total'];
 $total_pages = ceil($row_count / 8);
@@ -374,15 +386,15 @@ $total_pages = ceil($row_count / 8);
     <div class="hero-stats">
         <div class="hero-stat">
             <div class="hero-stat-number">50+</div>
-            <div class="hero-stat-label">Mon an</div>
+            <div class="hero-stat-label">Món ăn</div>
         </div>
         <div class="hero-stat">
             <div class="hero-stat-number">10K+</div>
-            <div class="hero-stat-label">Khach hang</div>
+            <div class="hero-stat-label">Khách hàng</div>
         </div>
         <div class="hero-stat">
             <div class="hero-stat-number">30min</div>
-            <div class="hero-stat-label">Giao hang</div>
+            <div class="hero-stat-label">Giao hàng</div>
         </div>
     </div>
 </div>
@@ -391,33 +403,33 @@ $total_pages = ceil($row_count / 8);
 <form class="search-filter-bar" method="GET" action="">
     <input type="hidden" name="quanly" value="trangchu">
     <div class="search-box">
-        <input type="text" name="search" placeholder="Tim mon an..." value="<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>">
+        <input type="text" name="search" placeholder="Tìm món ăn..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search'], ENT_QUOTES, 'UTF-8') : ''; ?>">
     </div>
     <select name="danhmuc" class="filter-select">
-        <option value="">Tat ca danh muc</option>
+        <option value="">Tất cả danh mục</option>
         <?php while($dm = mysqli_fetch_array($query_dm)) { ?>
-            <option value="<?php echo $dm['id_danhmuc']; ?>" <?php echo (isset($_GET['danhmuc']) && $_GET['danhmuc'] == $dm['id_danhmuc']) ? 'selected' : ''; ?>>
-                <?php echo $dm['tendanhmuc']; ?>
+            <option value="<?php echo (int) $dm['id_danhmuc']; ?>" <?php echo (isset($_GET['danhmuc']) && (int) $_GET['danhmuc'] === (int) $dm['id_danhmuc']) ? 'selected' : ''; ?>>
+                <?php echo htmlspecialchars($dm['tendanhmuc'], ENT_QUOTES, 'UTF-8'); ?>
             </option>
         <?php } ?>
     </select>
-    <button type="submit" class="btn-search">🔍 Tim kiem</button>
+    <button type="submit" class="btn-search">🔍 Tìm kiếm</button>
 </form>
 
 <!-- Promo Banner -->
 <div class="promo-banner">
     <div class="promo-content">
-        <h3>🎉 Khuyen mai dac biet!</h3>
-        <p>Giam 15% cho don hang dau tien khi dat hang qua website</p>
+        <h3>🎉 Khuyến mãi đặc biệt!</h3>
+        <p>Giảm 15% cho đơn hàng đầu tiên khi đặt hàng qua website</p>
     </div>
     <div class="promo-code">
-        <div class="promo-code-label">Nhap ma</div>
+        <div class="promo-code-label">Nhập mã</div>
         <div class="promo-code-value">FAST15</div>
     </div>
 </div>
 
 <!-- Section Title -->
-<h2 class="section-title">🔥 Mon an noi bat</h2>
+<h2 class="section-title">🔥 Món ăn nổi bật</h2>
 
 <!-- Products Grid -->
 <div class="product-grid">
@@ -426,7 +438,7 @@ $total_pages = ceil($row_count / 8);
     while ($row = mysqli_fetch_array($query_pro)) {
         $counter++;
         $badge = ($counter <= 2) ? 'hot' : (($counter <= 4) ? 'new' : '');
-        $badge_text = ($counter <= 2) ? 'HOT' : (($counter <= 4) ? 'NEW' : '');
+        $badge_text = ($counter <= 2) ? 'Nổi bật' : (($counter <= 4) ? 'Mới' : '');
     ?>
         <div class="product-card">
             <?php if($badge) { ?>
@@ -434,18 +446,18 @@ $total_pages = ceil($row_count / 8);
             <?php } ?>
             <img src="<?php echo htmlspecialchars(upload_url($row['hinhanh']), ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($row['tensanpham'], ENT_QUOTES, 'UTF-8'); ?>" class="product-image">
             <div class="product-info">
-                <div class="product-category"><?php echo $row['tendanhmuc'] ?></div>
-                <h3 class="product-name"><?php echo $row['tensanpham'] ?></h3>
-                <p class="product-desc"><?php echo substr($row['tomtat'], 0, 60) . '...'; ?></p>
+                <div class="product-category"><?php echo htmlspecialchars($row['tendanhmuc'], ENT_QUOTES, 'UTF-8'); ?></div>
+                <h3 class="product-name"><?php echo htmlspecialchars($row['tensanpham'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                <p class="product-desc"><?php echo htmlspecialchars(mb_substr($row['tomtat'], 0, 60, 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?>...</p>
                 <div class="product-footer">
                     <div class="product-price">
-                        <?php echo number_format($row['giasp'], 0, ',', '.'); ?>d
+                        <?php echo number_format($row['giasp'], 0, ',', '.'); ?>đ
                     </div>
                     <form method="POST" action="" style="display: flex; gap: 8px; align-items: center;">
-                        <input type="hidden" name="id_sanpham" value="<?php echo $row['id_sanpham']; ?>">
-                        <input type="hidden" name="ten_sanpham" value="<?php echo $row['tensanpham']; ?>">
-                        <input type="hidden" name="giasp" value="<?php echo $row['giasp']; ?>">
-                        <input type="hidden" name="hinhanh" value="<?php echo $row['hinhanh']; ?>">
+                        <input type="hidden" name="id_sanpham" value="<?php echo (int) $row['id_sanpham']; ?>">
+                        <input type="hidden" name="ten_sanpham" value="<?php echo htmlspecialchars($row['tensanpham'], ENT_QUOTES, 'UTF-8'); ?>">
+                        <input type="hidden" name="giasp" value="<?php echo (int) $row['giasp']; ?>">
+                        <input type="hidden" name="hinhanh" value="<?php echo htmlspecialchars($row['hinhanh'], ENT_QUOTES, 'UTF-8'); ?>">
                         <input type="number" name="soluong" value="1" min="1" max="10" style="width: 50px; padding: 8px; border: 2px solid #667eea; border-radius: 8px; text-align: center; font-size: 1rem;">
                         <button type="submit" name="them_giohang" style="padding: 10px 20px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; border-radius: 20px; font-size: 0.9rem; cursor: pointer; font-weight: bold;">
                             + Thêm
@@ -460,29 +472,29 @@ $total_pages = ceil($row_count / 8);
 <?php if($counter == 0) { ?>
     <div class="empty-state">
         <div class="empty-state-icon">😕</div>
-        <h3>Khong tim thay san pham</h3>
-        <p>Vui long thu tim kiem voi tu khoa khac hoac chon danh muc khac</p>
+        <h3>Không tìm thấy sản phẩm</h3>
+        <p>Vui lòng thử tìm kiếm với từ khóa khác hoặc chọn danh mục khác</p>
     </div>
 <?php } ?>
 
 <!-- Pagination -->
 <div class="pagination-modern">
     <?php if ($page > 1) { ?>
-        <a href="?quanly=trangchu&trang=<?php echo $page - 1; ?><?php echo isset($_GET['search']) ? '&search='.$_GET['search'] : ''; ?><?php echo isset($_GET['danhmuc']) ? '&danhmuc='.$_GET['danhmuc'] : ''; ?>">← Truoc</a>
+        <a href="?quanly=trangchu&trang=<?php echo $page - 1; ?><?php echo isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''; ?><?php echo isset($_GET['danhmuc']) ? '&danhmuc=' . (int) $_GET['danhmuc'] : ''; ?>">← Trước</a>
     <?php } else { ?>
-        <span class="disabled">← Truoc</span>
+        <span class="disabled">← Trước</span>
     <?php } ?>
 
     <?php for ($i = 1; $i <= $total_pages; $i++) { ?>
         <?php if ($i == $page) { ?>
             <span class="current"><?php echo $i; ?></span>
         <?php } else { ?>
-            <a href="?quanly=trangchu&trang=<?php echo $i; ?><?php echo isset($_GET['search']) ? '&search='.$_GET['search'] : ''; ?><?php echo isset($_GET['danhmuc']) ? '&danhmuc='.$_GET['danhmuc'] : ''; ?>"><?php echo $i; ?></a>
+            <a href="?quanly=trangchu&trang=<?php echo $i; ?><?php echo isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''; ?><?php echo isset($_GET['danhmuc']) ? '&danhmuc=' . (int) $_GET['danhmuc'] : ''; ?>"><?php echo $i; ?></a>
         <?php } ?>
     <?php } ?>
 
     <?php if ($page < $total_pages) { ?>
-        <a href="?quanly=trangchu&trang=<?php echo $page + 1; ?><?php echo isset($_GET['search']) ? '&search='.$_GET['search'] : ''; ?><?php echo isset($_GET['danhmuc']) ? '&danhmuc='.$_GET['danhmuc'] : ''; ?>">Sau →</a>
+        <a href="?quanly=trangchu&trang=<?php echo $page + 1; ?><?php echo isset($_GET['search']) ? '&search=' . urlencode($_GET['search']) : ''; ?><?php echo isset($_GET['danhmuc']) ? '&danhmuc=' . (int) $_GET['danhmuc'] : ''; ?>">Sau →</a>
     <?php } else { ?>
         <span class="disabled">Sau →</span>
     <?php } ?>
