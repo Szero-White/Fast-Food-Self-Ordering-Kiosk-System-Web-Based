@@ -94,7 +94,7 @@ while ($row = mysqli_fetch_array($query_sua_sp)) {
                 <label class="form-label-custom">Hình ảnh món ăn</label>
                 <div class="row align-items-center">
                     <div class="col-md-4">
-                        <img src="../uploads/<?php echo $row['hinhanh'] ?>" style="width: 100%; max-width: 200px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        <img src="<?php echo htmlspecialchars(upload_url($row['hinhanh']), ENT_QUOTES, 'UTF-8'); ?>" style="width: 100%; max-width: 200px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                         <p class="mt-2" style="color: #888; font-size: 13px;">Hình ảnh hiện tại</p>
                     </div>
                     <div class="col-md-8">

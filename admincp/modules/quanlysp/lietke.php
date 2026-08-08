@@ -58,7 +58,7 @@
                     <tr>
                         <td><strong>#<?php echo $i ?></strong></td>
                         <td>
-                            <img src="../uploads/<?php echo $row['hinhanh'] ?>" style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                            <img src="<?php echo htmlspecialchars(upload_url($row['hinhanh']), ENT_QUOTES, 'UTF-8'); ?>" style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
                         </td>
                         <td>
                             <div style="font-weight: 600; color: #333;"><?php echo $row['tensanpham'] ?></div>

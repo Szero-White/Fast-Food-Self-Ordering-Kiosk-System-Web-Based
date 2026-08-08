@@ -159,7 +159,6 @@ Fast-Food-Self-Ordering-Kiosk-System-Web-Based/
     │   └── styl.css                   # Style giao diện kiosk
     ├── 📁 pages/                      # Layout và các trang giao diện
     ├── 🖼️ images/                     # Hình ảnh tĩnh
-    ├── 📤 uploads/                    # Ảnh món ăn dùng bởi database
     ├── 📜 js/
     │   └── timeout.js                 # Xử lý auto timeout
     └── 🏠 index.php                   # Entry point kiosk
@@ -535,3 +534,14 @@ tbl_chitietdonhang (
 <img src="https://img.shields.io/badge/FastFood-Kiosk-orange?style=for-the-badge" />
 </p>
 
+
+---
+
+## Deployment Notes
+
+- Product, article, and site images uploaded from Admin are stored in `storage/uploads/`.
+- The database stores only the image filename/path, not the binary image content.
+- `storage/uploads/` must be writable on the hosting server.
+- Runtime uploaded images are ignored by Git. Keep only `.gitkeep` and `.htaccess` in the repository.
+- Existing seed images referenced by `web_sqli.sql` should be uploaded to `storage/uploads/` on the demo server.
+- Uploaded image validation allows JPG, PNG, and WEBP up to 5MB.

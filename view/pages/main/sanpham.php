@@ -67,7 +67,7 @@
     ?>
         <div class="wrapper_chitiet">
             <div class="hinhanh_sanpham">
-                <img src="uploads/<?php echo $row_chitiet['hinhanh'] ?>" alt="Hình ảnh sản phẩm">
+                <img src="<?php echo htmlspecialchars(upload_url($row_chitiet['hinhanh']), ENT_QUOTES, 'UTF-8'); ?>" alt="Hình ảnh sản phẩm">
             </div>
             <div class="chitiet_sanpham">
                 <h3>Tên sản phẩm : <?php echo $row_chitiet['tensanpham'] ?></h3>

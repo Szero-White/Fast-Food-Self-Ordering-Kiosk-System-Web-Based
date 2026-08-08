@@ -1,58 +1,90 @@
 <?php
-    include(__DIR__ . '/../../config/config.php');
+include(__DIR__ . '/../../config/config.php');
 
-    $tenbaiviet = $_POST['tenbaiviet'];
-    
-    $tomtat = $_POST['tomtat'];
-    $noidung = $_POST['noidung'];
+function redirect_articles(): void
+{
+    header('Location:../../index.php?action=quanlybaiviet&query=them');
+    exit;
+}
 
-    $hinhanh = $_FILES['hinhanh']['name'];
-    $hinhanh_tmp = $_FILES['hinhanh']['tmp_name'];
-    $hinhanh = time().'_'.$hinhanh;
+function find_article_image(mysqli $mysqli, int $id): ?string
+{
+    $stmt = mysqli_prepare($mysqli, 'SELECT hinhanh FROM tbl_baiviet WHERE id_bv = ? LIMIT 1');
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $image);
+    $found = mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
 
-    
-    $danhmuc = $_POST['danhmuc'];
-  
-    if(isset($_POST['thembaiviet'])){
-        $sql_them = "INSERT INTO tbl_baiviet(tenbaiviet,tomtat,noidung,hinhanh,id_danhmuc) 
-            VALUE('".$tenbaiviet."','".$tomtat."','".$noidung."','".$hinhanh."','".$danhmuc."')";
-        mysqli_query($mysqli,$sql_them);
-        move_uploaded_file($hinhanh_tmp,__DIR__ . '/../../uploads/'.$hinhanh);
-        header('Location:../../index.php?action=quanlybaiviet&query=them');
+    return $found ? $image : null;
+}
+
+try {
+    if (isset($_POST['thembaiviet'])) {
+        $tenbaiviet = trim($_POST['tenbaiviet'] ?? '');
+        $tomtat = trim($_POST['tomtat'] ?? '');
+        $noidung = trim($_POST['noidung'] ?? '');
+        $danhmuc = (int)($_POST['danhmuc'] ?? 0);
+        $hinhanh = save_uploaded_image($_FILES['hinhanh'] ?? [], 'posts') ?? '';
+
+        $stmt = mysqli_prepare(
+            $mysqli,
+            'INSERT INTO tbl_baiviet(tenbaiviet, tomtat, noidung, hinhanh, id_danhmuc)
+             VALUES (?, ?, ?, ?, ?)'
+        );
+        mysqli_stmt_bind_param($stmt, 'ssssi', $tenbaiviet, $tomtat, $noidung, $hinhanh, $danhmuc);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+
+        redirect_articles();
     }
-    elseif(isset($_POST['suabaiviet'])){
-        if(isset($_FILES['hinhanh']) && $_FILES['hinhanh']['size'] > 0){
-            $hinhanh_tmp = $_FILES['hinhanh']['tmp_name'];
-            $hinhanh = $_FILES['hinhanh']['name'];
-            move_uploaded_file($hinhanh_tmp,__DIR__ . '/../../uploads/'.$hinhanh);
-            $sql = "SELECT * FROM tbl_baiviet WHERE id_bv = '$_GET[idbaiviet]' LIMIT 1";
-            $query = mysqli_query($mysqli,$sql);
-            while ($row = mysqli_fetch_array($query)){
-                unlink(__DIR__ . '/../../uploads/'.$row['hinhanh']);
-            }
-        }
-    
-        $sql_update = "UPDATE tbl_baiviet SET tenbaiviet = '".$tenbaiviet."', tomtat = '".$tomtat."', noidung = '".$noidung."', id_danhmuc = '".$danhmuc."'";
-        if(isset($_FILES['hinhanh']) && $_FILES['hinhanh']['size'] > 0){
-            $sql_update .= ", hinhanh = '".$hinhanh."'";
-        }
-    
-        $sql_update .= " WHERE id_bv = '$_GET[idbaiviet]'";
-    
-        mysqli_query($mysqli,$sql_update);
 
-        header('Location:../../index.php?action=quanlybaiviet&query=them');
-    }
-    
-    else{
-        $id = $_GET['idbaiviet'];
-        $sql = "SELECT * FROM tbl_baiviet WHERE id_bv = '$id' limit 1";
-        $query = mysqli_query($mysqli,$sql);
-        while ($row = mysqli_fetch_array($query)) {
-            unlink(__DIR__ . '/../../uploads/'.$row['hinhanh']);
+    if (isset($_POST['suabaiviet'])) {
+        $id = (int)($_GET['idbaiviet'] ?? 0);
+        $tenbaiviet = trim($_POST['tenbaiviet'] ?? '');
+        $tomtat = trim($_POST['tomtat'] ?? '');
+        $noidung = trim($_POST['noidung'] ?? '');
+        $danhmuc = (int)($_POST['danhmuc'] ?? 0);
+        $oldImage = find_article_image($mysqli, $id);
+        $newImage = save_uploaded_image($_FILES['hinhanh'] ?? [], 'posts');
+
+        if ($newImage !== null) {
+            $stmt = mysqli_prepare(
+                $mysqli,
+                'UPDATE tbl_baiviet
+                 SET tenbaiviet = ?, tomtat = ?, noidung = ?, hinhanh = ?, id_danhmuc = ?
+                 WHERE id_bv = ?'
+            );
+            mysqli_stmt_bind_param($stmt, 'ssssii', $tenbaiviet, $tomtat, $noidung, $newImage, $danhmuc, $id);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+            delete_uploaded_image($oldImage);
+        } else {
+            $stmt = mysqli_prepare(
+                $mysqli,
+                'UPDATE tbl_baiviet
+                 SET tenbaiviet = ?, tomtat = ?, noidung = ?, id_danhmuc = ?
+                 WHERE id_bv = ?'
+            );
+            mysqli_stmt_bind_param($stmt, 'sssii', $tenbaiviet, $tomtat, $noidung, $danhmuc, $id);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
         }
-        $sql_xoa = "DELETE FROM tbl_baiviet WHERE id_bv ='".$id."'";
-        mysqli_query($mysqli,$sql_xoa);
-        header('Location:../../index.php?action=quanlybaiviet&query=them');
+
+        redirect_articles();
     }
-?>
+
+    $id = (int)($_GET['idbaiviet'] ?? 0);
+    $oldImage = find_article_image($mysqli, $id);
+
+    $stmt = mysqli_prepare($mysqli, 'DELETE FROM tbl_baiviet WHERE id_bv = ?');
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    delete_uploaded_image($oldImage);
+
+    redirect_articles();
+} catch (RuntimeException $exception) {
+    http_response_code(400);
+    echo htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8');
+}

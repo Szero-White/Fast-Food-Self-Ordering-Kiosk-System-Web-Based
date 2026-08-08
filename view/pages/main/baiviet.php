@@ -130,9 +130,9 @@ if (!$row_bv) {
     
     <!-- Image -->
     <div class="news-detail-image">
-        <img src="uploads/<?php echo $row_bv['hinhanh']; ?>" 
-             alt="<?php echo $row_bv['tenbaiviet']; ?>"
-             onerror="this.src='uploads/news-placeholder.jpg'">
+        <img src="<?php echo htmlspecialchars(upload_url($row_bv['hinhanh']), ENT_QUOTES, 'UTF-8'); ?>" 
+             alt="<?php echo htmlspecialchars($row_bv['tenbaiviet'], ENT_QUOTES, 'UTF-8'); ?>"
+             onerror="this.src='<?php echo htmlspecialchars(public_url('view/images/news-placeholder.jpg'), ENT_QUOTES, 'UTF-8'); ?>'">
     </div>
     
     <!-- Summary -->

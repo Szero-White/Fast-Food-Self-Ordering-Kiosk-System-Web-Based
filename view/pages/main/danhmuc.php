@@ -129,7 +129,7 @@ $row_title = mysqli_fetch_array($query_cate);
         $counter++;
     ?>
         <div class="product-card">
-            <img src="uploads/<?php echo $row_pro['hinhanh'] ?>" alt="<?php echo $row_pro['tensanpham'] ?>" class="product-image">
+            <img src="<?php echo htmlspecialchars(upload_url($row_pro['hinhanh']), ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($row_pro['tensanpham'], ENT_QUOTES, 'UTF-8'); ?>" class="product-image">
             <div class="product-info">
                 <div class="product-category"><?php echo $row_pro['tendanhmuc'] ?></div>
                 <h3 class="product-name"><?php echo $row_pro['tensanpham'] ?></h3>

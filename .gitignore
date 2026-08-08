@@ -9,6 +9,21 @@ logs/
 tmp/
 temp/
 
+# Runtime uploads
+/storage/uploads/*
+!/storage/uploads/.gitkeep
+!/storage/uploads/.htaccess
+!/storage/uploads/products/
+!/storage/uploads/products/.gitkeep
+!/storage/uploads/posts/
+!/storage/uploads/posts/.gitkeep
+!/storage/uploads/site/
+!/storage/uploads/site/.gitkeep
+/admincp/uploads/*
+!/admincp/uploads/.gitkeep
+/view/uploads/*
+!/view/uploads/.gitkeep
+
 # OS/editor noise
 .DS_Store
 Thumbs.db

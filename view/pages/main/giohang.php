@@ -143,7 +143,7 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
     <?php if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) { ?>
         <?php foreach ($_SESSION['cart'] as $item) { ?>
             <div class="cart-item">
-                <img src="uploads/<?php echo $item['hinhanh']; ?>" alt="<?php echo $item['ten']; ?>">
+                <img src="<?php echo htmlspecialchars(upload_url($item['hinhanh']), ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($item['ten'], ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="cart-item-info">
                     <div class="cart-item-name"><?php echo $item['ten']; ?></div>
                     <div class="cart-item-price"><?php echo number_format($item['gia'], 0, ',', '.'); ?>đ</div>

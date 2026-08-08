@@ -1,42 +1,59 @@
 <?php
 include(__DIR__ . '/../../config/config.php');
 
-if (isset($_POST['themlienhe'])) {
-    // Lấy dữ liệu từ form
-    $noidung = mysqli_real_escape_string($mysqli, $_POST['noidung']);
-    $id = 1; // Luôn là 1 cho trang giới thiệu
-
-    // Kiểm tra xem liệu người dùng đã tải lên hình ảnh mới hay không
-    if(isset($_FILES['hinhanh']) && $_FILES['hinhanh']['error'] === UPLOAD_ERR_OK) {
-        $hinhanh = time() . '_' . basename($_FILES['hinhanh']['name']);
-        $hinhanh_tmp = $_FILES['hinhanh']['tmp_name'];
-        $target_dir = __DIR__ . '/../../uploads/';
-        $target_file = $target_dir . $hinhanh;
-
-        // Di chuyển tệp tải lên vào thư mục đích
-        if (move_uploaded_file($hinhanh_tmp, $target_file)) {
-            // Cập nhật nội dung và hình ảnh
-            $sql_update = "UPDATE tbl_gioithieu SET noidung = '$noidung', hinhanh = '$hinhanh' WHERE id = '$id'";
-            mysqli_query($mysqli, $sql_update);
-            // Nếu chưa có dữ liệu thì INSERT mới
-            if (mysqli_affected_rows($mysqli) == 0) {
-                $sql_insert = "INSERT INTO tbl_gioithieu (id, noidung, hinhanh) VALUES ('$id', '$noidung', '$hinhanh')";
-                mysqli_query($mysqli, $sql_insert);
-            }
-            header('Location:../../index.php?action=quanlyweb&query=capnhat');
-        } else {
-            echo "Lỗi khi tải lên tệp.";
-        }
-    } else {
-        // Chỉ cập nhật nội dung
-        $sql_update = "UPDATE tbl_gioithieu SET noidung = '$noidung' WHERE id = '$id'";
-        mysqli_query($mysqli, $sql_update);
-        // Nếu chưa có dữ liệu thì INSERT mới
-        if (mysqli_affected_rows($mysqli) == 0) {
-            $sql_insert = "INSERT INTO tbl_gioithieu (id, noidung, hinhanh) VALUES ('$id', '$noidung', '')";
-            mysqli_query($mysqli, $sql_insert);
-        }
-        header('Location:../../index.php?action=quanlyweb&query=capnhat');
-    }
+function redirect_site_info(): void
+{
+    header('Location:../../index.php?action=quanlyweb&query=capnhat');
+    exit;
 }
-?>
+
+function find_site_info_image(mysqli $mysqli, int $id): ?string
+{
+    $stmt = mysqli_prepare($mysqli, 'SELECT hinhanh FROM tbl_gioithieu WHERE id = ? LIMIT 1');
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $image);
+    $found = mysqli_stmt_fetch($stmt);
+    mysqli_stmt_close($stmt);
+
+    return $found ? $image : null;
+}
+
+try {
+    if (!isset($_POST['themlienhe'])) {
+        redirect_site_info();
+    }
+
+    $id = 1;
+    $noidung = trim($_POST['noidung'] ?? '');
+    $oldImage = find_site_info_image($mysqli, $id);
+    $newImage = save_uploaded_image($_FILES['hinhanh'] ?? [], 'site');
+
+    if ($newImage !== null) {
+        $stmt = mysqli_prepare(
+            $mysqli,
+            'INSERT INTO tbl_gioithieu (id, noidung, hinhanh)
+             VALUES (?, ?, ?)
+             ON DUPLICATE KEY UPDATE noidung = VALUES(noidung), hinhanh = VALUES(hinhanh)'
+        );
+        mysqli_stmt_bind_param($stmt, 'iss', $id, $noidung, $newImage);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+        delete_uploaded_image($oldImage);
+    } else {
+        $stmt = mysqli_prepare(
+            $mysqli,
+            'INSERT INTO tbl_gioithieu (id, noidung, hinhanh)
+             VALUES (?, ?, "")
+             ON DUPLICATE KEY UPDATE noidung = VALUES(noidung)'
+        );
+        mysqli_stmt_bind_param($stmt, 'is', $id, $noidung);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+
+    redirect_site_info();
+} catch (RuntimeException $exception) {
+    http_response_code(400);
+    echo htmlspecialchars($exception->getMessage(), ENT_QUOTES, 'UTF-8');
+}

@@ -131,7 +131,7 @@ $row_gioithieu = mysqli_fetch_array($query_gioithieu);
             <p>Với hơn 10 năm kinh nghiệm trong ngành ẩm thực, chúng tôi đã phục vụ hàng triệu khách hàng và nhận được nhiều phản hồi tích cực. Cam kết của chúng tôi là luôn đặt chất lượng món ăn và sự hài lòng của khách hàng lên hàng đầu.</p>
         <?php } ?>
         <?php if(isset($row_gioithieu['hinhanh']) && !empty($row_gioithieu['hinhanh'])) { ?>
-            <img src="uploads/<?php echo $row_gioithieu['hinhanh']; ?>" style="max-width: 100%; margin-top: 20px; border-radius: 10px;">
+            <img src="<?php echo htmlspecialchars(upload_url($row_gioithieu['hinhanh']), ENT_QUOTES, 'UTF-8'); ?>" style="max-width: 100%; margin-top: 20px; border-radius: 10px;">
         <?php } ?>
     </div>
     

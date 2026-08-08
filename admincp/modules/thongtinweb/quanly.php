@@ -53,7 +53,7 @@ if (!$dong) {
                         <?php if($dong['hinhanh']) { ?>
                         <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 12px;">
                             <p style="color: #888; font-size: 13px; margin-bottom: 10px;">Ảnh hiện tại:</p>
-                            <img src="../uploads/<?php echo $dong['hinhanh'] ?>" style="max-width: 300px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            <img src="<?php echo htmlspecialchars(upload_url($dong['hinhanh']), ENT_QUOTES, 'UTF-8'); ?>" style="max-width: 300px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                         </div>
                         <?php } ?>
                     </div>

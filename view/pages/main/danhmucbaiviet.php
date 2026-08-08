@@ -180,10 +180,10 @@ if ($id_danhmuc > 0) {
                 <?php if($counter <= 2) { ?>
                     <span class="news-badge">🔥 HOT</span>
                 <?php } ?>
-                <img src="uploads/<?php echo $row_bv['hinhanh'] ?>" 
-                     alt="<?php echo $row_bv['tenbaiviet'] ?>" 
+                <img src="<?php echo htmlspecialchars(upload_url($row_bv['hinhanh']), ENT_QUOTES, 'UTF-8'); ?>" 
+                     alt="<?php echo htmlspecialchars($row_bv['tenbaiviet'], ENT_QUOTES, 'UTF-8'); ?>" 
                      class="news-image"
-                     onerror="this.src='uploads/news-placeholder.jpg'">
+                     onerror="this.src='<?php echo htmlspecialchars(public_url('view/images/news-placeholder.jpg'), ENT_QUOTES, 'UTF-8'); ?>'">
                 <div class="news-content">
                     <h3 class="news-title"><?php echo $row_bv['tenbaiviet'] ?></h3>
                     <p class="news-summary"><?php echo $row_bv['tomtat']; ?></p>

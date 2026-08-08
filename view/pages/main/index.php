@@ -432,7 +432,7 @@ $total_pages = ceil($row_count / 8);
             <?php if($badge) { ?>
                 <span class="product-badge <?php echo $badge; ?>"><?php echo $badge_text; ?></span>
             <?php } ?>
-            <img src="uploads/<?php echo $row['hinhanh'] ?>" alt="<?php echo $row['tensanpham'] ?>" class="product-image">
+            <img src="<?php echo htmlspecialchars(upload_url($row['hinhanh']), ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($row['tensanpham'], ENT_QUOTES, 'UTF-8'); ?>" class="product-image">
             <div class="product-info">
                 <div class="product-category"><?php echo $row['tendanhmuc'] ?></div>
                 <h3 class="product-name"><?php echo $row['tensanpham'] ?></h3>
