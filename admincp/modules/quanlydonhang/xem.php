@@ -1,4 +1,24 @@
 <?php
+$ordersAdminCssVersion = filemtime(__DIR__ . '/../../css_admin/pages/orders-admin.css');
+
+function order_detail_status(int $status): array
+{
+    return match ($status) {
+        1 => ['class' => 'active', 'label' => 'Hoàn thành'],
+        2 => ['class' => 'inactive', 'label' => 'Đã hủy'],
+        default => ['class' => 'pending', 'label' => 'Đang chọn'],
+    };
+}
+
+function order_detail_payment(?string $method): array
+{
+    return match ($method) {
+        'cash' => ['class' => 'cash', 'label' => 'Tiền mặt', 'icon' => 'fa-money-bill-wave'],
+        'transfer' => ['class' => 'transfer', 'label' => 'Chuyển khoản', 'icon' => 'fa-building-columns'],
+        default => ['class' => 'unknown', 'label' => 'Chưa chọn', 'icon' => 'fa-clock'],
+    };
+}
+
 $idDonHang = (int)($_GET['iddonhang'] ?? 0);
 $stmtOrder = mysqli_prepare($mysqli, 'SELECT * FROM tbl_donhang WHERE id = ? LIMIT 1');
 mysqli_stmt_bind_param($stmtOrder, 'i', $idDonHang);
@@ -6,7 +26,6 @@ mysqli_stmt_execute($stmtOrder);
 $query_xem = mysqli_stmt_get_result($stmtOrder);
 $row = mysqli_fetch_array($query_xem);
 
-// Lấy chi tiết đơn hàng
 $stmtOrderDetail = mysqli_prepare($mysqli, 'SELECT * FROM tbl_chitietdonhang WHERE id_donhang = ?');
 mysqli_stmt_bind_param($stmtOrderDetail, 'i', $idDonHang);
 mysqli_stmt_execute($stmtOrderDetail);
@@ -19,30 +38,26 @@ if (!$row) {
     return;
 }
 
-$status_text = '';
-$status_color = '';
-switch($row['trangthai']) {
-    case 0: $status_text = 'Đang chọn'; $status_color = '#f39c12'; break;
-    case 1: $status_text = 'Hoàn thành'; $status_color = '#27ae60'; break;
-    case 2: $status_text = 'Đã hủy'; $status_color = '#e74c3c'; break;
-}
+$status = order_detail_status((int)$row['trangthai']);
+$payment = order_detail_payment($row['phuongthuc'] ?? null);
 ?>
 
-<!-- Page Header -->
-<div class="content-card" style="background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%); border: 1px solid rgba(102,126,234,0.2);">
+<link rel="stylesheet" href="css_admin/pages/orders-admin.css?v=<?php echo $ordersAdminCssVersion; ?>">
+
+<div class="content-card orders-detail-hero">
     <div class="card-body-custom">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
             <div class="d-flex align-items-center gap-3">
-                <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-file-invoice" style="color: white; font-size: 24px;"></i>
+                <div class="orders-page-icon detail">
+                    <i class="fas fa-file-invoice"></i>
                 </div>
                 <div>
-                    <h4 style="margin: 0; font-weight: 700; color: #333;">Chi tiết đơn hàng #<?php echo $row['madon']; ?></h4>
-                    <p style="margin: 0; color: #888; font-size: 14px;">Ngày đặt: <?php echo date('d/m/Y H:i', strtotime($row['ngaydat'])); ?></p>
+                    <h4 class="orders-page-title">Chi tiết đơn hàng #<?php echo htmlspecialchars((string)$row['madon'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                    <p class="orders-page-subtitle">Ngày đặt: <?php echo date('d/m/Y H:i', strtotime((string)$row['ngaydat'])); ?></p>
                 </div>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <a href="?action=quanlydonhang&query=lietke" class="btn-custom btn-custom-secondary text-decoration-none d-inline-flex align-items-center" style="padding: 10px 20px;">
+            <div class="orders-header-actions">
+                <a href="?action=quanlydonhang&query=lietke" class="btn-custom btn-custom-secondary text-decoration-none d-inline-flex align-items-center orders-back-btn">
                     <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
                 </a>
             </div>
@@ -52,97 +67,77 @@ switch($row['trangthai']) {
 
 <div class="row">
     <div class="col-lg-4">
-        <!-- Trạng thái đơn -->
-        <div class="content-card" style="margin-top: 20px;">
+        <div class="content-card orders-side-card">
             <div class="card-header-custom">
-                <h5><i class="fas fa-info-circle me-2" style="color: #f39c12;"></i>Trạng thái đơn hàng</h5>
+                <h5><i class="fas fa-info-circle me-2 orders-title-icon status"></i>Trạng thái đơn hàng</h5>
             </div>
-            <div class="card-body-custom" style="text-align: center;">
-                <div style="display: inline-block; padding: 15px 30px; background: <?php echo $status_color; ?>; color: white; border-radius: 12px; font-weight: 600; font-size: 16px;">
-                    <?php echo $status_text; ?>
+            <div class="card-body-custom orders-card-center">
+                <div class="orders-status-pill <?php echo htmlspecialchars($status['class'], ENT_QUOTES, 'UTF-8'); ?>">
+                    <?php echo htmlspecialchars($status['label'], ENT_QUOTES, 'UTF-8'); ?>
                 </div>
-                <form method="POST" action="modules/quanlydonhang/xuly.php?iddonhang=<?php echo $row['id']; ?>" style="margin-top: 20px;">
+                <form method="POST" action="modules/quanlydonhang/xuly.php?iddonhang=<?php echo (int)$row['id']; ?>" class="orders-status-form">
                     <div class="form-group-custom">
-                        <label class="form-label-custom" style="font-size: 13px;">Cập nhật trạng thái</label>
-                        <select name="trangthai" class="form-control-custom" style="font-size: 14px; padding: 10px;">
-                            <option value="0" <?php echo $row['trangthai']==0 ? 'selected' : ''; ?>>🟡 Đang chọn</option>
-                            <option value="1" <?php echo $row['trangthai']==1 ? 'selected' : ''; ?>>🟢 Hoàn thành</option>
-                            <option value="2" <?php echo $row['trangthai']==2 ? 'selected' : ''; ?>>🔴 Đã hủy</option>
+                        <label class="form-label-custom orders-status-label">Cập nhật trạng thái</label>
+                        <select name="trangthai" class="form-control-custom orders-status-select">
+                            <option value="0" <?php echo (int)$row['trangthai'] === 0 ? 'selected' : ''; ?>>Đang chọn</option>
+                            <option value="1" <?php echo (int)$row['trangthai'] === 1 ? 'selected' : ''; ?>>Hoàn thành</option>
+                            <option value="2" <?php echo (int)$row['trangthai'] === 2 ? 'selected' : ''; ?>>Đã hủy</option>
                         </select>
                     </div>
-                    <button type="submit" name="capnhatdonhang" class="btn-custom btn-custom-primary" style="width: 100%; margin-top: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <button type="submit" name="capnhatdonhang" class="btn-custom btn-custom-primary orders-save-status-btn">
                         <i class="fas fa-save me-2"></i>Lưu trạng thái
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- Phương thức thanh toán -->
-        <div class="content-card" style="margin-top: 20px;">
+        <div class="content-card orders-side-card">
             <div class="card-header-custom">
-                <h5><i class="fas fa-credit-card me-2" style="color: #27ae60;"></i>Phương thức thanh toán</h5>
+                <h5><i class="fas fa-credit-card me-2 orders-title-icon payment"></i>Phương thức thanh toán</h5>
             </div>
-            <div class="card-body-custom" style="text-align: center;">
-                <?php 
-                $payment_method = $row['phuongthuc'] ?: 'Chưa chọn';
-                $payment_icon = 'fa-money-bill';
-                $payment_color = '#95a5a6';
-                if ($row['phuongthuc'] == 'cash') {
-                    $payment_method = 'Tiền mặt';
-                    $payment_icon = 'fa-money-bill-wave';
-                    $payment_color = '#27ae60';
-                } elseif ($row['phuongthuc'] == 'transfer') {
-                    $payment_method = 'Chuyển khoản';
-                    $payment_icon = 'fa-university';
-                    $payment_color = '#3498db';
-                }
-                ?>
-                <div style="display: inline-flex; align-items: center; gap: 10px; padding: 15px 30px; background: <?php echo $payment_color; ?>15; border: 2px solid <?php echo $payment_color; ?>; border-radius: 12px; color: <?php echo $payment_color; ?>; font-weight: 600; font-size: 16px;">
-                    <i class="fas <?php echo $payment_icon; ?>"></i>
-                    <?php echo $payment_method; ?>
+            <div class="card-body-custom orders-card-center">
+                <div class="orders-payment-display <?php echo htmlspecialchars($payment['class'], ENT_QUOTES, 'UTF-8'); ?>">
+                    <i class="fas <?php echo htmlspecialchars($payment['icon'], ENT_QUOTES, 'UTF-8'); ?>"></i>
+                    <?php echo htmlspecialchars($payment['label'], ENT_QUOTES, 'UTF-8'); ?>
                 </div>
             </div>
         </div>
 
-        <!-- Tổng tiền -->
-        <div class="content-card" style="margin-top: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-            <div class="card-body-custom" style="text-align: center; color: white;">
-                <p style="margin: 0 0 10px 0; font-size: 14px; opacity: 0.9;">Tổng giá trị đơn hàng</p>
-                <h3 style="margin: 0; font-weight: 700; font-size: 28px;"><?php echo number_format($row['tongtien'], 0, ',', '.'); ?>đ</h3>
+        <div class="content-card orders-total-card">
+            <div class="card-body-custom orders-total-body">
+                <p class="orders-total-label">Tổng giá trị đơn hàng</p>
+                <h3 class="orders-total-value"><?php echo number_format((float)$row['tongtien'], 0, ',', '.'); ?>đ</h3>
             </div>
         </div>
     </div>
 
     <div class="col-lg-8">
-        <!-- Chi tiết sản phẩm -->
         <div class="content-card">
             <div class="card-header-custom">
-                <h5><i class="fas fa-shopping-basket me-2" style="color: #e74c3c;"></i>Sản phẩm trong đơn</h5>
+                <h5><i class="fas fa-shopping-basket me-2 orders-title-icon products"></i>Sản phẩm trong đơn</h5>
             </div>
-            <div class="card-body-custom" style="padding: 0;">
+            <div class="card-body-custom orders-detail-table-body">
                 <div class="table-container">
                     <table class="custom-table">
                         <thead>
                             <tr>
-                                <th style="width: 60px;">STT</th>
+                                <th class="orders-col-stt">STT</th>
                                 <th>Sản phẩm</th>
-                                <th style="width: 100px; text-align: center;">SL</th>
-                                <th style="width: 150px; text-align: right;">Đơn giá</th>
-                                <th style="width: 150px; text-align: right;">Thành tiền</th>
+                                <th class="orders-col-qty">SL</th>
+                                <th class="orders-col-price">Đơn giá</th>
+                                <th class="orders-col-line-total">Thành tiền</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php
-                            $i = 1;
-                            while($ct = mysqli_fetch_array($query_ct)) {
-                            ?>
-                            <tr>
-                                <td><strong>#<?php echo $i++; ?></strong></td>
-                                <td><?php echo $ct['ten_sanpham']; ?></td>
-                                <td style="text-align: center;"><?php echo $ct['soluong']; ?></td>
-                                <td style="text-align: right;"><?php echo number_format($ct['gia'], 0, ',', '.'); ?>đ</td>
-                                <td style="text-align: right; font-weight: 600; color: #27ae60;"><?php echo number_format($ct['thanhtien'], 0, ',', '.'); ?>đ</td>
-                            </tr>
+                            <?php $index = 1; ?>
+                            <?php while ($ct = mysqli_fetch_array($query_ct)) { ?>
+                                <tr>
+                                    <td><strong>#<?php echo $index++; ?></strong></td>
+                                    <td><?php echo htmlspecialchars((string)$ct['ten_sanpham'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                    <td class="orders-text-center"><?php echo (int)$ct['soluong']; ?></td>
+                                    <td class="orders-text-right"><?php echo number_format((float)$ct['gia'], 0, ',', '.'); ?>đ</td>
+                                    <td class="orders-line-total"><?php echo number_format((float)$ct['thanhtien'], 0, ',', '.'); ?>đ</td>
+                                </tr>
                             <?php } ?>
                         </tbody>
                     </table>
@@ -150,18 +145,17 @@ switch($row['trangthai']) {
             </div>
         </div>
 
-        <!-- Ghi chú -->
-        <?php if($row['ghichu']) { ?>
-        <div class="content-card" style="margin-top: 20px;">
-            <div class="card-header-custom">
-                <h5><i class="fas fa-sticky-note me-2" style="color: #9b59b6;"></i>Ghi chú từ khách hàng</h5>
-            </div>
-            <div class="card-body-custom">
-                <div style="padding: 15px; background: #fff9e6; border-left: 4px solid #f1c40f; border-radius: 8px;">
-                    <p style="margin: 0; color: #555; font-style: italic;"><?php echo $row['ghichu']; ?></p>
+        <?php if (!empty($row['ghichu'])) { ?>
+            <div class="content-card orders-side-card">
+                <div class="card-header-custom">
+                    <h5><i class="fas fa-sticky-note me-2 orders-title-icon note"></i>Ghi chú từ khách hàng</h5>
+                </div>
+                <div class="card-body-custom">
+                    <div class="orders-note-box">
+                        <p class="orders-note-text"><?php echo htmlspecialchars((string)$row['ghichu'], ENT_QUOTES, 'UTF-8'); ?></p>
+                    </div>
                 </div>
             </div>
-        </div>
         <?php } ?>
     </div>
 </div>

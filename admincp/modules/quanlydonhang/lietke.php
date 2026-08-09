@@ -1,119 +1,140 @@
-<!-- Page Header -->
-<div class="content-card" style="background: linear-gradient(135deg, rgba(240,147,251,0.1) 0%, rgba(245,87,108,0.1) 100%); border: 1px solid rgba(240,147,251,0.2);">
+<?php
+$ordersAdminCssVersion = filemtime(__DIR__ . '/../../css_admin/pages/orders-admin.css');
+$ordersAdminJsVersion = filemtime(__DIR__ . '/../../js_admin/pages/orders-admin.js');
+
+function order_list_status(int $status): array
+{
+    return match ($status) {
+        1 => ['class' => 'active', 'label' => 'Hoàn thành'],
+        2 => ['class' => 'inactive', 'label' => 'Đã hủy'],
+        default => ['class' => 'pending', 'label' => 'Đang chọn'],
+    };
+}
+
+function order_list_payment(?string $method): array
+{
+    return match ($method) {
+        'cash' => ['class' => 'cash', 'label' => 'Tiền mặt', 'icon' => 'fa-money-bill-wave'],
+        'transfer' => ['class' => 'transfer', 'label' => 'Chuyển khoản', 'icon' => 'fa-building-columns'],
+        default => ['class' => 'unknown', 'label' => 'Chưa chọn', 'icon' => 'fa-clock'],
+    };
+}
+
+$ordersSql = "
+    SELECT donhang.id,
+           donhang.madon,
+           donhang.tongtien,
+           donhang.phuongthuc,
+           donhang.ngaydat,
+           donhang.trangthai,
+           donhang.admin_seen,
+           COALESCE(chitiet.sanpham, '') AS sanpham
+    FROM tbl_donhang AS donhang
+    LEFT JOIN (
+        SELECT id_donhang,
+               GROUP_CONCAT(CONCAT(ten_sanpham, ' x', soluong) SEPARATOR ', ') AS sanpham
+        FROM tbl_chitietdonhang
+        GROUP BY id_donhang
+    ) AS chitiet ON chitiet.id_donhang = donhang.id
+    ORDER BY donhang.ngaydat DESC
+";
+$orders = mysqli_query($mysqli, $ordersSql);
+?>
+
+<link rel="stylesheet" href="css_admin/pages/orders-admin.css?v=<?php echo $ordersAdminCssVersion; ?>">
+
+<div class="content-card orders-hero-card">
     <div class="card-body-custom">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
             <div class="d-flex align-items-center gap-3">
-                <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-shopping-cart" style="color: white; font-size: 24px;"></i>
+                <div class="orders-page-icon list">
+                    <i class="fas fa-shopping-cart"></i>
                 </div>
                 <div>
-                    <h4 style="margin: 0; font-weight: 700; color: #333;">Quản lý đơn hàng</h4>
-                    <p style="margin: 0; color: #888; font-size: 14px;">Theo dõi và cập nhật đơn hàng</p>
+                    <h4 class="orders-page-title">Quản lý đơn hàng</h4>
+                    <p class="orders-page-subtitle">Theo dõi và cập nhật đơn hàng</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Orders Table -->
 <div class="content-card">
     <div class="card-header-custom">
-        <h5><i class="fas fa-list me-2" style="color: #f5576c;"></i>Danh sách đơn hàng</h5>
+        <h5><i class="fas fa-list me-2 orders-section-icon"></i>Danh sách đơn hàng</h5>
         <div class="d-flex gap-2">
-            <div class="input-group" style="max-width: 300px;">
-                <span class="input-group-text" style="background: white; border-right: none;"><i class="fas fa-search" style="color: #888;"></i></span>
-                <input type="text" class="form-control" placeholder="Tìm kiếm đơn hàng..." style="border-left: none;">
+            <a href="modules/quanlydonhang/export.php" class="btn-custom btn-custom-primary text-decoration-none d-inline-flex align-items-center orders-export-btn">
+                <i class="fas fa-file-export me-2"></i>Xuất file
+            </a>
+            <div class="input-group orders-search">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" class="form-control" placeholder="Tìm kiếm đơn hàng...">
             </div>
         </div>
     </div>
-    <div class="card-body-custom" style="padding: 0;">
+    <div class="card-body-custom orders-table-body">
         <div class="table-container">
             <table class="custom-table">
                 <thead>
                     <tr>
-                        <th style="width: 60px;">ID</th>
+                        <th class="orders-col-id">ID</th>
                         <th>Mã đơn</th>
                         <th>Mô tả đơn hàng</th>
                         <th>Tổng tiền</th>
-                        <th style="width: 120px;">Thanh toán</th>
+                        <th class="orders-col-payment">Thanh toán</th>
                         <th>Ngày đặt</th>
-                        <th style="width: 130px;">Trạng thái</th>
-                        <th style="width: 180px; text-align: center;">Thao tác</th>
+                        <th class="orders-col-status">Trạng thái</th>
+                        <th class="orders-col-actions">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    $sql_lietke_donhang = "SELECT * FROM tbl_donhang ORDER BY ngaydat DESC";
-                    $query_lietke_donhang = mysqli_query($mysqli, $sql_lietke_donhang);
-                    while ($row = mysqli_fetch_array($query_lietke_donhang)) {
-                        $status_class = '';
-                        $status_text = '';
-                        switch($row['trangthai']) {
-                            case 0: $status_class = 'pending'; $status_text = 'Đang chọn'; break;
-                            case 1: $status_class = 'active'; $status_text = 'Hoàn thành'; break;
-                            case 2: $status_class = 'inactive'; $status_text = 'Đã hủy'; break;
-                        }
-                        // Lấy phương thức thanh toán
-                        $pttt = $row['phuongthuc'];
-                        if ($pttt == 'cash') {
-                            $pt_text = 'Tiền mặt';
-                            $pt_color = '#27ae60';
-                            $pt_bg = 'rgba(39,174,96,0.1)';
-                            $pt_icon = '💵';
-                        } elseif ($pttt == 'transfer') {
-                            $pt_text = 'Chuyển khoản';
-                            $pt_color = '#3498db';
-                            $pt_bg = 'rgba(52,152,219,0.1)';
-                            $pt_icon = '📱';
-                        } else {
-                            $pt_text = 'Chưa chọn';
-                            $pt_color = '#95a5a6';
-                            $pt_bg = 'rgba(149,165,166,0.1)';
-                            $pt_icon = '⏳';
-                        }
-                        // Lấy chi tiết sản phẩm trong đơn
-                        $sql_ct = "SELECT ten_sanpham, soluong FROM tbl_chitietdonhang WHERE id_donhang = '{$row['id']}'";
-                        $query_ct = mysqli_query($mysqli, $sql_ct);
-                        $products = [];
-                        while ($ct = mysqli_fetch_array($query_ct)) {
-                            $products[] = $ct['ten_sanpham'] . ' x' . $ct['soluong'];
-                        }
-                        $product_desc = count($products) > 0 ? implode(', ', $products) : '<span style="color:#999;font-style:italic;">Chưa có sản phẩm</span>';
+                    <?php while ($row = $orders ? mysqli_fetch_array($orders) : null) {
+                        $status = order_list_status((int)$row['trangthai']);
+                        $payment = order_list_payment($row['phuongthuc'] ?? null);
+                        $productDesc = trim((string)($row['sanpham'] ?? ''));
                     ?>
-                    <tr>
-                        <td><strong>#<?php echo $row['id'] ?></strong></td>
-                        <td>
-                            <span style="font-weight: 600; color: #667eea;"><?php echo $row['madon'] ?></span>
-                        </td>
-                        <td>
-                            <div style="font-size: 13px; color: #555; max-width: 250px; line-height: 1.5;">
-                                <?php echo $product_desc; ?>
-                            </div>
-                        </td>
-                        <td><strong style="color: #27ae60;"><?php echo number_format($row['tongtien'], 0, ',', '.') ?>đ</strong></td>
-                        <td>
-                            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; background: <?php echo $pt_bg; ?>; color: <?php echo $pt_color; ?>; border: 1px solid <?php echo $pt_color; ?>;">
-                                <?php echo $pt_icon . ' ' . $pt_text; ?>
-                            </span>
-                        </td>
-                        <td><?php echo date('d/m/Y H:i', strtotime($row['ngaydat'])) ?></td>
-                        <td><span class="status-badge <?php echo $status_class ?>"><?php echo $status_text ?></span></td>
-                        <td>
-                            <div class="action-group" style="justify-content: center; gap: 10px;">
-                                <a href="?action=quanlydonhang&query=xem&iddonhang=<?php echo $row['id'] ?>" class="btn-action" title="Xem chi tiết" style="background: #3498db; color: white; padding: 8px 16px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-size: 13px; font-weight: 600; box-shadow: 0 2px 5px rgba(52,152,219,0.3);">
-                                    <i class="fas fa-eye me-1" style="font-size: 12px;"></i>Xem
-                                </a>
-                                <a href="modules/quanlydonhang/xuly.php?iddonhang=<?php echo $row['id'] ?>&action=xoa" class="btn-action" title="Xóa đơn" onclick="return confirm('Bạn có chắc chắn muốn xóa đơn hàng này?')" style="background: #e74c3c; color: white; padding: 8px 16px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-size: 13px; font-weight: 600; box-shadow: 0 2px 5px rgba(231,76,60,0.3);">
-                                    <i class="fas fa-trash me-1" style="font-size: 12px;"></i>Xóa
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    <?php
-                    }
-                    ?>
+                        <tr>
+                            <td><strong>#<?php echo (int)$row['id']; ?></strong></td>
+                            <td>
+                                <span class="orders-code"><?php echo htmlspecialchars((string)$row['madon'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                <?php if ((int)$row['trangthai'] === 1 && (int)($row['admin_seen'] ?? 1) === 0) { ?>
+                                    <span class="order-new-badge">Đơn mới</span>
+                                <?php } ?>
+                            </td>
+                            <td>
+                                <div class="orders-product-desc">
+                                    <?php if ($productDesc !== '') { ?>
+                                        <?php echo htmlspecialchars($productDesc, ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php } else { ?>
+                                        <span class="orders-empty-text">Chưa có sản phẩm</span>
+                                    <?php } ?>
+                                </div>
+                            </td>
+                            <td><strong class="orders-total"><?php echo number_format((float)$row['tongtien'], 0, ',', '.'); ?>đ</strong></td>
+                            <td>
+                                <span class="orders-payment-badge <?php echo htmlspecialchars($payment['class'], ENT_QUOTES, 'UTF-8'); ?>">
+                                    <i class="fas <?php echo htmlspecialchars($payment['icon'], ENT_QUOTES, 'UTF-8'); ?>"></i>
+                                    <?php echo htmlspecialchars($payment['label'], ENT_QUOTES, 'UTF-8'); ?>
+                                </span>
+                            </td>
+                            <td><?php echo date('d/m/Y H:i', strtotime((string)$row['ngaydat'])); ?></td>
+                            <td><span class="status-badge <?php echo htmlspecialchars($status['class'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($status['label'], ENT_QUOTES, 'UTF-8'); ?></span></td>
+                            <td>
+                                <div class="action-group orders-action-group">
+                                    <a href="?action=quanlydonhang&query=xem&iddonhang=<?php echo (int)$row['id']; ?>" class="orders-action view" title="Xem chi tiết">
+                                        <i class="fas fa-eye me-1"></i>Xem
+                                    </a>
+                                    <a href="modules/quanlydonhang/xuly.php?iddonhang=<?php echo (int)$row['id']; ?>&action=xoa" class="orders-action delete" title="Xóa đơn" data-confirm="Bạn có chắc chắn muốn xóa đơn hàng này?">
+                                        <i class="fas fa-trash me-1"></i>Xóa
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+<script src="js_admin/pages/orders-admin.js?v=<?php echo $ordersAdminJsVersion; ?>"></script>

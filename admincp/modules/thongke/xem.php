@@ -1,184 +1,187 @@
 <?php
-$sql_tong_sp = "SELECT COUNT(*) as tong FROM tbl_sanpham";
-$query_tong_sp = mysqli_query($mysqli, $sql_tong_sp);
-$row_tong_sp = mysqli_fetch_assoc($query_tong_sp);
+$statisticsAdminCssVersion = filemtime(__DIR__ . '/../../css_admin/pages/statistics-admin.css');
 
-$sql_sp_chua_phan_loai = "
-    SELECT COUNT(*) as tong
-    FROM tbl_sanpham
-    LEFT JOIN tbl_danhmuc ON tbl_sanpham.id_danhmuc = tbl_danhmuc.id_danhmuc
-    WHERE tbl_danhmuc.id_danhmuc IS NULL
+function statistic_value(mysqli $mysqli, string $sql): int|float
+{
+    $result = mysqli_query($mysqli, $sql);
+    if (!$result) {
+        return 0;
+    }
+
+    $row = mysqli_fetch_assoc($result);
+    return $row ? (float)($row['tong'] ?? 0) : 0;
+}
+
+function statistic_money(float|int|null $value): string
+{
+    return number_format((float)($value ?? 0), 0, ',', '.') . 'đ';
+}
+
+function statistic_order_status(int $status): array
+{
+    return match ($status) {
+        1 => ['class' => 'active', 'label' => 'Hoàn thành'],
+        2 => ['class' => 'inactive', 'label' => 'Đã hủy'],
+        default => ['class' => 'pending', 'label' => 'Đang chọn'],
+    };
+}
+
+function statistic_payment_info(?string $method): array
+{
+    return match ($method) {
+        'cash' => ['class' => 'cash', 'label' => 'Tiền mặt', 'icon' => 'fa-money-bill-wave'],
+        'transfer' => ['class' => 'transfer', 'label' => 'Chuyển khoản', 'icon' => 'fa-building-columns'],
+        default => ['class' => 'unknown', 'label' => 'Chưa chọn', 'icon' => 'fa-clock'],
+    };
+}
+
+$totalProducts = (int)statistic_value($mysqli, 'SELECT COUNT(*) AS tong FROM tbl_sanpham');
+$uncategorizedProducts = (int)statistic_value(
+    $mysqli,
+    'SELECT COUNT(*) AS tong
+     FROM tbl_sanpham
+     LEFT JOIN tbl_danhmuc ON tbl_sanpham.id_danhmuc = tbl_danhmuc.id_danhmuc
+     WHERE tbl_danhmuc.id_danhmuc IS NULL'
+);
+$totalPosts = (int)statistic_value($mysqli, 'SELECT COUNT(*) AS tong FROM tbl_baiviet');
+$pendingOrders = (int)statistic_value($mysqli, 'SELECT COUNT(*) AS tong FROM tbl_donhang WHERE trangthai = 0');
+$monthlyRevenue = statistic_value(
+    $mysqli,
+    'SELECT SUM(tongtien) AS tong
+     FROM tbl_donhang
+     WHERE MONTH(ngaydat) = MONTH(CURRENT_DATE())
+       AND YEAR(ngaydat) = YEAR(CURRENT_DATE())
+       AND trangthai = 1'
+);
+$cashOrders = (int)statistic_value($mysqli, "SELECT COUNT(*) AS tong FROM tbl_donhang WHERE phuongthuc = 'cash' AND trangthai = 1");
+$transferOrders = (int)statistic_value($mysqli, "SELECT COUNT(*) AS tong FROM tbl_donhang WHERE phuongthuc = 'transfer' AND trangthai = 1");
+$cashRevenue = statistic_value($mysqli, "SELECT SUM(tongtien) AS tong FROM tbl_donhang WHERE phuongthuc = 'cash' AND trangthai = 1");
+$transferRevenue = statistic_value($mysqli, "SELECT SUM(tongtien) AS tong FROM tbl_donhang WHERE phuongthuc = 'transfer' AND trangthai = 1");
+
+$metrics = [
+    [
+        'class' => 'products',
+        'icon' => 'fa-utensils',
+        'label' => 'Tổng sản phẩm',
+        'value' => $totalProducts,
+        'note' => $uncategorizedProducts > 0 ? $uncategorizedProducts . ' món chưa phân loại' : '',
+        'note_class' => 'warning',
+    ],
+    [
+        'class' => 'posts',
+        'icon' => 'fa-newspaper',
+        'label' => 'Tổng bài viết',
+        'value' => $totalPosts,
+        'note' => '',
+        'note_class' => '',
+    ],
+    [
+        'class' => 'pending',
+        'icon' => 'fa-clock',
+        'label' => 'Đang chọn món',
+        'value' => $pendingOrders,
+        'note' => '',
+        'note_class' => '',
+    ],
+    [
+        'class' => 'revenue',
+        'icon' => 'fa-wallet',
+        'label' => 'Doanh thu tháng',
+        'value' => statistic_money($monthlyRevenue),
+        'compact' => true,
+        'note' => '',
+        'note_class' => '',
+    ],
+    [
+        'class' => 'cash',
+        'icon' => 'fa-money-bill-wave',
+        'label' => 'Tiền mặt',
+        'value' => $cashOrders,
+        'note' => statistic_money($cashRevenue),
+        'note_class' => 'cash',
+    ],
+    [
+        'class' => 'transfer',
+        'icon' => 'fa-building-columns',
+        'label' => 'Chuyển khoản',
+        'value' => $transferOrders,
+        'note' => statistic_money($transferRevenue),
+        'note_class' => 'transfer',
+    ],
+];
+
+$recentOrdersSql = "
+    SELECT donhang.id,
+           donhang.madon,
+           donhang.tongtien,
+           donhang.phuongthuc,
+           donhang.ngaydat,
+           donhang.trangthai,
+           COALESCE(chitiet.sanpham, '') AS sanpham
+    FROM tbl_donhang AS donhang
+    LEFT JOIN (
+        SELECT id_donhang,
+               GROUP_CONCAT(CONCAT(ten_sanpham, ' x', soluong) SEPARATOR ', ') AS sanpham
+        FROM tbl_chitietdonhang
+        GROUP BY id_donhang
+    ) AS chitiet ON chitiet.id_donhang = donhang.id
+    ORDER BY donhang.ngaydat DESC
+    LIMIT 10
 ";
-$query_sp_chua_phan_loai = mysqli_query($mysqli, $sql_sp_chua_phan_loai);
-$row_sp_chua_phan_loai = mysqli_fetch_assoc($query_sp_chua_phan_loai);
-$tongSpChuaPhanLoai = (int) ($row_sp_chua_phan_loai['tong'] ?? 0);
-
-$sql_tong_bv = "SELECT COUNT(*) as tong FROM tbl_baiviet";
-$query_tong_bv = mysqli_query($mysqli, $sql_tong_bv);
-$row_tong_bv = mysqli_fetch_assoc($query_tong_bv);
-
-$sql_don_cho = "SELECT COUNT(*) as tong FROM tbl_donhang WHERE trangthai = 0";
-$query_don_cho = mysqli_query($mysqli, $sql_don_cho);
-$row_don_cho = mysqli_fetch_assoc($query_don_cho);
-
-$sql_doanhthu = "SELECT SUM(tongtien) as tong FROM tbl_donhang WHERE MONTH(ngaydat) = MONTH(CURRENT_DATE()) AND YEAR(ngaydat) = YEAR(CURRENT_DATE()) AND trangthai = 1";
-$query_doanhthu = mysqli_query($mysqli, $sql_doanhthu);
-$row_doanhthu = mysqli_fetch_assoc($query_doanhthu);
-
-// Thống kê phương thức thanh toán
-$sql_cash = "SELECT COUNT(*) as tong FROM tbl_donhang WHERE phuongthuc = 'cash' AND trangthai = 1";
-$query_cash = mysqli_query($mysqli, $sql_cash);
-$row_cash = mysqli_fetch_assoc($query_cash);
-
-$sql_transfer = "SELECT COUNT(*) as tong FROM tbl_donhang WHERE phuongthuc = 'transfer' AND trangthai = 1";
-$query_transfer = mysqli_query($mysqli, $sql_transfer);
-$row_transfer = mysqli_fetch_assoc($query_transfer);
-
-$sql_doanhthu_cash = "SELECT SUM(tongtien) as tong FROM tbl_donhang WHERE phuongthuc = 'cash' AND trangthai = 1";
-$query_doanhthu_cash = mysqli_query($mysqli, $sql_doanhthu_cash);
-$row_doanhthu_cash = mysqli_fetch_assoc($query_doanhthu_cash);
-
-$sql_doanhthu_transfer = "SELECT SUM(tongtien) as tong FROM tbl_donhang WHERE phuongthuc = 'transfer' AND trangthai = 1";
-$query_doanhthu_transfer = mysqli_query($mysqli, $sql_doanhthu_transfer);
-$row_doanhthu_transfer = mysqli_fetch_assoc($query_doanhthu_transfer);
+$recentOrders = mysqli_query($mysqli, $recentOrdersSql);
 ?>
 
-<!-- Page Header -->
-<div class="content-card" style="background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%); border: 1px solid rgba(102,126,234,0.2);">
+<link rel="stylesheet" href="css_admin/pages/statistics-admin.css?v=<?php echo $statisticsAdminCssVersion; ?>">
+
+<div class="content-card stat-hero-card">
     <div class="card-body-custom">
         <div class="d-flex align-items-center gap-3">
-            <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-chart-pie" style="color: white; font-size: 24px;"></i>
+            <div class="stat-hero-icon">
+                <i class="fas fa-chart-pie"></i>
             </div>
             <div>
-                <h4 style="margin: 0; font-weight: 700; color: #333;">Thống kê</h4>
-                <p style="margin: 0; color: #888; font-size: 14px;">Tổng quan hoạt động nhà hàng</p>
+                <h4 class="stat-hero-title">Thống kê</h4>
+                <p class="stat-hero-subtitle">Tổng quan hoạt động nhà hàng</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Stats Grid -->
 <div class="row g-4 mb-4">
-    <!-- Products -->
-    <div class="col-xl-3 col-md-6">
-        <div class="content-card h-100" style="background: linear-gradient(135deg, rgba(255,107,107,0.1) 0%, rgba(238,90,82,0.1) 100%); border: 1px solid rgba(255,107,107,0.2);">
-            <div class="card-body-custom">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <p style="color: #888; font-size: 14px; margin-bottom: 8px;">Tổng sản phẩm</p>
-                        <h3 style="font-weight: 700; color: #333; margin: 0; font-size: 32px;"><?php echo $row_tong_sp['tong'] ?></h3>
-                        <?php if ($tongSpChuaPhanLoai > 0) { ?>
-                            <p style="color: #c0392b; font-size: 13px; font-weight: 700; margin: 4px 0 0 0;">
-                                <?php echo $tongSpChuaPhanLoai; ?> món chưa phân loại
-                            </p>
-                        <?php } ?>
-                    </div>
-                    <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-utensils" style="color: white; font-size: 24px;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Articles -->
-    <div class="col-xl-3 col-md-6">
-        <div class="content-card h-100" style="background: linear-gradient(135deg, rgba(17,153,142,0.1) 0%, rgba(56,239,125,0.1) 100%); border: 1px solid rgba(17,153,142,0.2);">
-            <div class="card-body-custom">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <p style="color: #888; font-size: 14px; margin-bottom: 8px;">Tổng bài viết</p>
-                        <h3 style="font-weight: 700; color: #333; margin: 0; font-size: 32px;"><?php echo $row_tong_bv['tong'] ?></h3>
-                    </div>
-                    <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-newspaper" style="color: white; font-size: 24px;"></i>
+    <?php foreach ($metrics as $metric) { ?>
+        <div class="col-xl-3 col-md-6">
+            <div class="content-card h-100 stat-metric-card <?php echo htmlspecialchars($metric['class'], ENT_QUOTES, 'UTF-8'); ?>">
+                <div class="card-body-custom">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <p class="stat-metric-label"><?php echo htmlspecialchars($metric['label'], ENT_QUOTES, 'UTF-8'); ?></p>
+                            <h3 class="stat-metric-value <?php echo !empty($metric['compact']) ? 'compact' : ''; ?>">
+                                <?php echo htmlspecialchars((string)$metric['value'], ENT_QUOTES, 'UTF-8'); ?>
+                            </h3>
+                            <?php if (!empty($metric['note'])) { ?>
+                                <p class="stat-metric-note <?php echo htmlspecialchars($metric['note_class'], ENT_QUOTES, 'UTF-8'); ?>">
+                                    <?php echo htmlspecialchars($metric['note'], ENT_QUOTES, 'UTF-8'); ?>
+                                </p>
+                            <?php } ?>
+                        </div>
+                        <div class="stat-metric-icon <?php echo htmlspecialchars($metric['class'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <i class="fas <?php echo htmlspecialchars($metric['icon'], ENT_QUOTES, 'UTF-8'); ?>"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Pending Orders -->
-    <div class="col-xl-3 col-md-6">
-        <div class="content-card h-100" style="background: linear-gradient(135deg, rgba(243,156,18,0.1) 0%, rgba(241,196,15,0.1) 100%); border: 1px solid rgba(243,156,18,0.2);">
-            <div class="card-body-custom">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <p style="color: #888; font-size: 14px; margin-bottom: 8px;">Đang chọn món</p>
-                        <h3 style="font-weight: 700; color: #333; margin: 0; font-size: 32px;"><?php echo $row_don_cho['tong'] ?></h3>
-                    </div>
-                    <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-clock" style="color: white; font-size: 24px;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Revenue -->
-    <div class="col-xl-3 col-md-6">
-        <div class="content-card h-100" style="background: linear-gradient(135deg, rgba(79,172,254,0.1) 0%, rgba(0,242,254,0.1) 100%); border: 1px solid rgba(79,172,254,0.2);">
-            <div class="card-body-custom">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <p style="color: #888; font-size: 14px; margin-bottom: 8px;">Doanh thu tháng</p>
-                        <h3 style="font-weight: 700; color: #333; margin: 0; font-size: 24px;"><?php echo number_format($row_doanhthu['tong'] ?: 0, 0, ',', '.') ?>đ</h3>
-                    </div>
-                    <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-wallet" style="color: white; font-size: 24px;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cash Payments -->
-    <div class="col-xl-3 col-md-6">
-        <div class="content-card h-100" style="background: linear-gradient(135deg, rgba(39,174,96,0.1) 0%, rgba(46,204,113,0.1) 100%); border: 1px solid rgba(39,174,96,0.2);">
-            <div class="card-body-custom">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <p style="color: #888; font-size: 14px; margin-bottom: 8px;">💵 Tiền mặt</p>
-                        <h3 style="font-weight: 700; color: #333; margin: 0; font-size: 32px;"><?php echo $row_cash['tong'] ?></h3>
-                        <p style="color: #27ae60; font-size: 13px; margin: 4px 0 0 0;"><?php echo number_format($row_doanhthu_cash['tong'] ?: 0, 0, ',', '.') ?>đ</p>
-                    </div>
-                    <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-money-bill-wave" style="color: white; font-size: 24px;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Transfer Payments -->
-    <div class="col-xl-3 col-md-6">
-        <div class="content-card h-100" style="background: linear-gradient(135deg, rgba(52,152,219,0.1) 0%, rgba(93,173,226,0.1) 100%); border: 1px solid rgba(52,152,219,0.2);">
-            <div class="card-body-custom">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <p style="color: #888; font-size: 14px; margin-bottom: 8px;">📱 Chuyển khoản</p>
-                        <h3 style="font-weight: 700; color: #333; margin: 0; font-size: 32px;"><?php echo $row_transfer['tong'] ?></h3>
-                        <p style="color: #3498db; font-size: 13px; margin: 4px 0 0 0;"><?php echo number_format($row_doanhthu_transfer['tong'] ?: 0, 0, ',', '.') ?>đ</p>
-                    </div>
-                    <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #3498db 0%, #5dade2 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-university" style="color: white; font-size: 24px;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php } ?>
 </div>
 
-<!-- Recent Orders -->
 <div class="content-card">
     <div class="card-header-custom">
-        <h5><i class="fas fa-shopping-bag me-2" style="color: #667eea;"></i>Đơn hàng gần đây</h5>
-        <a href="?action=quanlydonhang&query=lietke" class="btn-custom btn-custom-secondary text-decoration-none d-inline-flex align-items-center" style="padding: 8px 16px; font-size: 13px;">
+        <h5><i class="fas fa-shopping-bag me-2 stat-section-icon"></i>Đơn hàng gần đây</h5>
+        <a href="?action=quanlydonhang&query=lietke" class="btn-custom btn-custom-secondary text-decoration-none d-inline-flex align-items-center stat-view-all-btn">
             <i class="fas fa-eye me-2"></i>Xem tất cả
         </a>
     </div>
-    <div class="card-body-custom" style="padding: 0;">
+    <div class="card-body-custom stat-table-body">
         <div class="table-container">
             <table class="custom-table">
                 <thead>
@@ -192,60 +195,41 @@ $row_doanhthu_transfer = mysqli_fetch_assoc($query_doanhthu_transfer);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    $sql_recent_orders = "SELECT * FROM tbl_donhang ORDER BY ngaydat DESC LIMIT 10";
-                    $query_recent_orders = mysqli_query($mysqli, $sql_recent_orders);
-                    while ($row = mysqli_fetch_array($query_recent_orders)) {
-                        $status_class = '';
-                        $status_text = '';
-                        switch($row['trangthai']) {
-                            case 0: $status_class = 'pending'; $status_text = '🟡 Đang chọn'; break;
-                            case 1: $status_class = 'active'; $status_text = '🟢 Hoàn thành'; break;
-                            case 2: $status_class = 'inactive'; $status_text = '🔴 Đã hủy'; break;
-                        }
-                        // Phương thức thanh toán
-                        $pttt = $row['phuongthuc'];
-                        if ($pttt == 'cash') {
-                            $pt_text = '💵 Tiền mặt';
-                            $pt_color = '#27ae60';
-                            $pt_bg = 'rgba(39,174,96,0.1)';
-                        } elseif ($pttt == 'transfer') {
-                            $pt_text = '📱 Chuyển khoản';
-                            $pt_color = '#3498db';
-                            $pt_bg = 'rgba(52,152,219,0.1)';
-                        } else {
-                            $pt_text = '⏳ Chưa chọn';
-                            $pt_color = '#95a5a6';
-                            $pt_bg = 'rgba(149,165,166,0.1)';
-                        }
-                        // Lấy chi tiết sản phẩm
-                        $sql_ct = "SELECT ten_sanpham, soluong FROM tbl_chitietdonhang WHERE id_donhang = '{$row['id']}'";
-                        $query_ct = mysqli_query($mysqli, $sql_ct);
-                        $products = [];
-                        while ($ct = mysqli_fetch_array($query_ct)) {
-                            $products[] = $ct['ten_sanpham'] . ' x' . $ct['soluong'];
-                        }
-                        $product_desc = count($products) > 0 ? implode(', ', $products) : '<span style="color:#999;font-style:italic;">Chưa có SP</span>';
+                    <?php while ($row = $recentOrders ? mysqli_fetch_array($recentOrders) : null) {
+                        $status = statistic_order_status((int)$row['trangthai']);
+                        $payment = statistic_payment_info($row['phuongthuc'] ?? null);
+                        $productDesc = trim((string)($row['sanpham'] ?? ''));
                     ?>
-                    <tr>
-                        <td><strong style="font-family: monospace; color: #667eea;">#<?php echo $row['madon'] ?></strong></td>
-                        <td>
-                            <div style="font-size: 12px; color: #555; max-width: 200px;">
-                                <?php echo $product_desc; ?>
-                            </div>
-                        </td>
-                        <td><strong style="color: #27ae60;"><?php echo number_format($row['tongtien'], 0, ',', '.') ?>đ</strong></td>
-                        <td>
-                            <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background: <?php echo $pt_bg; ?>; color: <?php echo $pt_color; ?>; border: 1px solid <?php echo $pt_color; ?>;">
-                                <?php echo $pt_text; ?>
-                            </span>
-                        </td>
-                        <td><?php echo date('d/m/Y H:i', strtotime($row['ngaydat'])) ?></td>
-                        <td><span class="status-badge <?php echo $status_class ?>"><?php echo $status_text ?></span></td>
-                    </tr>
-                    <?php
-                    }
-                    ?>
+                        <tr>
+                            <td>
+                                <strong class="stat-order-code">#<?php echo htmlspecialchars((string)$row['madon'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                            </td>
+                            <td>
+                                <div class="stat-order-desc">
+                                    <?php if ($productDesc !== '') { ?>
+                                        <?php echo htmlspecialchars($productDesc, ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php } else { ?>
+                                        <span class="stat-empty-text">Chưa có sản phẩm</span>
+                                    <?php } ?>
+                                </div>
+                            </td>
+                            <td>
+                                <strong class="stat-order-total"><?php echo statistic_money((float)$row['tongtien']); ?></strong>
+                            </td>
+                            <td>
+                                <span class="stat-payment-badge <?php echo htmlspecialchars($payment['class'], ENT_QUOTES, 'UTF-8'); ?>">
+                                    <i class="fas <?php echo htmlspecialchars($payment['icon'], ENT_QUOTES, 'UTF-8'); ?>"></i>
+                                    <?php echo htmlspecialchars($payment['label'], ENT_QUOTES, 'UTF-8'); ?>
+                                </span>
+                            </td>
+                            <td><?php echo date('d/m/Y H:i', strtotime((string)$row['ngaydat'])); ?></td>
+                            <td>
+                                <span class="status-badge <?php echo htmlspecialchars($status['class'], ENT_QUOTES, 'UTF-8'); ?>">
+                                    <?php echo htmlspecialchars($status['label'], ENT_QUOTES, 'UTF-8'); ?>
+                                </span>
+                            </td>
+                        </tr>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>
