@@ -1,5 +1,4 @@
 <?php
-// Xử lý gửi liên hệ
 if (isset($_POST['gui_lienhe'])) {
     $ten = trim($_POST['ten'] ?? '');
     $email = trim($_POST['email'] ?? '');
@@ -27,276 +26,78 @@ if (isset($_POST['gui_lienhe'])) {
 }
 ?>
 
-<style>
-    .contact-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 20px;
-    }
-    
-    .page-header-box {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 20px;
-        padding: 60px 40px;
-        text-align: center;
-        margin: 0 auto 40px auto;
-        max-width: 84rem;
-        color: white;
-        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
-    }
-    .page-header-box h1 {
-        font-size: 2.5rem;
-        margin-bottom: 15px;
-        font-weight: bold;
-    }
-    .page-header-box p {
-        font-size: 1.2rem;
-        opacity: 0.9;
-    }
-    
-    .contact-grid {
-        display: grid;
-        grid-template-columns: 1fr 2fr;
-        gap: 40px;
-    }
-    
-    /* Contact Info */
-    .contact-info {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 30px;
-        border-radius: 20px;
-        color: white;
-    }
-    .contact-info h3 {
-        margin-bottom: 25px;
-        font-size: 1.3rem;
-    }
-    .info-item {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-    .info-icon {
-        font-size: 1.5rem;
-        width: 50px;
-        height: 50px;
-        min-width: 50px;
-        background: rgba(255,255,255,0.2);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .info-content {
-        flex: 1;
-        text-align: left;
-    }
-    .info-content h4 {
-        font-size: 1.1rem;
-        margin-bottom: 3px;
-        font-weight: 600;
-    }
-    .info-content p {
-        opacity: 0.9;
-        font-size: 1rem;
-        margin: 0;
-    }
-    
-    .social-links {
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid rgba(255,255,255,0.3);
-    }
-    .social-links h4 {
-        margin-bottom: 15px;
-    }
-    .social-links a {
-        display: inline-block;
-        width: 40px;
-        height: 40px;
-        background: rgba(255,255,255,0.2);
-        border-radius: 50%;
-        text-align: center;
-        line-height: 40px;
-        margin-right: 10px;
-        font-size: 1.2rem;
-        transition: all 0.3s;
-    }
-    .social-links a:hover {
-        background: white;
-        transform: translateY(-3px);
-    }
-    
-    /* Contact Form */
-    .contact-form {
-        background: white;
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 5px 25px rgba(0,0,0,0.1);
-    }
-    .form-group {
-        margin-bottom: 20px;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #2c3e50;
-    }
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        width: 100%;
-        padding: 15px;
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        font-size: 1rem;
-        transition: all 0.3s;
-    }
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-        border-color: #667eea;
-        outline: none;
-    }
-    .form-group textarea {
-        min-height: 120px;
-        resize: vertical;
-    }
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-    
-    .btn-submit {
-        width: 100%;
-        padding: 18px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 10px;
-        font-size: 1.1rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-    }
-    .btn-submit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-    }
-    
-    /* Alert Messages */
-    .alert {
-        padding: 15px 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .alert-success {
-        background: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-    }
-    .alert-danger {
-        background: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-    }
-    
-    @media (max-width: 768px) {
-        .contact-grid {
-            grid-template-columns: 1fr;
-        }
-        .form-row {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
-
 <div class="contact-container">
     <div class="page-header-box">
         <h1>📞 Liên Hệ Với Chúng Tôi</h1>
         <p>Có câu hỏi hoặc gặp vấn đề? Chúng tôi sẵn sàng hỗ trợ bạn!</p>
     </div>
-    
+
     <div class="contact-grid">
-        <div class="contact-info">
+        <aside class="contact-info">
             <h3>Thông tin liên hệ</h3>
-            
             <div class="info-item">
-                <div class="info-icon">📍</div>
+                <span class="info-icon">📍</span>
                 <div class="info-content">
                     <h4>Địa chỉ</h4>
                     <p>Quận 7, TP. Hồ Chí Minh</p>
                 </div>
             </div>
-            
             <div class="info-item">
-                <div class="info-icon">📞</div>
+                <span class="info-icon">📞</span>
                 <div class="info-content">
                     <h4>Hotline</h4>
                     <p>1900 6099</p>
                 </div>
             </div>
-            
             <div class="info-item">
-                <div class="info-icon">✉️</div>
+                <span class="info-icon">✉️</span>
                 <div class="info-content">
                     <h4>Email</h4>
                     <p>congtoan2k4@gmail.com</p>
                 </div>
             </div>
-            
             <div class="info-item">
-                <div class="info-icon">🕐</div>
+                <span class="info-icon">🕐</span>
                 <div class="info-content">
                     <h4>Giờ làm việc</h4>
                     <p>9:00 - 22:00 (Hằng ngày)</p>
                 </div>
             </div>
-            
+
             <div class="social-links">
                 <h4>Kết nối với chúng tôi</h4>
-                <a href="#">📘</a>
-                <a href="#">📸</a>
-                <a href="#">🐦</a>
-                <a href="#">▶️</a>
+                <a href="#" title="Facebook">📘</a>
+                <a href="#" title="Instagram">📸</a>
+                <a href="#" title="YouTube">▶️</a>
             </div>
-        </div>
-        
-        <div class="contact-form">
-            <?php if(isset($thanhcong)) { ?>
+        </aside>
+
+        <section class="contact-form">
+            <?php if (!empty($thanhcong)) { ?>
                 <div class="alert alert-success">
-                    ✅ <?php echo $thanhcong; ?>
+                    <i class="fas fa-check-circle"></i>
+                    <span><?php echo htmlspecialchars($thanhcong, ENT_QUOTES, 'UTF-8'); ?></span>
                 </div>
             <?php } ?>
-            
-            <?php if(isset($loi)) { ?>
+            <?php if (!empty($loi)) { ?>
                 <div class="alert alert-danger">
-                    ❌ <?php echo $loi; ?>
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span><?php echo htmlspecialchars($loi, ENT_QUOTES, 'UTF-8'); ?></span>
                 </div>
             <?php } ?>
-            
-            <form method="POST" action="">
+
+            <form method="POST">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="ten">Họ và tên *</label>
-                        <input type="text" id="ten" name="ten" required placeholder="Nhập họ tên">
+                        <input type="text" id="ten" name="ten" placeholder="Nhập họ tên" required>
                     </div>
                     <div class="form-group">
                         <label for="email">Email *</label>
-                        <input type="email" id="email" name="email" required placeholder="Nhập email">
+                        <input type="email" id="email" name="email" placeholder="Nhập email" required>
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="sodienthoai">Số điện thoại</label>
@@ -314,17 +115,16 @@ if (isset($_POST['gui_lienhe'])) {
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="noidung">Nội dung *</label>
-                    <textarea id="noidung" name="noidung" required placeholder="Mô tả chi tiết vấn đề của bạn..."></textarea>
+                    <textarea id="noidung" name="noidung" placeholder="Mô tả chi tiết vấn đề của bạn..." required></textarea>
                 </div>
-                
+
                 <button type="submit" name="gui_lienhe" class="btn-submit">
                     📤 Gửi liên hệ
                 </button>
             </form>
-        </div>
+        </section>
     </div>
 </div>
-

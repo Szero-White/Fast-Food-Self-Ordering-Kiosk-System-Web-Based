@@ -5,7 +5,6 @@ if (isset($_GET['quanly'])) {
     $tam = "";
 }
 
-// Welcome và camon hiển thị full screen không có sidebar
 if ($tam == 'welcome') {
     include("main/welcome.php");
 } else if ($tam == 'camon') {
@@ -20,7 +19,7 @@ if ($tam == 'welcome') {
         } else if ($tam == 'danhmucsanpham') {
             include("main/danhmuc.php");
         } else if ($tam == 'timkiem') {
-            include("main/timkiem.php");
+            include("main/index.php");
         } else if ($tam == 'sanpham') {
             include("main/sanpham.php");
         } else if ($tam == 'baiviet') {

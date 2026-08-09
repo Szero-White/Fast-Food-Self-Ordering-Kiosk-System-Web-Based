@@ -1,22 +1,8 @@
 <?php
 require_once __DIR__ . '/../../config/banner_repository.php';
+
 $banners = get_active_banners($mysqli);
 ?>
-
-<style>
-  #carouselExampleInterval {
-      max-width: 84rem;
-      width: 100%;
-      margin: 0 auto;
-      background-color: black;
-  }
-  .carousel-item img {
-      width: 100%;
-      height: 28rem;
-      object-fit: cover;
-      display: block;
-  }
-</style>
 
 <?php if (!empty($banners)) { ?>
   <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
