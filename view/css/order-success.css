@@ -1,0 +1,145 @@
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: radial-gradient(circle at top, #1f2937 0%, #06070a 48%, #000 100%);
+    font-family: Arial, sans-serif;
+}
+
+.success-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 42px 20px;
+    color: white;
+    text-align: center;
+}
+
+.success-icon {
+    margin-bottom: 20px;
+    font-size: 6rem;
+    animation: scale-in 0.5s ease;
+}
+
+.success-title {
+    margin-bottom: 15px;
+    color: #2ecc71;
+    font-size: 2.5rem;
+    font-weight: 800;
+}
+
+.success-message {
+    margin-bottom: 28px;
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.success-status {
+    font-weight: 700;
+}
+
+.success-status.ok {
+    color: #27ae60;
+}
+
+.success-status.error {
+    color: #e74c3c;
+}
+
+.order-info {
+    margin: 30px 0;
+    padding: 25px;
+    border-radius: 16px;
+    background: white;
+    color: #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.order-code {
+    margin: 10px 0;
+    color: #667eea;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+}
+
+.order-note {
+    color: #666;
+}
+
+.order-details {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.order-item {
+    padding: 8px 0;
+    border-bottom: 1px dashed #eee;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.order-total {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #667eea;
+    color: #e74c3c;
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-align: center;
+}
+
+.instructions {
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    text-align: left;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.instructions h3 {
+    margin-bottom: 15px;
+    color: #2c3e50;
+    text-align: center;
+}
+
+.instructions ol {
+    margin: 0;
+    padding-left: 25px;
+}
+
+.instructions li {
+    margin: 12px 0;
+    color: #333;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.countdown {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    font-size: 1.5rem;
+}
+
+.countdown span {
+    color: #f39c12;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+@keyframes scale-in {
+    0% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}

@@ -120,7 +120,7 @@ function detect_image_mime(string $tmpPath): string
     return is_array($imageInfo) && isset($imageInfo['mime']) ? (string)$imageInfo['mime'] : '';
 }
 
-function save_uploaded_image(array $file, string $category = 'misc'): ?string
+function save_uploaded_image(array $file, string $category = 'misc', ?string $namePrefix = null): ?string
 {
     if (($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
         return null;
@@ -149,7 +149,18 @@ function save_uploaded_image(array $file, string $category = 'misc'): ?string
 
     $category = clean_upload_path($category);
     $base = sanitize_file_base((string)($file['name'] ?? 'image'));
-    $filename = date('YmdHis') . '-' . bin2hex(random_bytes(4)) . '-' . $base . '.' . $allowed[$mime];
+    $prefix = '';
+    if (is_string($namePrefix) && trim($namePrefix) !== '') {
+        $prefix = sanitize_file_base(str_replace('_', '-', $namePrefix));
+    }
+
+    $filenameParts = array_filter([
+        $prefix,
+        date('YmdHis'),
+        bin2hex(random_bytes(4)),
+        $base,
+    ]);
+    $filename = implode('-', $filenameParts) . '.' . $allowed[$mime];
     $storedPath = $category !== '' ? $category . '/' . $filename : $filename;
 
     ensure_upload_dir($category);

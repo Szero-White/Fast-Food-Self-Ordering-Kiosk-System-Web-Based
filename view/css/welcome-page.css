@@ -1,0 +1,134 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.logo-container {
+    margin-bottom: 30px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.logo-container img {
+    width: 150px;
+    height: 150px;
+    border: 5px solid white;
+    border-radius: 50%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    object-fit: cover;
+}
+
+.welcome-title {
+    margin-bottom: 15px;
+    font-size: 3rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.tagline {
+    margin-bottom: 50px;
+    font-size: 1.3rem;
+    opacity: 0.9;
+}
+
+.start-btn {
+    padding: 25px 80px;
+    border: none;
+    border-radius: 50px;
+    background: white;
+    color: #667eea;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    display: inline-block;
+    cursor: pointer;
+    font-size: 2rem;
+    font-weight: 800;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.start-btn:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    transform: scale(1.05);
+}
+
+.start-btn:active {
+    transform: scale(0.98);
+}
+
+.features {
+    margin-top: 60px;
+    display: flex;
+    gap: 40px;
+    font-size: 1rem;
+    opacity: 0.85;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.feature-icon {
+    font-size: 2rem;
+}
+
+.bounce {
+    animation: bounce 2s infinite;
+}
+
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes bounce {
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-10px);
+    }
+
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+@media (max-width: 720px) {
+    .welcome-title {
+        font-size: 2.2rem;
+    }
+
+    .start-btn {
+        padding: 20px 52px;
+        font-size: 1.5rem;
+    }
+
+    .features {
+        flex-direction: column;
+        gap: 18px;
+    }
+}

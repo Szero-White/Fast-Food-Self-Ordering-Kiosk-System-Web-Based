@@ -1,0 +1,86 @@
+.crud-hero {
+    border: 1px solid rgba(102, 126, 234, 0.18);
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+}
+
+.crud-hero.food {
+    border-color: rgba(255, 107, 107, 0.18);
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(238, 90, 82, 0.1) 100%);
+}
+
+.crud-hero.contact {
+    border-color: rgba(79, 172, 254, 0.18);
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+}
+
+.crud-hero.info {
+    border-color: rgba(17, 153, 142, 0.18);
+    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.1) 100%);
+}
+
+.crud-hero-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.crud-title-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.crud-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    flex: 0 0 auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.crud-icon.food {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+}
+
+.crud-icon.contact {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.crud-icon.info {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.crud-title {
+    margin: 0;
+    color: #333;
+    font-weight: 700;
+}
+
+.crud-subtitle {
+    margin: 4px 0 0;
+    color: #888;
+    font-size: 14px;
+}
+
+.crud-card-title-icon {
+    color: #667eea;
+}
+
+.crud-card-title-icon.food {
+    color: #ff6b6b;
+}
+
+.crud-card-title-icon.contact {
+    color: #4facfe;
+}
+
+.crud-card-title-icon.info {
+    color: #11998e;
+}

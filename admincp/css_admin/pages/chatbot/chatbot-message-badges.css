@@ -1,0 +1,81 @@
+.user-message {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 14px 14px 14px 4px;
+    font-size: 14px;
+    display: inline-block;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+.bot-response {
+    background: #f8f9fa;
+    color: #495057;
+    padding: 10px 14px;
+    border-radius: 14px 14px 4px 14px;
+    font-size: 14px;
+    display: inline-block;
+    max-width: 100%;
+    word-wrap: break-word;
+    border: 1px solid #e9ecef;
+}
+
+.badge-custom {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge-static {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.badge-products {
+    background: #e8f5e9;
+    color: #388e3c;
+}
+
+.badge-price {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.badge-promo {
+    background: #fce4ec;
+    color: #c2185b;
+}
+
+.badge-stock {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.badge-fallback {
+    background: #f5f5f5;
+    color: #616161;
+}
+
+.badge-error {
+    background: #ffebee;
+    color: #d32f2f;
+}
+
+.keyword-tag {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.time-badge {
+    background: #f8f9fa;
+    color: #6c757d;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+}

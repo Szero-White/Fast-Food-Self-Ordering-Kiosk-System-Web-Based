@@ -1,0 +1,187 @@
+.payment-methods {
+    padding: 24px;
+    margin-bottom: 18px;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 18px;
+    border: 2px solid #e5e7eb;
+    border-radius: 14px;
+    margin-top: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payment-option:hover,
+.payment-option.selected {
+    border-color: #667eea;
+    background: #f2f4ff;
+    box-shadow: 0 10px 24px rgba(102, 126, 234, 0.12);
+}
+
+.payment-option input {
+    width: 18px;
+    height: 18px;
+    accent-color: #667eea;
+}
+
+.payment-option-icon {
+    width: 40px;
+    color: #111827;
+    font-size: 1.55rem;
+    text-align: center;
+}
+
+.payment-option-note {
+    margin: 4px 0 0;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.payment-info {
+    padding: 24px;
+    margin: 22px 0;
+    text-align: center;
+}
+
+.qr-section {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 18px;
+    margin-top: 18px;
+    padding: 18px;
+    background: #f8fafc;
+    border: 1px dashed #c7d2fe;
+    border-radius: 16px;
+    text-align: left;
+}
+
+.qr-code {
+    width: 132px;
+    height: 132px;
+    display: grid;
+    place-items: center;
+    border: 10px solid #fff;
+    border-radius: 18px;
+    background:
+        linear-gradient(90deg, #111827 10px, transparent 10px) 0 0 / 26px 26px,
+        linear-gradient(#111827 10px, transparent 10px) 0 0 / 26px 26px,
+        #fff;
+    color: #667eea;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
+}
+
+.qr-code i {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    background: #fff;
+    border-radius: 14px;
+    font-size: 2.1rem;
+}
+
+.qr-code-large {
+    width: 178px;
+    height: 178px;
+}
+
+.qr-payment-detail {
+    display: grid;
+    gap: 6px;
+}
+
+.qr-payment-detail p {
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.qr-payment-detail span,
+.payment-meta span {
+    color: #4b5563;
+    font-weight: 600;
+}
+
+.checkout-note {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.95rem;
+}
+
+.cash-payment-detail {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    color: #374151;
+    background: #f8fafc;
+    border-radius: 14px;
+}
+
+.cash-payment-detail p {
+    margin: 0;
+}
+
+.payment-preview {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 28px;
+    padding: 24px;
+    margin-bottom: 22px;
+}
+
+.payment-preview-hidden {
+    display: none;
+}
+
+.checkout-eyebrow {
+    display: inline-flex;
+    margin-bottom: 8px;
+    color: #667eea;
+    font-size: 0.86rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.payment-preview h3 {
+    color: #111827;
+    font-size: 1.4rem;
+    font-weight: 800;
+}
+
+.payment-preview p {
+    margin: 10px 0 14px;
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+.payment-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.payment-meta span {
+    display: inline-flex;
+    padding: 8px 12px;
+    background: #f3f4f6;
+    border-radius: 999px;
+}
+
+.cash-preview-icon {
+    display: grid;
+    place-items: center;
+    width: 128px;
+    height: 128px;
+    color: #16a34a;
+    background: #ecfdf5;
+    border-radius: 28px;
+    font-size: 3rem;
+}

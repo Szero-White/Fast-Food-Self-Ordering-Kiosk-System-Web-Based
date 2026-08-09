@@ -1,0 +1,112 @@
+.news-detail {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 28px 18px 56px;
+    color: #eee;
+}
+
+.news-detail-header {
+    margin-bottom: 28px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    text-align: center;
+}
+
+.news-detail-category {
+    margin-bottom: 10px;
+    color: #ff8a8a;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.news-detail-title {
+    margin: 0 0 12px;
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.news-detail-date {
+    color: #ccc;
+    font-size: 0.95rem;
+}
+
+.news-detail-image {
+    margin-bottom: 26px;
+    text-align: center;
+}
+
+.news-detail-image img {
+    width: 100%;
+    max-width: 660px;
+    max-height: 380px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.news-detail-summary {
+    margin-bottom: 25px;
+    padding: 20px;
+    border-left: 4px solid #ff6b6b;
+    border-radius: 10px;
+    background: #242424;
+    color: #ddd;
+    font-style: italic;
+}
+
+.news-detail-content {
+    color: #eee;
+    font-size: 1rem;
+    line-height: 1.85;
+}
+
+.news-detail-content p {
+    margin-bottom: 16px;
+}
+
+.news-detail-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.news-detail-btn {
+    min-height: 46px;
+    padding: 10px 20px;
+    border: 1px solid #555;
+    border-radius: 999px;
+    background: #333;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.news-detail-btn:hover {
+    border-color: #777;
+    background: #444;
+    color: white;
+}
+
+.news-detail-empty {
+    padding: 60px 20px;
+    color: white;
+    text-align: center;
+}
+
+@media (max-width: 576px) {
+    .news-detail-nav {
+        flex-direction: column;
+    }
+}

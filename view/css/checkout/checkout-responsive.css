@@ -1,0 +1,25 @@
+@media (max-width: 768px) {
+    .checkout-container {
+        padding: 18px;
+    }
+
+    .payment-preview,
+    .qr-section {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .qr-code,
+    .cash-preview-icon {
+        margin: 0 auto;
+    }
+
+    .checkout-actions {
+        flex-direction: column;
+    }
+
+    .btn-back,
+    .btn-pay {
+        width: 100%;
+    }
+}

@@ -1,0 +1,189 @@
+.stat-hero-card {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.stat-hero-icon,
+.stat-metric-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stat-hero-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-hero-icon i,
+.stat-metric-icon i {
+    color: #fff;
+    font-size: 24px;
+}
+
+.stat-hero-title {
+    margin: 0;
+    font-weight: 700;
+    color: #333;
+}
+
+.stat-hero-subtitle {
+    margin: 0;
+    color: #888;
+    font-size: 14px;
+}
+
+.stat-metric-card.products {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(238, 90, 82, 0.1) 100%);
+    border: 1px solid rgba(255, 107, 107, 0.2);
+}
+
+.stat-metric-card.posts {
+    background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.1) 100%);
+    border: 1px solid rgba(17, 153, 142, 0.2);
+}
+
+.stat-metric-card.pending {
+    background: linear-gradient(135deg, rgba(243, 156, 18, 0.1) 0%, rgba(241, 196, 15, 0.1) 100%);
+    border: 1px solid rgba(243, 156, 18, 0.2);
+}
+
+.stat-metric-card.revenue {
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+    border: 1px solid rgba(79, 172, 254, 0.2);
+}
+
+.stat-metric-card.cash {
+    background: linear-gradient(135deg, rgba(39, 174, 96, 0.1) 0%, rgba(46, 204, 113, 0.1) 100%);
+    border: 1px solid rgba(39, 174, 96, 0.2);
+}
+
+.stat-metric-card.transfer {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(93, 173, 226, 0.1) 100%);
+    border: 1px solid rgba(52, 152, 219, 0.2);
+}
+
+.stat-metric-label {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.stat-metric-value {
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    font-size: 32px;
+}
+
+.stat-metric-value.compact {
+    font-size: 24px;
+}
+
+.stat-metric-note {
+    font-size: 13px;
+    margin: 4px 0 0;
+}
+
+.stat-metric-note.warning {
+    color: #c0392b;
+    font-weight: 700;
+}
+
+.stat-metric-note.cash {
+    color: #27ae60;
+}
+
+.stat-metric-note.transfer {
+    color: #3498db;
+}
+
+.stat-metric-icon.products {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+}
+
+.stat-metric-icon.posts {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.stat-metric-icon.pending {
+    background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
+}
+
+.stat-metric-icon.revenue {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.stat-metric-icon.cash {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+}
+
+.stat-metric-icon.transfer {
+    background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+}
+
+.stat-section-icon {
+    color: #667eea;
+}
+
+.stat-view-all-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+.stat-table-body {
+    padding: 0;
+}
+
+.stat-order-code {
+    font-family: monospace;
+    color: #667eea;
+}
+
+.stat-order-desc {
+    font-size: 12px;
+    color: #555;
+    max-width: 220px;
+    line-height: 1.5;
+}
+
+.stat-empty-text {
+    color: #999;
+    font-style: italic;
+}
+
+.stat-order-total {
+    color: #27ae60;
+}
+
+.stat-payment-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.stat-payment-badge.cash {
+    background: rgba(39, 174, 96, 0.1);
+    color: #27ae60;
+    border: 1px solid #27ae60;
+}
+
+.stat-payment-badge.transfer {
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+    border: 1px solid #3498db;
+}
+
+.stat-payment-badge.unknown {
+    background: rgba(149, 165, 166, 0.1);
+    color: #95a5a6;
+    border: 1px solid #95a5a6;
+}

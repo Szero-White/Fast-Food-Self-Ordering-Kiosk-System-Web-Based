@@ -1,0 +1,57 @@
+/* FastFood Admin core tokens and base layout */
+:root {
+    --primary-color: #667eea;
+    --primary-dark: #764ba2;
+    --secondary-color: #4ecdc4;
+    --accent-color: #ff6b6b;
+    --success-color: #2ecc71;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+    --dark-color: #1a1a2e;
+    --light-color: #f8f9fa;
+    --sidebar-width: 280px;
+    --sidebar-collapsed: 80px;
+    --header-height: 70px;
+    --border-radius: 12px;
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.main-content {
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    transition: var(--transition);
+}
+
+.main-content.expanded {
+    margin-left: var(--sidebar-collapsed);
+}
+
+.content-wrapper {
+    padding: 30px;
+}
+
+.legacy-admin-banner {
+    padding: 20px;
+    background-color: #333;
+    color: white;
+    text-align: center;
+}
+
+.legacy-admin-banner img {
+    width: 80%;
+    height: auto;
+}

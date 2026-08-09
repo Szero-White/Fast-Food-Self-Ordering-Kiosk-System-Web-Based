@@ -1,0 +1,80 @@
+.chart-card,
+.history-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+}
+
+.chart-card {
+    padding: 20px;
+}
+
+.history-card {
+    overflow: hidden;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chatbot-section-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chatbot-section-icon i {
+    color: white;
+    font-size: 18px;
+}
+
+.chatbot-section-icon.chart {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.chatbot-section-icon.history {
+    background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+}
+
+.chatbot-section-icon.keyword {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+}
+
+.chatbot-chart-wrap {
+    height: 300px;
+}
+
+.chatbot-panel-header {
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.chatbot-section-title {
+    margin: 0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 64px;
+    color: #dee2e6;
+    margin-bottom: 20px;
+}

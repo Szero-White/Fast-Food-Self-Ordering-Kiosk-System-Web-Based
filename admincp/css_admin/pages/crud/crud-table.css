@@ -1,0 +1,46 @@
+.crud-search {
+    max-width: 300px;
+}
+
+.crud-search .input-group-text {
+    background: white;
+    border-right: none;
+    color: #888;
+}
+
+.crud-search .form-control {
+    border-left: none;
+}
+
+.crud-table-body {
+    padding: 0;
+}
+
+.crud-table-index {
+    width: 50px;
+}
+
+.crud-table-image {
+    width: 100px;
+}
+
+.crud-table-actions {
+    width: 120px;
+    text-align: center;
+}
+
+.crud-table-id {
+    width: 60px;
+}
+
+.crud-table-status {
+    width: 120px;
+}
+
+.crud-action-center {
+    justify-content: center;
+}
+
+.custom-table tbody tr.selected {
+    background: rgba(102, 126, 234, 0.1) !important;
+}

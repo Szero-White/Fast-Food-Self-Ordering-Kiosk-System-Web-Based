@@ -3,7 +3,7 @@
  * Trở về màn hình chờ sau 60 giây không có thao tác chủ động.
  */
 (function () {
-    const TIMEOUT_SECONDS = 60;
+    const TIMEOUT_SECONDS = 10;
     const WARNING_SECONDS = 10;
     let timeLeft = TIMEOUT_SECONDS;
     let timer = null;

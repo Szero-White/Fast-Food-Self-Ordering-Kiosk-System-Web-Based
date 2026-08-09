@@ -1,0 +1,67 @@
+.menu-category-page {
+    max-width: 84rem;
+    margin: 0 auto;
+    padding: 20px 0 44px;
+}
+
+.menu-category-hero {
+    display: grid;
+    place-items: center;
+    gap: 16px;
+    min-height: 190px;
+    padding: 38px;
+    margin-bottom: 34px;
+    border-radius: 20px;
+    text-align: center;
+    color: #fff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+}
+
+.menu-category-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    font-size: 1.8rem;
+}
+
+.menu-category-copy h1 {
+    margin: 0 0 8px;
+    font-size: 2.1rem;
+    font-weight: 800;
+}
+
+.menu-category-copy p {
+    margin: 0;
+    font-size: 1.02rem;
+    opacity: 0.9;
+}
+
+.menu-category-empty {
+    padding: 64px 24px;
+    border-radius: 16px;
+    text-align: center;
+    background: #fff;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.menu-category-empty i {
+    margin-bottom: 18px;
+    color: #667eea;
+    font-size: 3.2rem;
+}
+
+.menu-category-empty h3 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.menu-category-empty p {
+    color: #7f8c8d;
+    margin: 0;
+}

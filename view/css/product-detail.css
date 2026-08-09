@@ -1,0 +1,123 @@
+.product-detail {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 44px 22px;
+    color: white;
+}
+
+.product-detail-card {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.9fr) minmax(300px, 1.1fr);
+    gap: 40px;
+    align-items: start;
+}
+
+.product-detail-media img {
+    width: 100%;
+    max-height: 430px;
+    object-fit: cover;
+    border-radius: 18px;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35);
+}
+
+.product-detail-content {
+    text-align: center;
+}
+
+.product-detail-title {
+    margin: 0 0 18px;
+    color: #f093fb;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.product-detail-meta {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 22px;
+    font-size: 1.05rem;
+}
+
+.product-detail-price {
+    color: #ff6b6b;
+    font-weight: 800;
+}
+
+.product-detail-description {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+.product-detail-description h4 {
+    margin: 0 0 10px;
+    color: #f093fb;
+    font-weight: 800;
+}
+
+.product-detail-description p {
+    margin: 0;
+    color: white;
+    line-height: 1.7;
+}
+
+.product-detail-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+}
+
+.product-detail-btn {
+    min-width: 215px;
+    height: 58px;
+    padding: 0 26px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.product-detail-note {
+    margin-top: 24px;
+    padding: 16px 20px;
+    border-radius: 14px;
+    color: white;
+    background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+    text-align: center;
+    font-weight: 600;
+}
+
+.product-detail-empty {
+    padding: 60px 20px;
+    color: #ff6b6b;
+    font-size: 1.4rem;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .product-detail-card {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .product-detail-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .product-detail-btn {
+        width: 100%;
+    }
+}

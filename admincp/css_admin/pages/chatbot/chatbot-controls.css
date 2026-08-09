@@ -1,0 +1,58 @@
+.filter-select {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.filter-select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-refresh {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.btn-refresh:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-export {
+    background: #fff;
+    color: #667eea;
+    border: 2px solid #667eea;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.btn-export:hover,
+.btn-export:focus {
+    background: #667eea;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.22);
+    text-decoration: none;
+}
+
+.btn-load-more {
+    background: #f8f9fa;
+    color: #667eea;
+}
+
+.chatbot-hidden {
+    display: none;
+}

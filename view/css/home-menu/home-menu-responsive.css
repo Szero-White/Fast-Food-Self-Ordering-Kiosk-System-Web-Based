@@ -1,0 +1,30 @@
+@media (max-width: 640px) {
+    .product-info {
+        grid-template-rows: auto;
+    }
+
+    .product-footer {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+
+    .product-order-form {
+        grid-template-columns: 70px 1fr 1fr;
+    }
+
+    .product-quantity,
+    .btn-detail,
+    .btn-add-cart {
+        width: 100%;
+    }
+
+    .menu-section-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .menu-section-header::after {
+        width: 100%;
+        flex: none;
+    }
+}

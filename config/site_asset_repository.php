@@ -9,6 +9,16 @@ function default_site_assets(): array
             'image_path' => 'brand/logo.jpg',
             'image_source' => 'asset',
         ],
+        'admin_logo' => [
+            'label' => 'Logo khu vực quản trị',
+            'image_path' => 'brand/logo.jpg',
+            'image_source' => 'asset',
+        ],
+        'site_favicon' => [
+            'label' => 'Biểu tượng tab trình duyệt',
+            'image_path' => 'brand/logo.jpg',
+            'image_source' => 'asset',
+        ],
     ];
 }
 
@@ -59,7 +69,19 @@ function get_site_assets(mysqli $mysqli): array
         }
     }
 
-    return $assets;
+    $orderedAssets = [];
+    foreach (default_site_assets() as $key => $defaultAsset) {
+        $orderedAssets[$key] = $assets[$key] ?? [
+            'asset_key' => $key,
+            'label' => $defaultAsset['label'],
+            'image_path' => $defaultAsset['image_path'],
+            'image_source' => $defaultAsset['image_source'],
+            'updated_at' => null,
+        ];
+        unset($assets[$key]);
+    }
+
+    return $orderedAssets + $assets;
 }
 
 function find_site_asset(mysqli $mysqli, string $key): ?array

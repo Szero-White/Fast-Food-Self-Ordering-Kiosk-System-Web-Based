@@ -1,0 +1,226 @@
+/* Home page menu layout */
+/* Hero Section - Style riêng trang chủ */
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 60px 40px;
+        border-radius: 20px;
+        margin: 0 auto 40px auto;
+        max-width: 84rem;
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero-section::before {
+        content: '🍔';
+        position: absolute;
+        font-size: 200px;
+        opacity: 0.1;
+        right: -50px;
+        top: -50px;
+    }
+    .hero-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+    .hero-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-bottom: 30px;
+    }
+    .hero-stats {
+        display: flex;
+        justify-content: center;
+        gap: 50px;
+        margin-top: 30px;
+        position: relative;
+        z-index: 1;
+    }
+    .hero-stat {
+        text-align: center;
+    }
+    .hero-stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    .hero-stat-label {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    /* Search & Filter Bar */
+    .search-filter-bar {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        margin: 0 auto 30px auto;
+        max-width: 84rem;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .search-box {
+        flex: 1;
+        min-width: 250px;
+        position: relative;
+    }
+    .search-box input {
+        width: 100%;
+        padding: 15px 20px 15px 50px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+    .search-box input:focus {
+        border-color: #667eea;
+        outline: none;
+    }
+    .search-box::before {
+        content: '🔍';
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.2rem;
+    }
+    .filter-select {
+        padding: 15px 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        background: white;
+        cursor: pointer;
+        min-width: 180px;
+    }
+    .btn-search {
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    .btn-search:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Category Pills */
+    .category-pills {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+    .category-pill {
+        padding: 10px 20px;
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 25px;
+        text-decoration: none;
+        color: #666;
+        transition: all 0.3s;
+        font-size: 0.95rem;
+    }
+    .category-pill:hover,
+    .category-pill.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: transparent;
+    }
+
+/* Promo Banner */
+    .promo-banner {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        padding: 40px;
+        border-radius: 20px;
+        margin: 40px auto;
+        max-width: 84rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: white;
+    }
+    .promo-content h3 {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+    }
+    .promo-content p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+    .promo-code {
+        background: rgba(255,255,255,0.2);
+        padding: 15px 30px;
+        border-radius: 10px;
+        border: 2px dashed white;
+        text-align: center;
+    }
+    .promo-code-label {
+        font-size: 0.85rem;
+        opacity: 0.9;
+    }
+    .promo-code-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        letter-spacing: 2px;
+    }
+
+    /* Pagination */
+    .pagination-modern {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 40px;
+    }
+    .pagination-modern a,
+    .pagination-modern span {
+        padding: 12px 18px;
+        border-radius: 10px;
+        text-decoration: none;
+        transition: all 0.3s;
+        font-weight: 500;
+    }
+    .pagination-modern a {
+        background: white;
+        color: #667eea;
+        border: 2px solid #e0e0e0;
+    }
+    .pagination-modern a:hover {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    .pagination-modern .current {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .pagination-modern .disabled {
+        background: #ecf0f1;
+        color: #95a5a6;
+        cursor: not-allowed;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px;
+        background: white;
+        border-radius: 15px;
+    }
+    .empty-state-icon {
+        font-size: 5rem;
+        margin-bottom: 20px;
+    }
+    .empty-state h3 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+    }
+    .empty-state p {
+        color: #7f8c8d;
+    }

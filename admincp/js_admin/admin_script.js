@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.getElementById('mainContent');
     const sidebarToggle = document.getElementById('sidebarToggle');
-    const menuToggle = document.getElementById('menuToggle');
     
     // Create overlay for mobile
     const overlay = document.createElement('div');
@@ -36,14 +35,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 sidebar.classList.add('show');
                 overlay.classList.add('show');
             }
-        });
-    }
-    
-    // Toggle sidebar on mobile
-    if (menuToggle) {
-        menuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('show');
-            overlay.classList.toggle('show');
         });
     }
     
@@ -114,10 +105,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     isValid = false;
                     field.classList.add('is-invalid');
                     
-                    // Add shake animation
-                    field.style.animation = 'shake 0.5s ease';
+                    field.classList.add('admin-shake');
                     setTimeout(() => {
-                        field.style.animation = '';
+                        field.classList.remove('admin-shake');
                     }, 500);
                 } else {
                     field.classList.remove('is-invalid');
@@ -132,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Image preview for file uploads
-    const imageInputs = document.querySelectorAll('input[type="file"][accept*="image"]');
+    const imageInputs = document.querySelectorAll('input[type="file"][accept*="image"]:not([data-preview-target])');
     imageInputs.forEach(input => {
         input.addEventListener('change', function(e) {
             const file = e.target.files[0];
@@ -145,13 +135,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 reader.onload = function(e) {
                     if (!previewContainer.classList.contains('image-preview')) {
                         previewContainer.classList.add('image-preview');
-                        previewContainer.style.marginTop = '15px';
                         input.parentElement.appendChild(previewContainer);
                     }
                     
                     previewContainer.innerHTML = `
-                        <img src="${e.target.result}" alt="Preview" style="max-width: 200px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                        <p style="margin-top: 8px; font-size: 12px; color: #888;">${file.name}</p>
+                        <img src="${e.target.result}" alt="Ảnh xem trước" class="crud-current-image">
+                        <p class="crud-muted mt-2">${file.name}</p>
                     `;
                 };
                 
@@ -184,15 +173,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Search functionality
     const searchInputs = document.querySelectorAll('[data-search]');
     searchInputs.forEach(input => {
-        const targetTable = document.querySelector(input.getAttribute('data-search'));
-        if (targetTable) {
+        const target = document.querySelector(input.getAttribute('data-search'));
+        if (target) {
             input.addEventListener('keyup', function() {
                 const searchTerm = this.value.toLowerCase();
-                const rows = targetTable.querySelectorAll('tbody tr');
+                const rows = target.querySelectorAll('tbody tr');
+                const items = rows.length > 0 ? rows : target.children;
                 
-                rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                Array.from(items).forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    item.hidden = !text.includes(searchTerm);
                 });
             });
         }
@@ -251,27 +241,3 @@ function debounce(func, wait) {
     };
 }
 
-// Add CSS animation for shake effect
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-10px); }
-        75% { transform: translateX(10px); }
-    }
-    
-    .is-invalid {
-        border-color: #e74c3c !important;
-        box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.1) !important;
-    }
-    
-    .is-valid {
-        border-color: #2ecc71 !important;
-        box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.1) !important;
-    }
-    
-    .custom-table tbody tr.selected {
-        background: rgba(102, 126, 234, 0.1) !important;
-    }
-`;
-document.head.appendChild(style);

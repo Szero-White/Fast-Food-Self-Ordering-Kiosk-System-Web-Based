@@ -1,0 +1,77 @@
+.chatbot-table-scroll {
+    overflow-x: auto;
+}
+
+.chat-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.chat-table th {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 16px 12px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.chat-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #f1f3f5;
+    vertical-align: top;
+}
+
+.chat-table tr:hover td {
+    background: #f8f9ff;
+}
+
+.chat-table tr:last-child td {
+    border-bottom: none;
+}
+
+.chatbot-col-id {
+    width: 60px;
+}
+
+.chatbot-col-time {
+    width: 140px;
+}
+
+.chatbot-col-question {
+    min-width: 200px;
+}
+
+.chatbot-col-answer {
+    min-width: 250px;
+}
+
+.chatbot-col-keyword {
+    width: 100px;
+}
+
+.chatbot-col-type {
+    width: 120px;
+}
+
+.chatbot-col-ip {
+    width: 80px;
+}
+
+.chatbot-id {
+    font-weight: 700;
+    color: #667eea;
+}
+
+.chatbot-time-detail,
+.chatbot-muted {
+    color: #999;
+}
+
+.chatbot-ip {
+    color: #6c757d;
+    font-family: monospace;
+}
