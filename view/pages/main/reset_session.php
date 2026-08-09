@@ -1,15 +1,18 @@
 <?php
 session_start();
 
-// Cập nhật đơn hàng thành "Đã hủy" (trangthai = 2) nếu chưa thanh toán
 if (isset($_SESSION['id_donhang']) && $_SESSION['id_donhang'] > 0) {
     include(__DIR__ . '/../../config/config.php');
-    $id_donhang = $_SESSION['id_donhang'];
-    // Chỉ hủy nếu đơn hàng đang ở trạng thái "Đang chọn" (0)
-    mysqli_query($mysqli, "UPDATE tbl_donhang SET trangthai = 2 WHERE id = '$id_donhang' AND trangthai = 0");
+    $orderId = (int)$_SESSION['id_donhang'];
+    $stmt = mysqli_prepare($mysqli, 'UPDATE tbl_donhang SET trangthai = 2 WHERE id = ? AND trangthai = 0');
+
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, 'i', $orderId);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
 }
 
-$_SESSION = array();
+$_SESSION = [];
 session_destroy();
 echo json_encode(['success' => true]);
-?>
