@@ -141,7 +141,9 @@ CREATE TABLE `tbl_site_asset` (
 --
 
 INSERT INTO `tbl_site_asset` (`asset_key`, `label`, `image_path`, `image_source`, `updated_at`) VALUES
-('site_logo', 'Logo trang web', 'brand/logo.jpg', 'asset', current_timestamp());
+('site_logo', 'Logo trang web', 'brand/logo.jpg', 'asset', current_timestamp()),
+('admin_logo', 'Logo khu vực quản trị', 'brand/logo.jpg', 'asset', current_timestamp()),
+('site_favicon', 'Biểu tượng tab trình duyệt', 'brand/logo.jpg', 'asset', current_timestamp());
 
 -- --------------------------------------------------------
 
@@ -236,6 +238,7 @@ CREATE TABLE `tbl_donhang` (
   `phiship` decimal(10,2) DEFAULT 0.00,
   `ngaydat` datetime DEFAULT current_timestamp(),
   `trangthai` int(11) DEFAULT 0,
+  `admin_seen` tinyint(1) NOT NULL DEFAULT 1,
   `email` varchar(100) DEFAULT NULL,
   `diachi` text DEFAULT NULL,
   `phuongthuc` varchar(50) DEFAULT NULL,
