@@ -1,11 +1,14 @@
 <?php
-session_start();
+if (PHP_SAPI !== 'cli' && session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+$requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+if ($requestMethod === 'OPTIONS') {
     exit(0);
 }
 
@@ -105,14 +108,20 @@ switch($action) {
         // Lấy lịch sử chat (cho admin)
         $limit = intval($_GET['limit'] ?? 50);
         $offset = intval($_GET['offset'] ?? 0);
-        $sql = "SELECT * FROM tbl_chatbot_history ORDER BY created_at DESC LIMIT $offset, $limit";
+        $type = $_GET['type'] ?? '';
+        $allowedTypes = ['static', 'api_products', 'api_price', 'api_promo', 'api_stock', 'fallback', 'error'];
+        $whereSql = in_array($type, $allowedTypes, true)
+            ? "WHERE response_type = '" . mysqli_real_escape_string($mysqli, $type) . "'"
+            : '';
+
+        $sql = "SELECT * FROM tbl_chatbot_history $whereSql ORDER BY created_at DESC LIMIT $offset, $limit";
         $result = mysqli_query($mysqli, $sql);
         $history = [];
         while($row = mysqli_fetch_assoc($result)) {
             $history[] = $row;
         }
         // Count total
-        $countResult = mysqli_query($mysqli, "SELECT COUNT(*) as total FROM tbl_chatbot_history");
+        $countResult = mysqli_query($mysqli, "SELECT COUNT(*) as total FROM tbl_chatbot_history $whereSql");
         $total = mysqli_fetch_assoc($countResult)['total'];
         $response = ['success' => true, 'data' => $history, 'total' => intval($total)];
         break;

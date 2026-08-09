@@ -4,47 +4,51 @@ $stmt = mysqli_prepare($mysqli, 'SELECT * FROM tbl_sanpham WHERE id_sanpham = ? 
 mysqli_stmt_bind_param($stmt, 'i', $idSanPham);
 mysqli_stmt_execute($stmt);
 $query_sua_sp = mysqli_stmt_get_result($stmt);
+$row = mysqli_fetch_assoc($query_sua_sp);
+
+if (!$row) {
+    mysqli_stmt_close($stmt);
+    echo '<div class="content-card"><div class="card-body-custom">Món ăn không tồn tại.</div></div>';
+    return;
+}
+
+$tenSanPham = htmlspecialchars($row['tensanpham'] ?? '', ENT_QUOTES, 'UTF-8');
+$maSanPham = htmlspecialchars($row['masp'] ?? '', ENT_QUOTES, 'UTF-8');
+$tomTat = htmlspecialchars($row['tomtat'] ?? '', ENT_QUOTES, 'UTF-8');
+$noiDung = htmlspecialchars($row['noidung'] ?? '', ENT_QUOTES, 'UTF-8');
+$hinhAnh = htmlspecialchars(upload_url($row['hinhanh'] ?? ''), ENT_QUOTES, 'UTF-8');
 ?>
 
-<!-- Page Header -->
-<div class="content-card" style="background: linear-gradient(135deg, rgba(255,107,107,0.1) 0%, rgba(238,90,82,0.1) 100%); border: 1px solid rgba(255,107,107,0.2);">
-    <div class="card-body-custom">
-        <div class="d-flex align-items-center gap-3">
-            <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-edit" style="color: white; font-size: 24px;"></i>
+<div class="content-card crud-hero food">
+    <div class="card-body-custom crud-hero-body">
+        <div class="crud-title-group">
+            <div class="crud-icon food">
+                <i class="fas fa-edit"></i>
             </div>
             <div>
-                <h4 style="margin: 0; font-weight: 700; color: #333;">Sửa thông tin món ăn</h4>
-                <p style="margin: 0; color: #888; font-size: 14px;">Cập nhật thông tin món ăn trong thực đơn</p>
+                <h4 class="crud-title">Sửa thông tin món ăn</h4>
+                <p class="crud-subtitle">Cập nhật nội dung, giá bán, số lượng và hình ảnh món ăn</p>
             </div>
         </div>
     </div>
 </div>
 
-<?php
-while ($row = mysqli_fetch_array($query_sua_sp)) {
-$tenSanPham = htmlspecialchars($row['tensanpham'], ENT_QUOTES, 'UTF-8');
-$maSanPham = htmlspecialchars($row['masp'], ENT_QUOTES, 'UTF-8');
-$tomTat = htmlspecialchars($row['tomtat'], ENT_QUOTES, 'UTF-8');
-$noiDung = htmlspecialchars($row['noidung'], ENT_QUOTES, 'UTF-8');
-?>
-<!-- Edit Product Form -->
 <div class="content-card">
     <div class="card-header-custom">
-        <h5><i class="fas fa-utensils me-2" style="color: #ff6b6b;"></i>Sửa: <?php echo $tenSanPham; ?></h5>
+        <h5><i class="fas fa-utensils me-2 crud-card-title-icon food"></i>Sửa: <?php echo $tenSanPham; ?></h5>
     </div>
     <div class="card-body-custom">
         <form method="POST" action="modules/quanlysp/xuly.php?idsanpham=<?php echo $idSanPham; ?>" enctype="multipart/form-data">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group-custom">
-                        <label class="form-label-custom">Tên món ăn <span style="color: #e74c3c;">*</span></label>
+                        <label class="form-label-custom">Tên món ăn <span class="crud-required">*</span></label>
                         <input type="text" name="tensanpham" class="form-control-custom" value="<?php echo $tenSanPham; ?>" required>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group-custom">
-                        <label class="form-label-custom">Mã món <span style="color: #e74c3c;">*</span></label>
+                        <label class="form-label-custom">Mã món <span class="crud-required">*</span></label>
                         <input type="text" name="masp" class="form-control-custom" value="<?php echo $maSanPham; ?>" required>
                     </div>
                 </div>
@@ -53,13 +57,13 @@ $noiDung = htmlspecialchars($row['noidung'], ENT_QUOTES, 'UTF-8');
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group-custom">
-                        <label class="form-label-custom">Giá (VNĐ) <span style="color: #e74c3c;">*</span></label>
+                        <label class="form-label-custom">Giá (VNĐ) <span class="crud-required">*</span></label>
                         <input type="number" name="giasp" class="form-control-custom" value="<?php echo (int)$row['giasp']; ?>" required>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group-custom">
-                        <label class="form-label-custom">Số lượng <span style="color: #e74c3c;">*</span></label>
+                        <label class="form-label-custom">Số lượng <span class="crud-required">*</span></label>
                         <input type="number" name="soluong" class="form-control-custom" value="<?php echo (int)$row['soluong']; ?>" required>
                     </div>
                 </div>
@@ -72,18 +76,18 @@ $noiDung = htmlspecialchars($row['noidung'], ENT_QUOTES, 'UTF-8');
             </div>
 
             <div class="form-group-custom">
-                <label class="form-label-custom">Danh mục <span style="color: #e74c3c;">*</span></label>
+                <label class="form-label-custom">Danh mục <span class="crud-required">*</span></label>
                 <select name="danhmuc" class="form-control-custom" required>
                     <?php
                     $sql_danhmuc = "SELECT * FROM tbl_danhmuc ORDER BY id_danhmuc DESC";
                     $query_danhmuc = mysqli_query($mysqli, $sql_danhmuc);
                     while ($row_danhmuc = mysqli_fetch_array($query_danhmuc)) {
-                        $selected = ($row_danhmuc['id_danhmuc'] == $row['id_danhmuc']) ? 'selected' : '';
+                        $selected = (int)$row_danhmuc['id_danhmuc'] === (int)$row['id_danhmuc'] ? 'selected' : '';
                     ?>
-                    <option value="<?php echo (int)$row_danhmuc['id_danhmuc']; ?>" <?php echo $selected ?>><?php echo htmlspecialchars($row_danhmuc['tendanhmuc'], ENT_QUOTES, 'UTF-8'); ?></option>
-                    <?php
-                    }
-                    ?>
+                    <option value="<?php echo (int)$row_danhmuc['id_danhmuc']; ?>" <?php echo $selected; ?>>
+                        <?php echo htmlspecialchars($row_danhmuc['tendanhmuc'], ENT_QUOTES, 'UTF-8'); ?>
+                    </option>
+                    <?php } ?>
                 </select>
             </div>
 
@@ -99,34 +103,37 @@ $noiDung = htmlspecialchars($row['noidung'], ENT_QUOTES, 'UTF-8');
 
             <div class="form-group-custom">
                 <label class="form-label-custom">Hình ảnh món ăn</label>
-                <div class="row align-items-center">
+                <div class="row align-items-center g-4">
                     <div class="col-md-4">
-                        <img src="<?php echo htmlspecialchars(upload_url($row['hinhanh']), ENT_QUOTES, 'UTF-8'); ?>" style="width: 100%; max-width: 200px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                        <p class="mt-2" style="color: #888; font-size: 13px;">Hình ảnh hiện tại</p>
+                        <img src="<?php echo $hinhAnh; ?>" alt="<?php echo $tenSanPham; ?>" class="crud-current-image">
+                        <p class="crud-muted mt-2">Hình ảnh hiện tại</p>
                     </div>
                     <div class="col-md-8">
-                        <div class="image-upload" onclick="document.getElementById('hinhanh').click()">
+                        <div class="image-upload" role="button" tabindex="0" data-upload-target="hinhanh">
                             <i class="fas fa-cloud-upload-alt"></i>
                             <p>Bấm để chọn hình ảnh mới</p>
-                            <small style="color: #aaa;">Để trống nếu không đổi hình</small>
-                            <input type="file" name="hinhanh" id="hinhanh" accept="image/*" style="display: none;">
+                            <small class="crud-upload-help">Để trống nếu không đổi hình hiện tại.</small>
+                        </div>
+                        <input type="file" name="hinhanh" id="hinhanh" accept="image/*" class="crud-upload-input" data-preview-target="preview-sp-edit">
+                        <div id="preview-sp-edit" class="crud-preview mt-3">
+                            <p class="crud-muted">Ảnh mới: <span data-file-name></span></p>
+                            <img src="" alt="Ảnh món ăn mới xem trước">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="d-flex gap-3 mt-4">
-                <button type="submit" name="suasanpham" class="btn-custom btn-custom-primary" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);">
-                    <i class="fas fa-save me-2"></i>Lưu thay đổi
+            <div class="d-flex gap-3 mt-4 flex-wrap">
+                <button type="submit" name="suasanpham" class="btn-custom btn-custom-primary">
+                    <i class="fas fa-save"></i>
+                    <span>Lưu thay đổi</span>
                 </button>
-                <a href="?action=quanlymonan&query=them" class="btn-custom btn-custom-secondary text-decoration-none d-inline-flex align-items-center">
-                    <i class="fas fa-arrow-left me-2"></i>Quay lại
+                <a href="?action=quanlymonan&query=them" class="btn-custom btn-custom-secondary text-decoration-none">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Quay lại</span>
                 </a>
             </div>
         </form>
     </div>
 </div>
-<?php
-}
-mysqli_stmt_close($stmt);
-?>
+<?php mysqli_stmt_close($stmt); ?>

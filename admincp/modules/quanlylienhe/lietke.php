@@ -1,45 +1,39 @@
-<!-- Page Header -->
-<div class="content-card" style="background: linear-gradient(135deg, rgba(79,172,254,0.1) 0%, rgba(0,242,254,0.1) 100%); border: 1px solid rgba(79,172,254,0.2);">
-    <div class="card-body-custom">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-            <div class="d-flex align-items-center gap-3">
-                <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-envelope" style="color: white; font-size: 24px;"></i>
-                </div>
-                <div>
-                    <h4 style="margin: 0; font-weight: 700; color: #333;">Quản lý liên hệ</h4>
-                    <p style="margin: 0; color: #888; font-size: 14px;">Tiếp nhận và xử lý ý kiến khách hàng</p>
-                </div>
+<div class="content-card crud-hero contact">
+    <div class="card-body-custom crud-hero-body">
+        <div class="crud-title-group">
+            <div class="crud-icon contact">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div>
+                <h4 class="crud-title">Quản lý liên hệ</h4>
+                <p class="crud-subtitle">Tiếp nhận và xử lý ý kiến khách hàng</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Contacts Table -->
 <div class="content-card">
     <div class="card-header-custom">
-        <h5><i class="fas fa-list me-2" style="color: #4facfe;"></i>Danh sách liên hệ</h5>
-        <div class="d-flex gap-2">
-            <div class="input-group" style="max-width: 300px;">
-                <span class="input-group-text" style="background: white; border-right: none;"><i class="fas fa-search" style="color: #888;"></i></span>
-                <input type="text" class="form-control" placeholder="Tìm kiếm..." style="border-left: none;">
-            </div>
+        <h5><i class="fas fa-list me-2 crud-card-title-icon contact"></i>Danh sách liên hệ</h5>
+        <div class="input-group crud-search">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+            <input type="text" class="form-control" placeholder="Tìm kiếm..." data-search="#contact-table">
         </div>
     </div>
-    <div class="card-body-custom" style="padding: 0;">
+    <div class="card-body-custom crud-table-body">
         <div class="table-container">
-            <table class="custom-table">
+            <table class="custom-table" id="contact-table">
                 <thead>
                     <tr>
-                        <th style="width: 60px;">ID</th>
+                        <th class="crud-table-id">ID</th>
                         <th>Tên</th>
                         <th>Email</th>
                         <th>SĐT</th>
                         <th>Loại</th>
                         <th>Nội dung</th>
                         <th>Ngày gửi</th>
-                        <th style="width: 120px;">Trạng thái</th>
-                        <th style="width: 120px; text-align: center;">Thao tác</th>
+                        <th class="crud-table-status">Trạng thái</th>
+                        <th class="crud-table-actions">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,8 +41,9 @@
                     $sql_lietke_lh = "SELECT * FROM tbl_lienhe ORDER BY ngaygui DESC";
                     $query_lietke_lh = mysqli_query($mysqli, $sql_lietke_lh);
                     while ($row = mysqli_fetch_array($query_lietke_lh)) {
-                        $status_class = $row['trangthai'] == 'chua_xem' ? 'pending' : 'active';
-                        $status_text = $row['trangthai'] == 'chua_xem' ? 'Chưa xem' : 'Đã xem';
+                        $chuaXem = ($row['trangthai'] ?? '') === 'chua_xem';
+                        $statusClass = $chuaXem ? 'pending' : 'active';
+                        $statusText = $chuaXem ? 'Chưa xem' : 'Đã xem';
                         $idLienHe = (int)$row['id_lienhe'];
                         $tenLienHe = htmlspecialchars($row['ten'] ?: '(Chưa có tên)', ENT_QUOTES, 'UTF-8');
                         $emailLienHe = htmlspecialchars($row['email'] ?: '(Chưa có email)', ENT_QUOTES, 'UTF-8');
@@ -60,32 +55,28 @@
                         <td><strong>#<?php echo $idLienHe; ?></strong></td>
                         <td>
                             <div class="d-flex align-items-center gap-2">
-                                <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-user" style="color: white; font-size: 12px;"></i>
-                                </div>
-                                <span style="font-weight: 500;"><?php echo $tenLienHe; ?></span>
+                                <span class="crud-avatar"><i class="fas fa-user"></i></span>
+                                <span class="crud-entity-title"><?php echo $tenLienHe; ?></span>
                             </div>
                         </td>
                         <td><?php echo $emailLienHe; ?></td>
                         <td><?php echo $sdtLienHe; ?></td>
-                        <td><span class="badge" style="background: rgba(102,126,234,0.1); color: #667eea; padding: 6px 12px; border-radius: 20px;"><?php echo $loaiLienHe; ?></span></td>
-                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><?php echo $noiDungRutGon; ?>...</td>
-                        <td><?php echo date('d/m/Y H:i', strtotime($row['ngaygui'])) ?></td>
-                        <td><span class="status-badge <?php echo $status_class ?>"><?php echo $status_text ?></span></td>
+                        <td><span class="crud-pill"><?php echo $loaiLienHe; ?></span></td>
+                        <td class="crud-truncate"><?php echo $noiDungRutGon; ?>...</td>
+                        <td><?php echo date('d/m/Y H:i', strtotime($row['ngaygui'])); ?></td>
+                        <td><span class="status-badge <?php echo $statusClass; ?>"><?php echo $statusText; ?></span></td>
                         <td>
-                            <div class="action-group" style="justify-content: center;">
+                            <div class="action-group crud-action-center">
                                 <a href="?action=quanlylienhe&query=sua&idlienhe=<?php echo $idLienHe; ?>" class="btn-action view" title="Xem chi tiết">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="modules/quanlylienhe/xuly.php?idlienhe=<?php echo $idLienHe; ?>" class="btn-action delete" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa?')">
+                                <a href="modules/quanlylienhe/xuly.php?idlienhe=<?php echo $idLienHe; ?>" class="btn-action delete" title="Xóa" data-confirm="Bạn có chắc chắn muốn xóa liên hệ này?">
                                     <i class="fas fa-trash"></i>
                                 </a>
                             </div>
                         </td>
                     </tr>
-                    <?php
-                    }
-                    ?>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>

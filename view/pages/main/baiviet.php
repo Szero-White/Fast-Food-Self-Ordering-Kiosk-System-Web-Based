@@ -1,158 +1,67 @@
 <?php
-$id_baiviet = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$idBaiViet = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-if ($id_baiviet <= 0) {
-    echo '<div style="text-align:center; padding:50px; color:white;"><h2>📰 Bài viết không tồn tại</h2></div>';
+if ($idBaiViet <= 0) {
+    echo '<div class="news-detail-empty"><h2>Bài viết không tồn tại</h2></div>';
     return;
 }
 
-$sql_bv = "SELECT * FROM tbl_baiviet, tbl_danhmucbaiviet 
-           WHERE tbl_baiviet.id_danhmuc = tbl_danhmucbaiviet.id_baiviet 
-           AND tbl_baiviet.id_bv = '$id_baiviet' 
-           LIMIT 1";
-$query_bv = mysqli_query($mysqli, $sql_bv);
-$row_bv = mysqli_fetch_array($query_bv);
+$stmt = mysqli_prepare(
+    $mysqli,
+    'SELECT tbl_baiviet.*, tbl_danhmucbaiviet.tendanhmucbv
+     FROM tbl_baiviet
+     LEFT JOIN tbl_danhmucbaiviet ON tbl_baiviet.id_danhmuc = tbl_danhmucbaiviet.id_baiviet
+     WHERE tbl_baiviet.id_bv = ?
+     LIMIT 1'
+);
+mysqli_stmt_bind_param($stmt, 'i', $idBaiViet);
+mysqli_stmt_execute($stmt);
+$query_bv = mysqli_stmt_get_result($stmt);
+$row_bv = mysqli_fetch_assoc($query_bv);
+mysqli_stmt_close($stmt);
 
 if (!$row_bv) {
-    echo '<div style="text-align:center; padding:50px; color:white;"><h2>📰 Không tìm thấy bài viết</h2></div>';
+    echo '<div class="news-detail-empty"><h2>Không tìm thấy bài viết</h2></div>';
     return;
 }
+
+$tenBaiViet = htmlspecialchars($row_bv['tenbaiviet'] ?? '', ENT_QUOTES, 'UTF-8');
+$tenDanhMuc = htmlspecialchars($row_bv['tendanhmucbv'] ?? 'Tin tức', ENT_QUOTES, 'UTF-8');
+$tomTat = $row_bv['tomtat'] ?? '';
+$noiDung = $row_bv['noidung'] ?? '';
+$hinhAnh = htmlspecialchars(upload_url($row_bv['hinhanh'] ?? ''), ENT_QUOTES, 'UTF-8');
 ?>
 
-<style>
-    .news-detail {
-        max-width: 700px;
-        margin: 0 auto;
-        padding: 15px;
-    }
-    
-    /* Header */
-    .news-detail-header {
-        text-align: center;
-        padding: 20px 0;
-        border-bottom: 1px solid #e0e0e0;
-        margin-bottom: 25px;
-    }
-    
-    .news-detail-category {
-        color: #ff6b6b;
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 10px;
-    }
-    
-    .news-detail-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #fff;
-        line-height: 1.4;
-        margin: 0 0 12px 0;
-    }
-    
-    .news-detail-date {
-        color: #ccc;
-        font-size: 0.9rem;
-    }
-    
-    /* Image */
-    .news-detail-image {
-        text-align: center;
-        margin-bottom: 25px;
-    }
-    
-    .news-detail-image img {
-        width: 100%;
-        max-width: 600px;
-        max-height: 350px;
-        object-fit: cover;
-        border-radius: 8px;
-    }
-    
-    /* Content */
-    .news-detail-content {
-        color: #eee;
-        line-height: 1.8;
-        font-size: 1rem;
-    }
-    
-    .news-detail-content p {
-        margin-bottom: 16px;
-    }
-    
-    /* Summary highlight */
-    .news-detail-summary {
-        background: #2a2a2a;
-        padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 25px;
-        font-style: italic;
-        color: #ddd;
-        border-left: 3px solid #ff6b6b;
-    }
-    
-    /* Navigation */
-    .news-detail-nav {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 40px;
-        padding-top: 20px;
-        border-top: 1px solid #e0e0e0;
-    }
-    
-    .news-detail-btn {
-        padding: 10px 20px;
-        text-decoration: none;
-        color: #fff;
-        font-size: 0.95rem;
-        border: 1px solid #555;
-        border-radius: 4px;
-        transition: all 0.2s;
-        background: #333;
-    }
-    
-    .news-detail-btn:hover {
-        background: #444;
-        border-color: #666;
-    }
-</style>
-
-<div class="news-detail">
-    <!-- Header -->
-    <div class="news-detail-header">
-        <div class="news-detail-category"><?php echo $row_bv['tendanhmucbv']; ?></div>
-        <h1 class="news-detail-title"><?php echo $row_bv['tenbaiviet']; ?></h1>
+<article class="news-detail">
+    <header class="news-detail-header">
+        <div class="news-detail-category"><?php echo $tenDanhMuc; ?></div>
+        <h1 class="news-detail-title"><?php echo $tenBaiViet; ?></h1>
         <div class="news-detail-date">
-            📅 <?php echo date('d/m/Y', strtotime('now')); ?> • Tin tức khuyến mãi
+            <i class="fas fa-calendar-days"></i>
+            <?php echo date('d/m/Y'); ?> · Tin tức khuyến mãi
         </div>
-    </div>
-    
-    <!-- Image -->
+    </header>
+
     <div class="news-detail-image">
-        <img src="<?php echo htmlspecialchars(upload_url($row_bv['hinhanh']), ENT_QUOTES, 'UTF-8'); ?>" 
-             alt="<?php echo htmlspecialchars($row_bv['tenbaiviet'], ENT_QUOTES, 'UTF-8'); ?>"
-             onerror="this.src='<?php echo htmlspecialchars(asset_url('placeholders/news-placeholder.jpg'), ENT_QUOTES, 'UTF-8'); ?>'">
+        <img src="<?php echo $hinhAnh; ?>" alt="<?php echo $tenBaiViet; ?>">
     </div>
-    
-    <!-- Summary -->
+
     <div class="news-detail-summary">
-        <?php echo nl2br($row_bv['tomtat']); ?>
+        <?php echo nl2br($tomTat); ?>
     </div>
-    
-    <!-- Content -->
+
     <div class="news-detail-content">
-        <?php echo nl2br($row_bv['noidung']); ?>
+        <?php echo nl2br($noiDung); ?>
     </div>
-    
-    <!-- Navigation -->
-    <div class="news-detail-nav">
-        <a href="index.php?quanly=danhmucbaiviet&id=<?php echo $row_bv['id_danhmuc']; ?>" class="news-detail-btn">
-            ← Quay lại
+
+    <nav class="news-detail-nav">
+        <a href="index.php?quanly=danhmucbaiviet&id=<?php echo (int)$row_bv['id_danhmuc']; ?>" class="news-detail-btn">
+            <i class="fas fa-arrow-left"></i>
+            <span>Quay lại</span>
         </a>
         <a href="index.php" class="news-detail-btn">
-            🏠 Trang chủ
+            <i class="fas fa-house"></i>
+            <span>Trang chủ</span>
         </a>
-    </div>
-</div>
-
+    </nav>
+</article>

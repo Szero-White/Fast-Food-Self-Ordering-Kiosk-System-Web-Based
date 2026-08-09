@@ -4,54 +4,58 @@ $stmt = mysqli_prepare($mysqli, 'SELECT * FROM tbl_baiviet WHERE id_bv = ? LIMIT
 mysqli_stmt_bind_param($stmt, 'i', $idBaiViet);
 mysqli_stmt_execute($stmt);
 $query_sua_bv = mysqli_stmt_get_result($stmt);
+$row = mysqli_fetch_assoc($query_sua_bv);
+
+if (!$row) {
+    mysqli_stmt_close($stmt);
+    echo '<div class="content-card"><div class="card-body-custom">Bài viết không tồn tại.</div></div>';
+    return;
+}
+
+$tenBaiViet = htmlspecialchars($row['tenbaiviet'] ?? '', ENT_QUOTES, 'UTF-8');
+$tomTat = htmlspecialchars($row['tomtat'] ?? '', ENT_QUOTES, 'UTF-8');
+$noiDung = htmlspecialchars($row['noidung'] ?? '', ENT_QUOTES, 'UTF-8');
+$hinhAnh = htmlspecialchars(upload_url($row['hinhanh'] ?? ''), ENT_QUOTES, 'UTF-8');
 ?>
 
-<!-- Page Header -->
-<div class="content-card" style="background: linear-gradient(135deg, rgba(17,153,142,0.1) 0%, rgba(56,239,125,0.1) 100%); border: 1px solid rgba(17,153,142,0.2);">
-    <div class="card-body-custom">
-        <div class="d-flex align-items-center gap-3">
-            <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center;">
-                <i class="fas fa-edit" style="color: white; font-size: 24px;"></i>
+<div class="content-card crud-hero info">
+    <div class="card-body-custom crud-hero-body">
+        <div class="crud-title-group">
+            <div class="crud-icon info">
+                <i class="fas fa-edit"></i>
             </div>
             <div>
-                <h4 style="margin: 0; font-weight: 700; color: #333;">Sửa bài viết</h4>
-                <p style="margin: 0; color: #888; font-size: 14px;">Cập nhật nội dung bài viết</p>
+                <h4 class="crud-title">Sửa bài viết</h4>
+                <p class="crud-subtitle">Cập nhật nội dung bài viết và ảnh đại diện</p>
             </div>
         </div>
     </div>
 </div>
 
-<?php
-while ($row = mysqli_fetch_array($query_sua_bv)) {
-$tenBaiViet = htmlspecialchars($row['tenbaiviet'], ENT_QUOTES, 'UTF-8');
-$tomTat = htmlspecialchars($row['tomtat'], ENT_QUOTES, 'UTF-8');
-$noiDung = htmlspecialchars($row['noidung'], ENT_QUOTES, 'UTF-8');
-?>
-<!-- Edit Article Form -->
 <div class="content-card">
     <div class="card-header-custom">
-        <h5><i class="fas fa-newspaper me-2" style="color: #11998e;"></i>Sửa: <?php echo $tenBaiViet; ?></h5>
+        <h5><i class="fas fa-newspaper me-2 crud-card-title-icon info"></i>Sửa: <?php echo $tenBaiViet; ?></h5>
     </div>
     <div class="card-body-custom">
         <form method="POST" action="modules/quanlybaiviet/xuly.php?idbaiviet=<?php echo $idBaiViet; ?>" enctype="multipart/form-data">
             <div class="form-group-custom">
-                <label class="form-label-custom">Tiêu đề bài viết <span style="color: #e74c3c;">*</span></label>
+                <label class="form-label-custom">Tiêu đề bài viết <span class="crud-required">*</span></label>
                 <input type="text" name="tenbaiviet" class="form-control-custom" value="<?php echo $tenBaiViet; ?>" required>
             </div>
 
             <div class="form-group-custom">
-                <label class="form-label-custom">Danh mục bài viết <span style="color: #e74c3c;">*</span></label>
+                <label class="form-label-custom">Danh mục bài viết <span class="crud-required">*</span></label>
                 <select name="danhmuc" class="form-control-custom" required>
                     <?php
                     $sql_danhmucbv = "SELECT * FROM tbl_danhmucbaiviet ORDER BY id_baiviet DESC";
                     $query_danhmucbv = mysqli_query($mysqli, $sql_danhmucbv);
                     while ($row_danhmucbv = mysqli_fetch_array($query_danhmucbv)) {
-                        $selected = ($row_danhmucbv['id_baiviet'] == $row['id_danhmuc']) ? 'selected' : '';
+                        $selected = (int)$row_danhmucbv['id_baiviet'] === (int)$row['id_danhmuc'] ? 'selected' : '';
                     ?>
-                    <option value="<?php echo (int)$row_danhmucbv['id_baiviet']; ?>" <?php echo $selected ?>><?php echo htmlspecialchars($row_danhmucbv['tendanhmucbv'], ENT_QUOTES, 'UTF-8'); ?></option>
-                    <?php
-                    }
-                    ?>
+                    <option value="<?php echo (int)$row_danhmucbv['id_baiviet']; ?>" <?php echo $selected; ?>>
+                        <?php echo htmlspecialchars($row_danhmucbv['tendanhmucbv'], ENT_QUOTES, 'UTF-8'); ?>
+                    </option>
+                    <?php } ?>
                 </select>
             </div>
 
@@ -67,34 +71,37 @@ $noiDung = htmlspecialchars($row['noidung'], ENT_QUOTES, 'UTF-8');
 
             <div class="form-group-custom">
                 <label class="form-label-custom">Hình ảnh đại diện</label>
-                <div class="row align-items-center">
+                <div class="row align-items-center g-4">
                     <div class="col-md-4">
-                        <img src="<?php echo htmlspecialchars(upload_url($row['hinhanh']), ENT_QUOTES, 'UTF-8'); ?>" style="width: 100%; max-width: 200px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                        <p class="mt-2" style="color: #888; font-size: 13px;">Hình ảnh hiện tại</p>
+                        <img src="<?php echo $hinhAnh; ?>" alt="<?php echo $tenBaiViet; ?>" class="crud-current-image">
+                        <p class="crud-muted mt-2">Hình ảnh hiện tại</p>
                     </div>
                     <div class="col-md-8">
-                        <div class="image-upload" onclick="document.getElementById('hinhanh').click()">
+                        <div class="image-upload" role="button" tabindex="0" data-upload-target="hinhanh">
                             <i class="fas fa-cloud-upload-alt"></i>
                             <p>Bấm để chọn hình ảnh mới</p>
-                            <small style="color: #aaa;">Để trống nếu không đổi hình</small>
-                            <input type="file" name="hinhanh" id="hinhanh" accept="image/*" style="display: none;">
+                            <small class="crud-upload-help">Để trống nếu không đổi hình hiện tại.</small>
+                        </div>
+                        <input type="file" name="hinhanh" id="hinhanh" accept="image/*" class="crud-upload-input" data-preview-target="preview-bv-edit">
+                        <div id="preview-bv-edit" class="crud-preview mt-3">
+                            <p class="crud-muted">Ảnh mới: <span data-file-name></span></p>
+                            <img src="" alt="Ảnh bài viết mới xem trước">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="d-flex gap-3 mt-4">
-                <button type="submit" name="suabaiviet" class="btn-custom btn-custom-primary" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-                    <i class="fas fa-save me-2"></i>Lưu thay đổi
+            <div class="d-flex gap-3 mt-4 flex-wrap">
+                <button type="submit" name="suabaiviet" class="btn-custom btn-custom-success">
+                    <i class="fas fa-save"></i>
+                    <span>Lưu thay đổi</span>
                 </button>
-                <a href="?action=quanlybaiviet&query=them" class="btn-custom btn-custom-secondary text-decoration-none d-inline-flex align-items-center">
-                    <i class="fas fa-arrow-left me-2"></i>Quay lại
+                <a href="?action=quanlybaiviet&query=them" class="btn-custom btn-custom-secondary text-decoration-none">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Quay lại</span>
                 </a>
             </div>
         </form>
     </div>
 </div>
-<?php
-}
-mysqli_stmt_close($stmt);
-?>
+<?php mysqli_stmt_close($stmt); ?>

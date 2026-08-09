@@ -22,7 +22,7 @@ try {
         redirect_site_assets();
     }
 
-    $newImage = save_uploaded_image($_FILES['hinhanh'] ?? [], 'site');
+    $newImage = save_uploaded_image($_FILES['hinhanh'] ?? [], 'site', $assetKey);
 
     if ($newImage === null) {
         redirect_site_assets();
