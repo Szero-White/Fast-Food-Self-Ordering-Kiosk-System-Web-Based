@@ -1,9 +1,9 @@
 <div class="clear"></div>
 <div class="main">
     <?php
-        if(isset($_GET['action']) && $_GET['query']){
-            $tam = $_GET['action'];
-            $query = $_GET['query'];
+        if (isset($_GET['action'], $_GET['query'])) {
+            $tam = (string)$_GET['action'];
+            $query = (string)$_GET['query'];
         }else{
             $tam = "";
             $query = "";
@@ -63,6 +63,9 @@
         }
         else if($tam=='quanlylienhe' && $query=="sua"){
             include(__DIR__ . "/quanlylienhe/sua.php");
+        }
+        else if($tam=='quanlyhotro' && $query=="lietke"){
+            include(__DIR__ . "/quanlyhotro/lietke.php");
         }
         else if($tam=='quanlychatbot' && $query=="lietke"){
             include(__DIR__ . "/quanlychatbot/lietke.php");

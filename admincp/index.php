@@ -1,9 +1,7 @@
 <?php
-session_start();
-if (!isset($_SESSION['dangnhap'])) {
-    header('Location:login.php');
-    exit;
-}
+require_once __DIR__ . '/includes/admin_security.php';
+
+admin_require_login('login.php');
 
 if (isset($_GET['dangxuat']) && $_GET['dangxuat'] == 1) {
     $_SESSION = [];
@@ -15,6 +13,7 @@ if (isset($_GET['dangxuat']) && $_GET['dangxuat'] == 1) {
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/../config/site_asset_repository.php';
 require_once __DIR__ . '/../config/order_notification_repository.php';
+require_once __DIR__ . '/../config/staff_call_repository.php';
 require_once __DIR__ . '/includes/admin_shell_data.php';
 ?>
 
@@ -23,7 +22,8 @@ require_once __DIR__ . '/includes/admin_shell_data.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FastFood Admin - Quản Lý Nhà Hàng</title>
+    <meta name="admin-csrf-token" content="<?php echo htmlspecialchars(admin_csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
+    <title>FastFood Admin - Quản lý nhà hàng</title>
     <link rel="icon" href="<?php echo htmlspecialchars($adminFaviconUrl, ENT_QUOTES, 'UTF-8'); ?>">
     <link rel="apple-touch-icon" href="<?php echo htmlspecialchars($adminFaviconUrl, ENT_QUOTES, 'UTF-8'); ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -33,7 +33,6 @@ require_once __DIR__ . '/includes/admin_shell_data.php';
     <link rel="stylesheet" type="text/css" href="css_admin/pages/crud-admin.css?v=<?php echo $crudAdminCssVersion; ?>">
 </head>
 <body>
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo">
@@ -42,11 +41,11 @@ require_once __DIR__ . '/includes/admin_shell_data.php';
                 </span>
                 <span>FastFood</span>
             </div>
-            <button class="sidebar-toggle" id="sidebarToggle">
+            <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="Thu gọn menu">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
-        
+
         <div class="sidebar-user">
             <div class="user-avatar">
                 <i class="fas fa-user-shield"></i>
@@ -57,9 +56,20 @@ require_once __DIR__ . '/includes/admin_shell_data.php';
             </div>
         </div>
 
-        <nav class="sidebar-nav">
+        <nav class="sidebar-nav is-restoring-scroll">
             <?php include("modules/menu.php"); ?>
         </nav>
+        <script>
+            (function() {
+                var sidebarNav = document.querySelector('.sidebar-nav');
+                if (!sidebarNav) return;
+
+                var savedScroll = sessionStorage.getItem('adminSidebarScrollTop');
+                if (savedScroll !== null) {
+                    sidebarNav.scrollTop = parseInt(savedScroll, 10) || 0;
+                }
+            })();
+        </script>
 
         <div class="sidebar-footer">
             <a href="index.php?dangxuat=1" class="logout-btn">
@@ -69,9 +79,7 @@ require_once __DIR__ . '/includes/admin_shell_data.php';
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content" id="mainContent">
-        <!-- Top Header -->
         <header class="top-header">
             <div class="header-left">
                 <div class="breadcrumb">
@@ -104,8 +112,27 @@ require_once __DIR__ . '/includes/admin_shell_data.php';
                                     </div>
                                 </div>
                             <?php } else { ?>
+                                <?php if ($pendingStaffCalls > 0) { ?>
+                                    <a class="notification-item" href="index.php?action=quanlyhotro&query=lietke">
+                                        <span class="notification-icon info"><i class="fas fa-bell-concierge"></i></span>
+                                        <span class="notification-content">
+                                            <strong><?php echo $pendingStaffCalls; ?> yêu cầu gọi nhân viên</strong>
+                                            <small>
+                                                <?php foreach ($pendingStaffCallItems as $index => $call) {
+                                                    echo $index > 0 ? ' · ' : '';
+                                                    echo '#' . htmlspecialchars((string)$call['ma_goi'], ENT_QUOTES, 'UTF-8') . ' lúc ' . date('H:i', strtotime((string)$call['ngaygoi']));
+                                                } ?>
+                                                <?php if ($pendingStaffCalls > count($pendingStaffCallItems)) { ?>
+                                                    · còn <?php echo $pendingStaffCalls - count($pendingStaffCallItems); ?> yêu cầu khác
+                                                <?php } ?>
+                                            </small>
+                                            <em>Mở hàng chờ hỗ trợ</em>
+                                        </span>
+                                    </a>
+                                <?php } ?>
+
                                 <?php if ($newPaidOrders > 0) { ?>
-                                    <a class="notification-item" href="<?php echo count($newPaidOrderItems) === 1 ? 'index.php?action=quanlydonhang&query=xem&iddonhang=' . (int) $newPaidOrderItems[0]['id'] : 'index.php?action=quanlydonhang&query=lietke'; ?>">
+                                    <a class="notification-item" href="<?php echo count($newPaidOrderItems) === 1 ? 'index.php?action=quanlydonhang&query=xem&iddonhang=' . (int)$newPaidOrderItems[0]['id'] : 'index.php?action=quanlydonhang&query=lietke'; ?>">
                                         <span class="notification-icon success"><i class="fas fa-receipt"></i></span>
                                         <span class="notification-content">
                                             <strong><?php echo $newPaidOrders; ?> đơn hàng vừa thanh toán</strong>
@@ -124,15 +151,16 @@ require_once __DIR__ . '/includes/admin_shell_data.php';
                                         </span>
                                     </a>
                                 <?php } ?>
+
                                 <?php if ($lowStockProducts > 0) { ?>
-                                    <a class="notification-item" href="<?php echo count($lowStockItems) === 1 ? 'index.php?action=quanlymonan&query=sua&idsanpham=' . (int) $lowStockItems[0]['id_sanpham'] : 'index.php?action=quanlymonan&query=them'; ?>">
+                                    <a class="notification-item" href="<?php echo count($lowStockItems) === 1 ? 'index.php?action=quanlymonan&query=sua&idsanpham=' . (int)$lowStockItems[0]['id_sanpham'] : 'index.php?action=quanlymonan&query=them'; ?>">
                                         <span class="notification-icon warning"><i class="fas fa-box-open"></i></span>
                                         <span class="notification-content">
                                             <strong><?php echo $lowStockProducts; ?> món sắp hết hàng</strong>
                                             <small>
                                                 <?php foreach ($lowStockItems as $index => $item) {
                                                     echo $index > 0 ? ' · ' : '';
-                                                    echo htmlspecialchars($item['tensanpham'], ENT_QUOTES, 'UTF-8') . ' còn ' . (int) $item['soluong'];
+                                                    echo htmlspecialchars($item['tensanpham'], ENT_QUOTES, 'UTF-8') . ' còn ' . (int)$item['soluong'];
                                                 } ?>
                                                 <?php if ($lowStockProducts > count($lowStockItems)) { ?>
                                                     · còn <?php echo $lowStockProducts - count($lowStockItems); ?> món khác
@@ -144,6 +172,7 @@ require_once __DIR__ . '/includes/admin_shell_data.php';
                                         </span>
                                     </a>
                                 <?php } ?>
+
                                 <?php if ($uncategorizedProducts > 0) { ?>
                                     <a class="notification-item" href="index.php?action=quanlymonan&query=them">
                                         <span class="notification-icon danger"><i class="fas fa-triangle-exclamation"></i></span>
@@ -153,6 +182,7 @@ require_once __DIR__ . '/includes/admin_shell_data.php';
                                         </span>
                                     </a>
                                 <?php } ?>
+
                                 <?php if ($missingActiveBanner > 0) { ?>
                                     <a class="notification-item" href="index.php?action=quanlybanner&query=them">
                                         <span class="notification-icon danger"><i class="fas fa-image"></i></span>
@@ -165,6 +195,7 @@ require_once __DIR__ . '/includes/admin_shell_data.php';
                             <?php } ?>
                         </div>
                     </div>
+
                     <a href="index.php?action=quanlylienhe&query=lietke" class="action-btn" title="Liên hệ chưa xem" aria-label="Liên hệ chưa xem: <?php echo $unreadContacts; ?>">
                         <i class="fas fa-envelope"></i>
                         <?php if ($unreadContacts > 0) { ?>
@@ -172,6 +203,7 @@ require_once __DIR__ . '/includes/admin_shell_data.php';
                         <?php } ?>
                     </a>
                 </div>
+
                 <div class="user-dropdown dropdown">
                     <button class="user-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <span><?php echo $adminName; ?></span>
@@ -190,7 +222,6 @@ require_once __DIR__ . '/includes/admin_shell_data.php';
             </div>
         </header>
 
-        <!-- Content Area -->
         <div class="content-wrapper">
             <?php
             require_once __DIR__ . "/config/config.php";

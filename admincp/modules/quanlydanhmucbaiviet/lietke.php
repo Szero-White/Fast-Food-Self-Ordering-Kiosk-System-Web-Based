@@ -1,5 +1,12 @@
 <?php
-$sql_lietke_danhmucbv = "SELECT * FROM tbl_danhmucbaiviet ORDER BY thutu ASC";
+$sql_lietke_danhmucbv = "
+    SELECT danhmuc.*,
+           COUNT(baiviet.id_bv) AS tong_baiviet
+    FROM tbl_danhmucbaiviet AS danhmuc
+    LEFT JOIN tbl_baiviet AS baiviet ON baiviet.id_danhmuc = danhmuc.id_baiviet
+    GROUP BY danhmuc.id_baiviet, danhmuc.tendanhmucbv, danhmuc.thutu
+    ORDER BY danhmuc.thutu ASC
+";
 $query_lietke_danhmucbv = mysqli_query($mysqli, $sql_lietke_danhmucbv);
 ?>
 
@@ -38,16 +45,25 @@ $query_lietke_danhmucbv = mysqli_query($mysqli, $sql_lietke_danhmucbv);
                 $idDanhMuc = (int)$row['id_baiviet'];
                 $tenDanhMuc = htmlspecialchars($row['tendanhmucbv'], ENT_QUOTES, 'UTF-8');
                 $thuTu = (int)$row['thutu'];
+                $tongBaiViet = (int)($row['tong_baiviet'] ?? 0);
                 $tone = 'tone-' . ((($i - 1) % 6) + 1);
             ?>
             <div class="col-lg-4 col-md-6">
                 <div class="category-card <?php echo $tone; ?>">
-                    <div class="d-flex align-items-start justify-content-between mb-3">
+                    <div class="category-card-top">
                         <div class="category-icon <?php echo $tone; ?>"><i class="fas fa-folder"></i></div>
-                        <span class="category-order">#<?php echo $thuTu; ?></span>
+                        <span class="category-usage-pill">
+                            <i class="fas fa-newspaper"></i>
+                            <?php echo $tongBaiViet; ?> bài viết
+                        </span>
                     </div>
-                    <h5 class="crud-entity-title mb-2"><?php echo $tenDanhMuc; ?></h5>
-                    <p class="crud-muted mb-3">ID: <?php echo $idDanhMuc; ?> | Thứ tự: <?php echo $thuTu; ?></p>
+                    <div class="category-card-content">
+                        <h5 class="crud-entity-title category-title"><?php echo $tenDanhMuc; ?></h5>
+                        <div class="category-meta-line">
+                            <span>ID: <?php echo $idDanhMuc; ?></span>
+                            <span>Thứ tự: <?php echo $thuTu; ?></span>
+                        </div>
+                    </div>
                     <div class="d-flex gap-2 category-actions">
                         <a href="?action=quanlydanhmucbaiviet&query=sua&idbaiviet=<?php echo $idDanhMuc; ?>" class="btn-action edit" title="Sửa">
                             <i class="fas fa-edit"></i>

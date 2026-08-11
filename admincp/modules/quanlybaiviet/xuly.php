@@ -1,5 +1,9 @@
 <?php
 include(__DIR__ . '/../../config/config.php');
+require_once __DIR__ . '/../../includes/admin_security.php';
+
+admin_require_login('../../login.php');
+admin_require_valid_csrf();
 
 function redirect_articles(): void
 {

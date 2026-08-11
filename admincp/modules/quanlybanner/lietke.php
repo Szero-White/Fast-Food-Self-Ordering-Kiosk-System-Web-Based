@@ -54,9 +54,12 @@ $banners = get_all_banners($mysqli);
                                 <a href="?action=quanlybanner&query=sua&idbanner=<?php echo (int)$banner['id_banner']; ?>" class="btn-action edit" title="Sửa">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <a href="modules/quanlybanner/xuly.php?idbanner=<?php echo (int)$banner['id_banner']; ?>" class="btn-action delete" title="Xóa" data-confirm="Bạn có chắc chắn muốn xóa banner này?">
-                                    <i class="fas fa-trash"></i>
-                                </a>
+                                <form method="POST" action="modules/quanlybanner/xuly.php?idbanner=<?php echo (int)$banner['id_banner']; ?>" class="crud-inline-action">
+                                    <?php echo admin_csrf_field(); ?>
+                                    <button type="submit" class="btn-action delete" title="Xóa" data-confirm="Bạn có chắc chắn muốn xóa banner này?">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

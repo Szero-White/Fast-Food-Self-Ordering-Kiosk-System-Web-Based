@@ -20,6 +20,7 @@
             </div>
             <div class="card-body-custom">
                 <form method="POST" action="modules/quanlydanhmucbaiviet/xuly.php">
+                    <?php echo admin_csrf_field(); ?>
                     <div class="form-group-custom">
                         <label class="form-label-custom">Tên danh mục <span class="crud-required">*</span></label>
                         <input type="text" name="tendanhmucbaiviet" class="form-control-custom" placeholder="VD: Tin tức, Khuyến mãi..." required>

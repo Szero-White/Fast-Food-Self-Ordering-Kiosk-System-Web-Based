@@ -38,6 +38,7 @@ $hinhAnh = htmlspecialchars(upload_url($row['hinhanh'] ?? ''), ENT_QUOTES, 'UTF-
     </div>
     <div class="card-body-custom">
         <form method="POST" action="modules/quanlybaiviet/xuly.php?idbaiviet=<?php echo $idBaiViet; ?>" enctype="multipart/form-data">
+            <?php echo admin_csrf_field(); ?>
             <div class="form-group-custom">
                 <label class="form-label-custom">Tiêu đề bài viết <span class="crud-required">*</span></label>
                 <input type="text" name="tenbaiviet" class="form-control-custom" value="<?php echo $tenBaiViet; ?>" required>

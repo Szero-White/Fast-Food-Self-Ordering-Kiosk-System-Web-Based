@@ -73,6 +73,7 @@ $displayLimitLabel = $displayLimit > 0 ? $displayLimit . ' ảnh đầu tiên đ
     </div>
     <div class="card-body-custom">
         <form method="POST" action="modules/quanlybanner/xuly.php" class="banner-config-form">
+            <?php echo admin_csrf_field(); ?>
             <div class="form-group-custom banner-config-input-group">
                 <label class="form-label-custom">Số ảnh hiển thị trên trang chủ</label>
                 <input type="number" name="visible_limit" class="form-control-custom" min="0" max="20" value="<?php echo $displayLimit; ?>">
@@ -101,6 +102,7 @@ $displayLimitLabel = $displayLimit > 0 ? $displayLimit . ' ảnh đầu tiên đ
     </div>
     <div class="card-body-custom">
         <form method="POST" action="modules/quanlybanner/xuly.php" enctype="multipart/form-data">
+            <?php echo admin_csrf_field(); ?>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group-custom">

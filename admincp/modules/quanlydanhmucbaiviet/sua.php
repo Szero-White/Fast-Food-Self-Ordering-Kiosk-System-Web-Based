@@ -37,6 +37,7 @@ $tenDanhMucBaiViet = htmlspecialchars($dong['tendanhmucbv'], ENT_QUOTES, 'UTF-8'
             </div>
             <div class="card-body-custom">
                 <form method="POST" action="modules/quanlydanhmucbaiviet/xuly.php?idbaiviet=<?php echo $idDanhMucBaiViet; ?>">
+                    <?php echo admin_csrf_field(); ?>
                     <div class="form-group-custom">
                         <label class="form-label-custom">Tên danh mục <span class="crud-required">*</span></label>
                         <input type="text" name="tendanhmucbaiviet" class="form-control-custom" value="<?php echo $tenDanhMucBaiViet; ?>" required>

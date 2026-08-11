@@ -20,6 +20,7 @@ $menuGroups = [
         ['href' => 'index.php?action=quanlybaiviet&query=them', 'icon' => 'fas fa-newspaper', 'label' => 'Bài viết', 'actions' => ['quanlybaiviet']],
     ],
     'Vận hành' => [
+        ['href' => 'index.php?action=quanlyhotro&query=lietke', 'icon' => 'fas fa-bell-concierge', 'label' => 'Gọi nhân viên', 'actions' => ['quanlyhotro']],
         ['href' => 'index.php?action=quanlydonhang&query=lietke', 'icon' => 'fas fa-shopping-cart', 'label' => 'Đơn hàng', 'actions' => ['quanlydonhang']],
         ['href' => 'index.php?action=quanlylienhe&query=lietke', 'icon' => 'fas fa-envelope', 'label' => 'Liên hệ', 'actions' => ['quanlylienhe']],
         ['href' => 'index.php?action=quanlychatbot&query=lietke', 'icon' => 'fas fa-robot', 'label' => 'Chatbot', 'actions' => ['quanlychatbot']],
@@ -34,7 +35,8 @@ $menuGroups = [
         </li>
 
         <?php foreach ($items as $item) {
-            $isActive = in_array($currentAction, $item['actions'], true) || ($currentAction === 'dashboard' && $item['href'] === 'index.php');
+            $isActive = in_array($currentAction, $item['actions'], true)
+                || ($currentAction === 'dashboard' && $item['href'] === 'index.php');
         ?>
             <li class="nav-item">
                 <a class="nav-link <?php echo $isActive ? 'active' : ''; ?>" href="<?php echo htmlspecialchars($item['href'], ENT_QUOTES, 'UTF-8'); ?>">

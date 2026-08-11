@@ -1,5 +1,12 @@
 <?php
-$sql_lietke_danhmucsp = "SELECT * FROM tbl_danhmuc ORDER BY thutu ASC";
+$sql_lietke_danhmucsp = "
+    SELECT danhmuc.*,
+           COUNT(sanpham.id_sanpham) AS tong_sanpham
+    FROM tbl_danhmuc AS danhmuc
+    LEFT JOIN tbl_sanpham AS sanpham ON sanpham.id_danhmuc = danhmuc.id_danhmuc
+    GROUP BY danhmuc.id_danhmuc, danhmuc.tendanhmuc, danhmuc.thutu
+    ORDER BY danhmuc.thutu ASC
+";
 $query_lietke_danhmucsp = mysqli_query($mysqli, $sql_lietke_danhmucsp);
 ?>
 
@@ -38,17 +45,26 @@ $query_lietke_danhmucsp = mysqli_query($mysqli, $sql_lietke_danhmucsp);
                 $idDanhMuc = (int)$row['id_danhmuc'];
                 $tenDanhMuc = htmlspecialchars($row['tendanhmuc'], ENT_QUOTES, 'UTF-8');
                 $thuTu = (int)$row['thutu'];
+                $tongSanPham = (int)($row['tong_sanpham'] ?? 0);
                 $tone = 'tone-' . ((($i - 1) % 6) + 1);
                 $firstLetter = htmlspecialchars(mb_strtoupper(mb_substr($row['tendanhmuc'], 0, 1, 'UTF-8'), 'UTF-8'), ENT_QUOTES, 'UTF-8');
             ?>
             <div class="col-lg-4 col-md-6">
                 <div class="category-card <?php echo $tone; ?>">
-                    <div class="d-flex align-items-start justify-content-between mb-3">
+                    <div class="category-card-top">
                         <div class="category-icon <?php echo $tone; ?>"><?php echo $firstLetter; ?></div>
-                        <span class="category-order">#<?php echo $thuTu; ?></span>
+                        <span class="category-usage-pill">
+                            <i class="fas fa-utensils"></i>
+                            <?php echo $tongSanPham; ?> món
+                        </span>
                     </div>
-                    <h5 class="crud-entity-title mb-2"><?php echo $tenDanhMuc; ?></h5>
-                    <p class="crud-muted mb-3">ID: <?php echo $idDanhMuc; ?> | Thứ tự: <?php echo $thuTu; ?></p>
+                    <div class="category-card-content">
+                        <h5 class="crud-entity-title category-title"><?php echo $tenDanhMuc; ?></h5>
+                        <div class="category-meta-line">
+                            <span>ID: <?php echo $idDanhMuc; ?></span>
+                            <span>Thứ tự: <?php echo $thuTu; ?></span>
+                        </div>
+                    </div>
                     <div class="d-flex gap-2 category-actions">
                         <a href="?action=quanlydanhmucsp&query=sua&iddanhmuc=<?php echo $idDanhMuc; ?>" class="btn-action edit" title="Sửa">
                             <i class="fas fa-edit"></i>

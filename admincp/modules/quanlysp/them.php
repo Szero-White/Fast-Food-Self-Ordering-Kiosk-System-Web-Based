@@ -18,6 +18,7 @@
     </div>
     <div class="card-body-custom">
         <form method="POST" action="modules/quanlysp/xuly.php" enctype="multipart/form-data">
+            <?php echo admin_csrf_field(); ?>
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group-custom">

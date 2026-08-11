@@ -18,6 +18,7 @@
     </div>
     <div class="card-body-custom">
         <form method="POST" action="modules/quanlybaiviet/xuly.php" enctype="multipart/form-data">
+            <?php echo admin_csrf_field(); ?>
             <div class="form-group-custom">
                 <label class="form-label-custom">Tiêu đề bài viết <span class="crud-required">*</span></label>
                 <input type="text" name="tenbaiviet" class="form-control-custom" placeholder="Nhập tiêu đề bài viết..." required>

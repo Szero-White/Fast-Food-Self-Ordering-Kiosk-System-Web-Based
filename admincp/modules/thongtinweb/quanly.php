@@ -33,6 +33,7 @@ $hinhAnhGioiThieu = trim((string)($dong['hinhanh'] ?? ''));
             </div>
             <div class="card-body-custom">
                 <form method="POST" action="modules/thongtinweb/xuly.php?id=1" enctype="multipart/form-data">
+                    <?php echo admin_csrf_field(); ?>
                     <div class="form-group-custom">
                         <label class="form-label-custom">Thông tin giới thiệu</label>
                         <textarea name="noidung" class="form-control-custom crud-long-textarea" rows="15" data-editor><?php echo $noiDungGioiThieu; ?></textarea>

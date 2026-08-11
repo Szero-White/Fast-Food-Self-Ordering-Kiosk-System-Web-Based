@@ -34,6 +34,7 @@ if ($banner === null) {
             </div>
             <div class="card-body-custom">
                 <form method="POST" action="modules/quanlybanner/xuly.php?idbanner=<?php echo (int)$banner['id_banner']; ?>" enctype="multipart/form-data">
+                    <?php echo admin_csrf_field(); ?>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group-custom">

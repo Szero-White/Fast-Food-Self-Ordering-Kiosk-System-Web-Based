@@ -75,6 +75,7 @@ $assetDescriptions = [
                 </div>
 
                 <form method="POST" action="modules/quanlyhinhanh/xuly.php" enctype="multipart/form-data">
+                    <?php echo admin_csrf_field(); ?>
                     <input type="hidden" name="asset_key" value="<?php echo $safeAssetKey; ?>">
                     <div class="asset-upload-control">
                         <label class="asset-file-label" for="asset-file-<?php echo $safeAssetKey; ?>">

@@ -1,5 +1,4 @@
 <?php
-// Start session at the very beginning - before any output
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -7,11 +6,13 @@ if (session_status() === PHP_SESSION_NONE) {
 include("config/config.php");
 require_once __DIR__ . '/../config/site_asset_repository.php';
 require_once __DIR__ . '/../config/order_notification_repository.php';
+require_once __DIR__ . '/../config/staff_call_repository.php';
 require_once __DIR__ . '/controllers/kiosk_session_controller.php';
 require_once __DIR__ . '/controllers/cart_controller.php';
 require_once __DIR__ . '/controllers/checkout_controller.php';
 
 ensure_order_notification_columns($mysqli);
+ensure_staff_call_table($mysqli);
 
 $currentPage = $_GET['quanly'] ?? '';
 $usesHomePageCss = in_array($currentPage, ['', 'index', 'trangchu'], true);
@@ -22,8 +23,14 @@ $usesProductDetailCss = $currentPage === 'sanpham';
 $usesNewsDetailCss = $currentPage === 'baiviet';
 $usesCartPageCss = $currentPage === 'giohang';
 $usesStaticPageCss = in_array($currentPage, ['gioithieu', 'lienhe', 'contact'], true);
+$usesStaffCallCss = $currentPage === 'goinhanvien';
+$usesKioskTimeout = !in_array($currentPage, ['welcome', 'camon'], true);
 $layoutGlassCssVersion = filemtime(__DIR__ . '/css/layout-glass.css');
 $staticPageCssVersion = filemtime(__DIR__ . '/css/static-pages.css');
+$productDetailCssVersion = filemtime(__DIR__ . '/css/product-detail.css');
+$staffCallCssVersion = filemtime(__DIR__ . '/css/staff-call-page.css');
+$timeoutCssVersion = filemtime(__DIR__ . '/css/kiosk-timeout.css');
+$timeoutJsVersion = filemtime(__DIR__ . '/js/timeout.js');
 
 handle_kiosk_session_request($mysqli, $currentPage);
 handle_cart_request($mysqli, $currentPage);
@@ -58,7 +65,7 @@ handle_checkout_request($mysqli, $currentPage);
         <link rel="stylesheet" type="text/css" href="css/checkout-page.css">
     <?php } ?>
     <?php if ($usesProductDetailCss) { ?>
-        <link rel="stylesheet" type="text/css" href="css/product-detail.css">
+        <link rel="stylesheet" type="text/css" href="css/product-detail.css?v=<?php echo $productDetailCssVersion; ?>">
     <?php } ?>
     <?php if ($usesNewsDetailCss) { ?>
         <link rel="stylesheet" type="text/css" href="css/news-detail.css">
@@ -69,32 +76,38 @@ handle_checkout_request($mysqli, $currentPage);
     <?php if ($usesStaticPageCss) { ?>
         <link rel="stylesheet" type="text/css" href="css/static-pages.css?v=<?php echo $staticPageCssVersion; ?>">
     <?php } ?>
-
+    <?php if ($usesStaffCallCss) { ?>
+        <link rel="stylesheet" type="text/css" href="css/staff-call-page.css?v=<?php echo $staffCallCssVersion; ?>">
+    <?php } ?>
+    <?php if ($usesKioskTimeout) { ?>
+        <link rel="stylesheet" type="text/css" href="css/kiosk-timeout.css?v=<?php echo $timeoutCssVersion; ?>">
+    <?php } ?>
 </head>
 
 <body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    
-    <!-- Chatbot Widget -->
+
     <?php include("pages/chatbot.php"); ?>
-    
+
     <div class="wrapper">
         <?php
         include("config/config.php");
         include("pages/header.php");
         include("pages/menu.php");
         include("pages/main.php");
-        // Footer loaded by individual pages
         include("pages/footer.php");
         ?>
     </div>
+
     <?php if ($usesHomePageCss) { ?>
         <script src="js/home-page.js"></script>
     <?php } ?>
     <?php if ($usesCheckoutPageAssets) { ?>
         <script src="js/checkout-page.js"></script>
     <?php } ?>
-    
+    <?php if ($usesKioskTimeout) { ?>
+        <script src="js/timeout.js?v=<?php echo $timeoutJsVersion; ?>"></script>
+    <?php } ?>
 </body>
 
 </html>

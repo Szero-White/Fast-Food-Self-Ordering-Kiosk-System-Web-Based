@@ -1,5 +1,9 @@
 <?php
 include(__DIR__ . '/../../config/config.php');
+require_once __DIR__ . '/../../includes/admin_security.php';
+
+admin_require_login('../../login.php');
+admin_require_valid_csrf();
 
 $tendanhmucbv = trim($_POST['tendanhmucbaiviet'] ?? '');
 $thutu = (int)($_POST['thutu'] ?? 0);

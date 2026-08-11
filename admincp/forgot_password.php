@@ -1,95 +1,139 @@
 <?php
-session_start();
+declare(strict_types=1);
+
+require_once __DIR__ . '/includes/admin_security.php';
 include('config/config.php');
 require_once __DIR__ . '/../config/site_asset_repository.php';
 
 $adminLogoUrl = site_asset_url($mysqli, 'admin_logo');
 $adminFaviconUrl = site_asset_url($mysqli, 'site_favicon');
-
-$step = $_GET['step'] ?? 1;
+$step = max(1, min(3, (int)($_GET['step'] ?? 1)));
 $error = '';
 $success = '';
 
-// Step 1: Check username and get security question
-if ($step == 1 && isset($_POST['check_user'])) {
-    $username = mysqli_real_escape_string($mysqli, $_POST['username']);
-    // Kiểm tra admin đang hoạt động (status > 0)
-    $sql = "SELECT id_admin, security_question, security_answer FROM tbl_admin WHERE username = '$username' AND admin_status > 0";
-    $result = mysqli_query($mysqli, $sql);
-    
-    if (mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        
-        // Nếu chưa có câu trả lời xác thực, set mặc định là 'cat'
-        if (empty($row['security_answer'])) {
-            $admin_id = $row['id_admin'];
-            $default_answer = md5('cat');
-            mysqli_query($mysqli, "UPDATE tbl_admin SET security_answer = '$default_answer', security_question = 'Thú cưng yêu thích của bạn là gì?' WHERE id_admin = $admin_id");
-            $row['security_question'] = 'Thú cưng yêu thích của bạn là gì?';
-        }
-        
-        $_SESSION['reset_admin_id'] = $row['id_admin'];
-        $_SESSION['reset_username'] = $username;
-        $_SESSION['security_question'] = $row['security_question'] ?? 'Thú cưng yêu thích của bạn là gì?';
-        header('Location: forgot_password.php?step=2');
-        exit;
+function reset_csrf_token(): string
+{
+    if (empty($_SESSION['reset_csrf_token']) || !is_string($_SESSION['reset_csrf_token'])) {
+        $_SESSION['reset_csrf_token'] = bin2hex(random_bytes(32));
+    }
+
+    return $_SESSION['reset_csrf_token'];
+}
+
+function reset_csrf_field(): string
+{
+    return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(reset_csrf_token(), ENT_QUOTES, 'UTF-8') . '">';
+}
+
+function reset_csrf_is_valid(): bool
+{
+    $token = (string)($_POST['csrf_token'] ?? '');
+    return $token !== '' && hash_equals(reset_csrf_token(), $token);
+}
+
+function redirect_reset_step(int $step): void
+{
+    header('Location: forgot_password.php?step=' . $step);
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !reset_csrf_is_valid()) {
+    $error = 'Phiên xác thực không hợp lệ, vui lòng thử lại.';
+}
+
+if ($error === '' && $step === 1 && isset($_POST['check_user'])) {
+    $username = trim((string)($_POST['username'] ?? ''));
+
+    $stmt = $mysqli->prepare(
+        'SELECT id_admin, username, security_question, security_answer
+         FROM tbl_admin
+         WHERE username = ? AND admin_status > 0
+         LIMIT 1'
+    );
+    $stmt->bind_param('s', $username);
+    $stmt->execute();
+    $admin = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    if (!$admin) {
+        $error = 'Tài khoản không tồn tại hoặc đã bị khóa.';
+    } elseif (empty($admin['security_question']) || empty($admin['security_answer'])) {
+        $error = 'Tài khoản này chưa cấu hình câu hỏi bảo mật. Vui lòng liên hệ quản trị viên.';
     } else {
-        $error = 'Tài khoản không tồn tại hoặc đã bị khóa!';
+        $_SESSION['reset_admin_id'] = (int)$admin['id_admin'];
+        $_SESSION['reset_username'] = (string)$admin['username'];
+        $_SESSION['security_question'] = (string)$admin['security_question'];
+        unset($_SESSION['verified']);
+        redirect_reset_step(2);
     }
 }
 
-// Step 2: Verify security answer
-if ($step == 2 && isset($_POST['verify_answer'])) {
-    if (!isset($_SESSION['reset_admin_id'])) {
-        header('Location: forgot_password.php?step=1');
-        exit;
+if ($error === '' && $step === 2 && isset($_POST['verify_answer'])) {
+    if (empty($_SESSION['reset_admin_id'])) {
+        redirect_reset_step(1);
     }
-    
-    $answer = md5($_POST['security_answer']);
-    $admin_id = $_SESSION['reset_admin_id'];
-    
-    $sql = "SELECT * FROM tbl_admin WHERE id_admin = $admin_id AND security_answer = '$answer'";
-    $result = mysqli_query($mysqli, $sql);
-    
-    if (mysqli_num_rows($result) > 0) {
+
+    $adminId = (int)$_SESSION['reset_admin_id'];
+    $answer = trim((string)($_POST['security_answer'] ?? ''));
+    $stmt = $mysqli->prepare('SELECT security_answer FROM tbl_admin WHERE id_admin = ? AND admin_status > 0 LIMIT 1');
+    $stmt->bind_param('i', $adminId);
+    $stmt->execute();
+    $admin = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    $storedAnswer = (string)($admin['security_answer'] ?? '');
+    $legacyAnswerOk = strlen($storedAnswer) === 32 && hash_equals($storedAnswer, md5($answer));
+    $passwordAnswerOk = password_verify($answer, $storedAnswer);
+
+    if ($legacyAnswerOk || $passwordAnswerOk) {
+        if ($legacyAnswerOk) {
+            $newAnswerHash = password_hash($answer, PASSWORD_DEFAULT);
+            $stmt = $mysqli->prepare('UPDATE tbl_admin SET security_answer = ? WHERE id_admin = ?');
+            $stmt->bind_param('si', $newAnswerHash, $adminId);
+            $stmt->execute();
+            $stmt->close();
+        }
+
         $_SESSION['verified'] = true;
-        header('Location: forgot_password.php?step=3');
-        exit;
+        redirect_reset_step(3);
     } else {
-        $error = 'Câu trả lời xác thực không đúng!';
+        $error = 'Câu trả lời bảo mật không đúng.';
     }
 }
 
-// Step 3: Reset password
-if ($step == 3 && isset($_POST['reset_password'])) {
-    if (!isset($_SESSION['reset_admin_id']) || !isset($_SESSION['verified'])) {
-        header('Location: forgot_password.php?step=1');
-        exit;
+if ($error === '' && $step === 3 && isset($_POST['reset_password'])) {
+    if (empty($_SESSION['reset_admin_id']) || empty($_SESSION['verified'])) {
+        redirect_reset_step(1);
     }
-    
-    $new_password = $_POST['new_password'];
-    $confirm_password = $_POST['confirm_password'];
-    
-    if ($new_password != $confirm_password) {
-        $error = 'Mật khẩu xác nhận không khớp!';
-    } elseif (strlen($new_password) < 6) {
-        $error = 'Mật khẩu phải có ít nhất 6 ký tự!';
+
+    $adminId = (int)$_SESSION['reset_admin_id'];
+    $newPassword = (string)($_POST['new_password'] ?? '');
+    $confirmPassword = (string)($_POST['confirm_password'] ?? '');
+
+    if ($newPassword !== $confirmPassword) {
+        $error = 'Mật khẩu xác nhận không khớp.';
+    } elseif (strlen($newPassword) < 8) {
+        $error = 'Mật khẩu phải có ít nhất 8 ký tự.';
     } else {
-        $hashed = password_hash($new_password, PASSWORD_DEFAULT);
-        $admin_id = $_SESSION['reset_admin_id'];
-        $stmt = $mysqli->prepare("UPDATE tbl_admin SET password = ? WHERE id_admin = ?");
-        $stmt->bind_param('si', $hashed, $admin_id);
-        
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+        $stmt = $mysqli->prepare('UPDATE tbl_admin SET password = ? WHERE id_admin = ?');
+        $stmt->bind_param('si', $hashedPassword, $adminId);
+
         if ($stmt->execute()) {
-            // Clear session
-            unset($_SESSION['reset_admin_id']);
-            unset($_SESSION['reset_username']);
-            unset($_SESSION['security_question']);
-            unset($_SESSION['verified']);
-            $success = 'Đặt lại mật khẩu thành công! Bạn có thể đăng nhập ngay bây giờ.';
+            unset(
+                $_SESSION['reset_admin_id'],
+                $_SESSION['reset_username'],
+                $_SESSION['security_question'],
+                $_SESSION['verified'],
+                $_SESSION['reset_csrf_token']
+            );
+            $success = 'Đặt lại mật khẩu thành công. Bạn có thể đăng nhập ngay bây giờ.';
+            $step = 1;
         } else {
-            $error = 'Có lỗi xảy ra, vui lòng thử lại!';
+            $error = 'Có lỗi xảy ra, vui lòng thử lại.';
         }
+
+        $stmt->close();
     }
 }
 ?>
@@ -98,7 +142,7 @@ if ($step == 3 && isset($_POST['reset_password'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quên Mật Khẩu - FastFood Admin</title>
+    <title>Quên mật khẩu - FastFood Admin</title>
     <link rel="icon" href="<?php echo htmlspecialchars($adminFaviconUrl, ENT_QUOTES, 'UTF-8'); ?>">
     <link rel="apple-touch-icon" href="<?php echo htmlspecialchars($adminFaviconUrl, ENT_QUOTES, 'UTF-8'); ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -119,109 +163,91 @@ if ($step == 3 && isset($_POST['reset_password'])) {
                 <div class="logo-icon">
                     <img src="<?php echo htmlspecialchars($adminLogoUrl, ENT_QUOTES, 'UTF-8'); ?>" alt="FastFood">
                 </div>
-                <h2>Khôi Phục Mật Khẩu</h2>
+                <h2>Khôi phục mật khẩu</h2>
                 <p>Bước <?php echo $step; ?>/3</p>
             </div>
 
-            <!-- Progress Steps -->
             <div class="progress-steps">
-                <div class="step <?php echo $step >= 1 ? 'completed' : 'inactive'; ?>">
+                <div class="step <?php echo $step > 1 ? 'completed' : ($step === 1 ? 'active' : 'inactive'); ?>">
                     <div class="step-circle"><i class="fas fa-user"></i></div>
                     <span class="step-label">Tài khoản</span>
                 </div>
-                <div class="step <?php echo $step == 2 ? 'active' : ($step > 2 ? 'completed' : 'inactive'); ?>">
+                <div class="step <?php echo $step > 2 ? 'completed' : ($step === 2 ? 'active' : 'inactive'); ?>">
                     <div class="step-circle"><i class="fas fa-shield-alt"></i></div>
                     <span class="step-label">Xác thực</span>
                 </div>
-                <div class="step <?php echo $step == 3 ? 'active' : 'inactive'; ?>">
+                <div class="step <?php echo $step > 3 ? 'completed' : ($step === 3 ? 'active' : 'inactive'); ?>">
                     <div class="step-circle"><i class="fas fa-lock"></i></div>
-                    <span class="step-label">Đặt lại</span>
+                    <span class="step-label">Mật khẩu mới</span>
                 </div>
             </div>
 
-            <?php if ($error): ?>
-                <div class="alert-custom alert-error">
-                    <i class="fas fa-exclamation-circle me-2"></i><?php echo $error; ?>
-                </div>
-            <?php endif; ?>
+            <?php if ($error !== '') { ?>
+                <div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></div>
+            <?php } ?>
 
-            <?php if ($success): ?>
-                <div class="alert-custom alert-success">
-                    <i class="fas fa-check-circle me-2"></i><?php echo $success; ?>
-                </div>
-                <div class="success-icon">
-                    <i class="fas fa-check"></i>
-                </div>
-                <div class="back-link">
-                    <a href="login.php"><i class="fas fa-sign-in-alt me-2"></i>Đăng nhập ngay</a>
-                </div>
-            <?php else: ?>
-
-                <?php if ($step == 1): ?>
-                <!-- Step 1: Enter username -->
-                <form method="POST" action="?step=1">
+            <?php if ($success !== '') { ?>
+                <div class="alert alert-success"><i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($success, ENT_QUOTES, 'UTF-8'); ?></div>
+                <a href="login.php" class="btn-action btn-success"><i class="fas fa-sign-in-alt me-2"></i>Đăng nhập ngay</a>
+            <?php } elseif ($step === 1) { ?>
+                <form method="POST">
+                    <?php echo reset_csrf_field(); ?>
                     <div class="form-group">
                         <label class="form-label">Tên đăng nhập</label>
                         <div class="input-wrapper">
                             <i class="fas fa-user"></i>
-                            <input type="text" name="username" class="form-control" placeholder="Nhập tên đăng nhập" required autofocus>
+                            <input type="text" name="username" class="form-control" placeholder="Nhập tên đăng nhập" required>
                         </div>
                     </div>
                     <button type="submit" name="check_user" class="btn-action">
-                        <i class="fas fa-arrow-right me-2"></i>Tiếp tục
+                        <i class="fas fa-search me-2"></i>Kiểm tra tài khoản
                     </button>
                 </form>
-
-                <?php elseif ($step == 2): ?>
-                <!-- Step 2: Answer security question -->
-                <div class="question-box">
-                    <div class="question-label">Câu hỏi xác thực</div>
-                    <div class="question-text">
-                        <i class="fas fa-question-circle me-2"></i>
-                        <?php echo htmlspecialchars($_SESSION['security_question'] ?? 'Thú cưng yêu thích của bạn là gì?'); ?>
+            <?php } elseif ($step === 2) { ?>
+                <form method="POST">
+                    <?php echo reset_csrf_field(); ?>
+                    <div class="question-box">
+                        <i class="fas fa-question-circle"></i>
+                        <h5>Câu hỏi bảo mật</h5>
+                        <p><?php echo htmlspecialchars((string)($_SESSION['security_question'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
                     </div>
-                </div>
-
-                <form method="POST" action="?step=2">
                     <div class="form-group">
-                        <label class="form-label">Câu trả lời của bạn</label>
+                        <label class="form-label">Câu trả lời</label>
                         <div class="input-wrapper">
-                            <i class="fas fa-comment"></i>
-                            <input type="text" name="security_answer" class="form-control" placeholder="Nhập câu trả lời của bạn..." required autofocus autocomplete="off">
+                            <i class="fas fa-key"></i>
+                            <input type="text" name="security_answer" class="form-control" placeholder="Nhập câu trả lời" required>
                         </div>
                     </div>
                     <button type="submit" name="verify_answer" class="btn-action">
-                        <i class="fas fa-check-circle me-2"></i>Xác nhận
+                        <i class="fas fa-check me-2"></i>Xác nhận
                     </button>
                 </form>
-
-                <?php elseif ($step == 3): ?>
-                <!-- Step 3: Reset password -->
-                <form method="POST" action="?step=3">
+            <?php } else { ?>
+                <form method="POST">
+                    <?php echo reset_csrf_field(); ?>
                     <div class="form-group">
                         <label class="form-label">Mật khẩu mới</label>
                         <div class="input-wrapper">
                             <i class="fas fa-lock"></i>
-                            <input type="password" name="new_password" class="form-control" placeholder="Ít nhất 6 ký tự" required autofocus>
+                            <input type="password" name="new_password" class="form-control" placeholder="Nhập mật khẩu mới" minlength="8" required>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Xác nhận mật khẩu</label>
                         <div class="input-wrapper">
                             <i class="fas fa-lock"></i>
-                            <input type="password" name="confirm_password" class="form-control" placeholder="Nhập lại mật khẩu" required>
+                            <input type="password" name="confirm_password" class="form-control" placeholder="Nhập lại mật khẩu mới" minlength="8" required>
                         </div>
                     </div>
-                    <button type="submit" name="reset_password" class="btn-action btn-success">
+                    <button type="submit" name="reset_password" class="btn-action">
                         <i class="fas fa-save me-2"></i>Đặt lại mật khẩu
                     </button>
                 </form>
-                <?php endif; ?>
+            <?php } ?>
 
-                <div class="back-link">
-                    <a href="login.php"><i class="fas fa-arrow-left me-2"></i>Quay lại đăng nhập</a>
-                </div>
-            <?php endif; ?>
+            <div class="back-link">
+                <a href="login.php"><i class="fas fa-arrow-left me-1"></i>Quay lại đăng nhập</a>
+            </div>
         </div>
     </div>
 </body>

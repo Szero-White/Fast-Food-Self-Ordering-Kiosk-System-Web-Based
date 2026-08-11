@@ -1,7 +1,10 @@
 <?php
 include(__DIR__ . '/../../config/config.php');
+require_once __DIR__ . '/../../includes/admin_security.php';
 require_once __DIR__ . '/../../../config/banner_repository.php';
 
+admin_require_login('../../login.php');
+admin_require_valid_csrf();
 ensure_banner_table($mysqli);
 
 function redirect_banners(): void
