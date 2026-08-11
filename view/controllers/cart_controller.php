@@ -5,7 +5,7 @@ function fetch_cart_product(mysqli $mysqli, int $productId): ?array
 {
     $stmt = mysqli_prepare(
         $mysqli,
-        'SELECT id_sanpham, tensanpham, giasp, hinhanh
+        'SELECT id_sanpham, tensanpham, giasp, hinhanh, soluong
          FROM tbl_sanpham
          WHERE id_sanpham = ?
          LIMIT 1'
@@ -32,15 +32,23 @@ function handle_cart_request(mysqli $mysqli, string $currentPage): void
 
     if (isset($_POST['them_giohang'])) {
         $productId = (int)($_POST['id_sanpham'] ?? 0);
-        $quantity = max(1, min(10, (int)($_POST['soluong'] ?? 1)));
+        $quantity = max(1, (int)($_POST['soluong'] ?? 1));
         $product = fetch_cart_product($mysqli, $productId);
 
         if ($product !== null) {
+            $quantity = kiosk_clamp_cart_quantity($quantity, (int)($product['soluong'] ?? 0));
+            if ($quantity <= 0) {
+                kiosk_redirect('index.php?quanly=giohang');
+            }
+
             $found = false;
 
             foreach ($_SESSION['cart'] as &$item) {
                 if ((int)$item['id'] === $productId) {
-                    $item['soluong'] = min(10, (int)$item['soluong'] + $quantity);
+                    $item['soluong'] = kiosk_clamp_cart_quantity(
+                        (int)$item['soluong'] + $quantity,
+                        (int)($product['soluong'] ?? 0)
+                    );
                     $found = true;
                     break;
                 }
@@ -71,7 +79,17 @@ function handle_cart_request(mysqli $mysqli, string $currentPage): void
             }
 
             if ($quantity > 0) {
-                $item['soluong'] = min(10, $quantity);
+                $product = fetch_cart_product($mysqli, $productId);
+                $updatedQuantity = kiosk_clamp_cart_quantity(
+                    $quantity,
+                    $product !== null ? (int)($product['soluong'] ?? 0) : null
+                );
+
+                if ($updatedQuantity > 0) {
+                    $item['soluong'] = $updatedQuantity;
+                } else {
+                    unset($_SESSION['cart'][$key]);
+                }
             } else {
                 unset($_SESSION['cart'][$key]);
             }

@@ -19,6 +19,8 @@ if (!empty($_SESSION['cart'])) {
             $hinhAnh = htmlspecialchars(upload_url($item['hinhanh']), ENT_QUOTES, 'UTF-8');
             $giaSanPham = (float)$item['gia'];
             $soLuong = (int)$item['soluong'];
+            $productStock = fetch_cart_product($mysqli, $idSanPham);
+            $tonKho = max(1, (int)($productStock['soluong'] ?? $soLuong));
         ?>
             <div class="cart-item">
                 <img src="<?php echo $hinhAnh; ?>" alt="<?php echo $tenSanPham; ?>">
@@ -29,7 +31,7 @@ if (!empty($_SESSION['cart'])) {
 
                 <form method="POST" class="quantity-control">
                     <input type="hidden" name="id" value="<?php echo $idSanPham; ?>">
-                    <input type="number" name="soluong" value="<?php echo $soLuong; ?>" min="0" max="10">
+                    <input type="number" name="soluong" value="<?php echo $soLuong; ?>" min="0" max="<?php echo $tonKho; ?>">
                     <button type="submit" name="capnhat" class="btn-update">Cập nhật</button>
                 </form>
 
@@ -64,5 +66,3 @@ if (!empty($_SESSION['cart'])) {
         </div>
     <?php } ?>
 </div>
-
-<script src="js/timeout.js"></script>

@@ -1,6 +1,6 @@
 <?php
 if (isset($_GET['quanly'])) {
-    $tam = $_GET['quanly'];
+    $tam = (string)$_GET['quanly'];
 } else {
     $tam = "";
 }
@@ -10,9 +10,11 @@ if ($tam == 'welcome') {
 } else if ($tam == 'camon') {
     include("main/camon.php");
 } else {
+$staticPages = ['lienhe', 'gioithieu', 'contact'];
+$isStaticPage = in_array($tam, $staticPages, true);
 ?>
 <div class="main">
-    <div class="maincontent">
+    <div class="maincontent<?php echo $isStaticPage ? ' maincontent--static' : ''; ?>">
         <?php
         if ($tam == 'monan') {
             include("main/tenmonan.php");
@@ -36,6 +38,8 @@ if ($tam == 'welcome') {
             include("main/giohang.php");
         } else if ($tam == 'thanhtoan') {
             include("main/thanhtoan.php");
+        } else if ($tam == 'goinhanvien') {
+            include("main/goinhanvien.php");
         } else if ($tam == 'index' || $tam == '' || $tam == 'trangchu') {
             include("main/index.php");
         } else {

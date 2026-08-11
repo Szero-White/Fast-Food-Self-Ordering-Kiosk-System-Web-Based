@@ -30,6 +30,7 @@ function render_menu_product_card(array $row, int $index = 0): void
 {
     $badge = $index < 2 ? 'hot' : ($index < 4 ? 'new' : '');
     $badgeText = $index < 2 ? 'Nổi bật' : ($index < 4 ? 'Mới' : '');
+    $stockQuantity = max(1, (int)($row['soluong'] ?? 1));
     ?>
     <article class="product-card">
         <?php if ($badge !== '') { ?>
@@ -51,7 +52,7 @@ function render_menu_product_card(array $row, int $index = 0): void
                     <input type="hidden" name="ten_sanpham" value="<?php echo htmlspecialchars($row['tensanpham'], ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="giasp" value="<?php echo (int) $row['giasp']; ?>">
                     <input type="hidden" name="hinhanh" value="<?php echo htmlspecialchars($row['hinhanh'], ENT_QUOTES, 'UTF-8'); ?>">
-                    <input type="number" name="soluong" value="1" min="1" max="10" class="product-quantity" aria-label="Số lượng">
+                    <input type="number" name="soluong" value="1" min="1" max="<?php echo $stockQuantity; ?>" class="product-quantity" aria-label="Số lượng">
                     <a class="btn-detail" href="index.php?quanly=sanpham&id=<?php echo (int) $row['id_sanpham']; ?>" title="Xem chi tiết" aria-label="Xem chi tiết">
                         <i class="fas fa-eye"></i>
                     </a>

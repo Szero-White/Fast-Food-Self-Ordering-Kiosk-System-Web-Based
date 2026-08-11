@@ -2,6 +2,15 @@
 $sql_gioithieu = "SELECT * FROM tbl_gioithieu WHERE id = 1";
 $query_gioithieu = mysqli_query($mysqli, $sql_gioithieu);
 $row_gioithieu = mysqli_fetch_array($query_gioithieu);
+
+function about_safe_content(?string $content): string
+{
+    $html = strip_tags((string)$content, '<p><br><strong><b><em><i><ul><ol><li><a><h3><h4>');
+    $html = preg_replace('/\s+on[a-z]+\s*=\s*(["\']).*?\1/iu', '', $html) ?? '';
+    $html = preg_replace('/href\s*=\s*(["\'])\s*javascript:.*?\1/iu', 'href="#"', $html) ?? '';
+
+    return $html;
+}
 ?>
 
 <div class="about-container">
@@ -14,7 +23,7 @@ $row_gioithieu = mysqli_fetch_array($query_gioithieu);
         <h2>📖 Về Chúng Tôi</h2>
         <?php if (!empty($row_gioithieu['noidung'])) { ?>
             <div class="about-content">
-                <?php echo $row_gioithieu['noidung']; ?>
+                <?php echo about_safe_content($row_gioithieu['noidung']); ?>
             </div>
         <?php } else { ?>
             <p>Nhà hàng FastFood là chuỗi thức ăn nhanh hàng đầu tại Thành phố Hồ Chí Minh. Chúng tôi tự hào mang đến cho khách hàng những món ăn ngon, chất lượng với giá cả hợp lý.</p>

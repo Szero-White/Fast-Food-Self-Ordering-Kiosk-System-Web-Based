@@ -1,3 +1,5 @@
+/* styl.css — legacy base, giữ lại các utility class */
+
 body {
     margin: 0;
     padding: 0;
@@ -14,67 +16,13 @@ body {
     width: 100%;
 }
 
-.header {
-    height: auto;
-    width: auto;
-    padding-left: 60px;
-    background-color: black;
-    color: white;
-}
-
-.header img {
-    width: 116px;
-    height: 65px;
-    margin: 6px 19px 2px;
-    border: 1px solid;
-    border-radius: 9%;
-}
-
-ul.list_header {
-    padding: 0;
-    /* margin-right: 20px; */
-    list-style: none;
-    float: right;
-
-}
-
-ul.list_header li {
-    float: left;
-    margin: 0px 0px 0px;
-    padding: 11px;
-    font-weight: revert-layer;
-}
-
-ul.list_header li:hover {
-    /* background: white; */
-    color: white;
-}
-
-ul.list_header li a {
-    text-decoration: none;
-    color: white;
-
-}
-
-.menu {
-    border: 1px solid black;
-    height: auto;
-    width: auto;
-    background-color: black;
-    margin: 0 auto;
-    color: white;
-}
-
 .main {
-    height: 100%;
     width: 100%;
     margin: 0 auto;
     background-color: black;
     display: flex;
     justify-content: center;
 }
-
-
 
 .maincontent {
     height: auto;
@@ -85,54 +33,7 @@ ul.list_header li a {
     background-color: black;
 }
 
-.dsp {
-    text-align: center;
-    padding-bottom: 20px;
-    padding-top: 7px;
-    background-color: black;
-}
-
-ul.product_list {
-    padding: 0;
-    margin-right: 0;
-    list-style: none;
-    float: left;
-    background-color: black;
-}
-
-ul.product_list li {
-    width: 20%;
-    border: 1px solid white;
-    border-radius: 3%;
-    float: left;
-    text-align: center;
-    color: peru;
-    margin-top: inherit;
-    margin-right: 55px;
-    margin-bottom: 53px;
-    height: 24rem;
-    background-color: black;
-}
-
-ul.product_list li img {
-    border-radius: 9%;
-    margin-top: 11px;
-    width: 91%;
-    height: 12rem;
-    margin-bottom: 5px;
-}
-
-
-
-
-.clear {
-    clear: both;
-}
-
-.clear_right {
-    clear: right;
-}
-
-.clear_left {
-    clear: left;
-}
+/* Utility */
+.clear       { clear: both; }
+.clear_right { clear: right; }
+.clear_left  { clear: left; }

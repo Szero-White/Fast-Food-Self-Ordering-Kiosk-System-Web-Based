@@ -1,9 +1,29 @@
 <?php
+$action = $_GET['action'] ?? '';
+$adminOnlyActions = ['get_chat_history', 'get_chat_stats', 'get_chat_stats_by_date'];
+
 if (PHP_SAPI !== 'cli' && session_status() === PHP_SESSION_NONE) {
+    if (in_array($action, $adminOnlyActions, true)) {
+        $adminSessionPath = sys_get_temp_dir() . '/fastfood_admin_sessions';
+        if (!is_dir($adminSessionPath)) {
+            mkdir($adminSessionPath, 0700, true);
+        }
+        session_save_path($adminSessionPath);
+    }
+
     session_start();
 }
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
+
+$requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$requestHost = $_SERVER['HTTP_HOST'] ?? '';
+if ($requestOrigin !== '') {
+    $originHost = parse_url($requestOrigin, PHP_URL_HOST);
+    $normalizedHost = strtolower(preg_replace('/:\d+$/', '', $requestHost) ?? $requestHost);
+    if (is_string($originHost) && strtolower($originHost) === $normalizedHost) {
+        header('Access-Control-Allow-Origin: ' . $requestOrigin);
+    }
+}
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
@@ -13,6 +33,9 @@ if ($requestMethod === 'OPTIONS') {
 }
 
 include(__DIR__ . '/../../config/config.php');
+require_once __DIR__ . '/../../controllers/cart_controller.php';
+require_once __DIR__ . '/../../../config/kiosk_order_repository.php';
+require_once __DIR__ . '/../../../config/gemini_chatbot_client.php';
 
 if (!$mysqli) {
     $response = ['success' => false, 'message' => 'Database connection failed: ' . mysqli_connect_error()];
@@ -28,13 +51,80 @@ if (!$result) {
     exit;
 }
 
-$action = $_GET['action'] ?? '';
+function chatbot_limit_text(string $value, int $length): string
+{
+    if (function_exists('mb_substr')) {
+        return mb_substr($value, 0, $length, 'UTF-8');
+    }
+
+    return substr($value, 0, $length);
+}
+
+function chatbot_request_json(): array
+{
+    $data = json_decode(file_get_contents('php://input'), true);
+
+    return is_array($data) ? $data : [];
+}
+
 $response = ['success' => false, 'data' => null, 'message' => ''];
+$allowedResponseTypes = ['static', 'api_products', 'api_price', 'api_promo', 'api_stock', 'api_cart_add', 'ai_gemini', 'fallback', 'error'];
+
+if (in_array($action, $adminOnlyActions, true) && !isset($_SESSION['dangnhap'])) {
+    http_response_code(401);
+    echo json_encode([
+        'success' => false,
+        'code' => 'admin_required',
+        'message' => 'Bạn cần đăng nhập quản trị để xem dữ liệu này.',
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
 switch($action) {
+    case 'ai_chat':
+        $data = chatbot_request_json();
+        $message = trim((string)($data['message'] ?? $_GET['message'] ?? ''));
+        $message = chatbot_limit_text($message, 500);
+
+        if ($message === '') {
+            $response = ['success' => false, 'code' => 'missing_message', 'message' => 'Thiếu nội dung câu hỏi.'];
+            break;
+        }
+
+        $aiResult = chatbot_ai_generate_reply($mysqli, $message);
+
+        if (!empty($aiResult['success'])) {
+            $response = [
+                'success' => true,
+                'data' => [
+                    'response' => $aiResult['answer'],
+                    'matched_keyword' => 'gemini',
+                    'response_type' => 'ai_gemini',
+                ],
+            ];
+        } else {
+            $response = [
+                'success' => false,
+                'code' => $aiResult['code'] ?? 'ai_error',
+                'message' => $aiResult['message'] ?? 'AI chưa thể trả lời lúc này.',
+            ];
+        }
+        break;
+
     case 'get_products':
         // Lấy danh sách sản phẩm
-        $sql = "SELECT tensanpham, giasp, soluong, tomtat FROM tbl_sanpham WHERE soluong > 0 ORDER BY id_sanpham DESC LIMIT 10";
+        $sql = "SELECT sanpham.id_sanpham,
+                       sanpham.tensanpham,
+                       sanpham.giasp,
+                       sanpham.soluong,
+                       sanpham.hinhanh,
+                       sanpham.tomtat,
+                       danhmuc.tendanhmuc
+                FROM tbl_sanpham AS sanpham
+                LEFT JOIN tbl_danhmuc AS danhmuc ON danhmuc.id_danhmuc = sanpham.id_danhmuc
+                WHERE sanpham.soluong > 0
+                ORDER BY sanpham.id_sanpham DESC
+                LIMIT 50";
         $result = mysqli_query($mysqli, $sql);
         $products = [];
         while($row = mysqli_fetch_assoc($result)) {
@@ -45,16 +135,90 @@ switch($action) {
         
     case 'search_product':
         // Tìm sản phẩm theo tên
-        $keyword = mysqli_real_escape_string($mysqli, $_GET['keyword'] ?? '');
-        $sql = "SELECT tensanpham, giasp, soluong FROM tbl_sanpham 
-                WHERE tensanpham LIKE '%$keyword%' AND soluong > 0 
-                LIMIT 5";
-        $result = mysqli_query($mysqli, $sql);
+        $keyword = trim((string)($_GET['keyword'] ?? ''));
+        $keyword = chatbot_limit_text($keyword, 100);
+        $likeKeyword = '%' . $keyword . '%';
         $products = [];
-        while($row = mysqli_fetch_assoc($result)) {
-            $products[] = $row;
+        $stmt = mysqli_prepare(
+            $mysqli,
+            "SELECT sanpham.id_sanpham,
+                    sanpham.tensanpham,
+                    sanpham.giasp,
+                    sanpham.soluong,
+                    sanpham.hinhanh,
+                    sanpham.tomtat,
+                    danhmuc.tendanhmuc
+             FROM tbl_sanpham AS sanpham
+             LEFT JOIN tbl_danhmuc AS danhmuc ON danhmuc.id_danhmuc = sanpham.id_danhmuc
+             WHERE sanpham.tensanpham LIKE ? AND sanpham.soluong > 0
+             LIMIT 5"
+        );
+
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, 's', $likeKeyword);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            while($row = mysqli_fetch_assoc($result)) {
+                $products[] = $row;
+            }
+            mysqli_stmt_close($stmt);
         }
         $response = ['success' => true, 'data' => $products, 'keyword' => $keyword];
+        break;
+
+    case 'add_to_cart':
+        $data = chatbot_request_json();
+        $productId = (int)($data['product_id'] ?? 0);
+        $quantity = max(1, (int)($data['quantity'] ?? 1));
+
+        if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
+            $_SESSION['cart'] = [];
+        }
+
+        $product = fetch_cart_product($mysqli, $productId);
+        if ($product === null) {
+            $response = ['success' => false, 'message' => 'Không tìm thấy món cần thêm vào giỏ hàng.'];
+            break;
+        }
+
+        $quantity = kiosk_clamp_cart_quantity($quantity, (int)($product['soluong'] ?? 0));
+        if ($quantity <= 0) {
+            $response = ['success' => false, 'message' => 'Món này hiện đã hết hàng.'];
+            break;
+        }
+
+        $found = false;
+        foreach ($_SESSION['cart'] as &$item) {
+            if ((int)$item['id'] === $productId) {
+                $item['soluong'] = kiosk_clamp_cart_quantity(
+                    (int)$item['soluong'] + $quantity,
+                    (int)($product['soluong'] ?? 0)
+                );
+                $found = true;
+                break;
+            }
+        }
+        unset($item);
+
+        if (!$found) {
+            $_SESSION['cart'][] = [
+                'id' => (int)$product['id_sanpham'],
+                'ten' => (string)$product['tensanpham'],
+                'gia' => (float)$product['giasp'],
+                'hinhanh' => (string)$product['hinhanh'],
+                'soluong' => $quantity,
+            ];
+        }
+
+        $response = [
+            'success' => true,
+            'data' => [
+                'product' => $product,
+                'added_quantity' => $quantity,
+                'cart_quantity' => kiosk_cart_quantity($_SESSION['cart']),
+                'cart_total' => kiosk_cart_total($_SESSION['cart']),
+            ],
+        ];
         break;
         
     case 'get_promotions':
@@ -84,15 +248,25 @@ switch($action) {
         
     case 'check_stock':
         // Kiểm tra tồn kho
-        $product = mysqli_real_escape_string($mysqli, $_GET['product'] ?? '');
-        $sql = "SELECT tensanpham, soluong FROM tbl_sanpham 
-                WHERE tensanpham LIKE '%$product%' LIMIT 1";
-        $result = mysqli_query($mysqli, $sql);
+        $product = trim((string)($_GET['product'] ?? ''));
+        $product = chatbot_limit_text($product, 100);
+        $likeProduct = '%' . $product . '%';
+        $stmt = mysqli_prepare(
+            $mysqli,
+            'SELECT tensanpham, soluong
+             FROM tbl_sanpham
+             WHERE tensanpham LIKE ?
+             LIMIT 1'
+        );
+        mysqli_stmt_bind_param($stmt, 's', $likeProduct);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
         if($row = mysqli_fetch_assoc($result)) {
             $response = ['success' => true, 'data' => $row];
         } else {
             $response = ['success' => false, 'message' => 'Không tìm thấy món này'];
         }
+        mysqli_stmt_close($stmt);
         break;
         
     case 'get_price_range':
@@ -106,11 +280,10 @@ switch($action) {
 
     case 'get_chat_history':
         // Lấy lịch sử chat (cho admin)
-        $limit = intval($_GET['limit'] ?? 50);
-        $offset = intval($_GET['offset'] ?? 0);
+        $limit = max(1, min(200, intval($_GET['limit'] ?? 50)));
+        $offset = max(0, intval($_GET['offset'] ?? 0));
         $type = $_GET['type'] ?? '';
-        $allowedTypes = ['static', 'api_products', 'api_price', 'api_promo', 'api_stock', 'fallback', 'error'];
-        $whereSql = in_array($type, $allowedTypes, true)
+        $whereSql = in_array($type, $allowedResponseTypes, true)
             ? "WHERE response_type = '" . mysqli_real_escape_string($mysqli, $type) . "'"
             : '';
 
@@ -128,18 +301,26 @@ switch($action) {
 
     case 'save_chat':
         // Lưu lịch sử chat từ frontend
-        $data = json_decode(file_get_contents('php://input'), true);
-        $userMsg = mysqli_real_escape_string($mysqli, $data['user_message'] ?? '');
-        $botResp = mysqli_real_escape_string($mysqli, $data['bot_response'] ?? '');
-        $keyword = mysqli_real_escape_string($mysqli, $data['matched_keyword'] ?? '');
-        $type = mysqli_real_escape_string($mysqli, $data['response_type'] ?? 'static');
+        $data = chatbot_request_json();
+        $userMsg = chatbot_limit_text(trim((string)($data['user_message'] ?? '')), 500);
+        $botResp = chatbot_limit_text(trim((string)($data['bot_response'] ?? '')), 2000);
+        $keyword = chatbot_limit_text(trim((string)($data['matched_keyword'] ?? '')), 100);
+        $type = trim((string)($data['response_type'] ?? 'static'));
+        if (!in_array($type, $allowedResponseTypes, true)) {
+            $type = 'fallback';
+        }
         $ip = $_SERVER['REMOTE_ADDR'] ?? null;
-        $ua = mysqli_real_escape_string($mysqli, $_SERVER['HTTP_USER_AGENT'] ?? '');
+        $ua = chatbot_limit_text((string)($_SERVER['HTTP_USER_AGENT'] ?? ''), 255);
 
         if (!empty($userMsg) && !empty($botResp)) {
-            $sql = "INSERT INTO tbl_chatbot_history (user_message, bot_response, matched_keyword, response_type, user_ip, user_agent)
-                    VALUES ('$userMsg', '$botResp', '$keyword', '$type', '$ip', '$ua')";
-            mysqli_query($mysqli, $sql);
+            $stmt = mysqli_prepare(
+                $mysqli,
+                'INSERT INTO tbl_chatbot_history (user_message, bot_response, matched_keyword, response_type, user_ip, user_agent)
+                 VALUES (?, ?, ?, ?, ?, ?)'
+            );
+            mysqli_stmt_bind_param($stmt, 'ssssss', $userMsg, $botResp, $keyword, $type, $ip, $ua);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
             $response = ['success' => true, 'id' => mysqli_insert_id($mysqli)];
         } else {
             $response = ['success' => false, 'message' => 'Missing data'];

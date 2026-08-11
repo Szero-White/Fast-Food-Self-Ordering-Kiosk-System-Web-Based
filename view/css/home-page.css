@@ -224,3 +224,36 @@
     .empty-state p {
         color: #7f8c8d;
     }
+
+    /* View more button per section — same pattern as news-page */
+    .menu-section {
+        max-width: 84rem;
+        margin: 0 auto 46px;
+    }
+
+    .news-view-more {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    .btn-view-more {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 500;
+        font-size: 14px;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 14px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-view-more:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+        color: white;
+    }

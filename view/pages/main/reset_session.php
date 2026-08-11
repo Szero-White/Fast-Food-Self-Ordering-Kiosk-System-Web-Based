@@ -2,7 +2,7 @@
 session_start();
 
 if (isset($_SESSION['id_donhang']) && $_SESSION['id_donhang'] > 0) {
-    include(__DIR__ . '/../../config/config.php');
+    include(__DIR__ . '/../../../config/config.php');
     $orderId = (int)$_SESSION['id_donhang'];
     $stmt = mysqli_prepare($mysqli, 'UPDATE tbl_donhang SET trangthai = 2 WHERE id = ? AND trangthai = 0');
 

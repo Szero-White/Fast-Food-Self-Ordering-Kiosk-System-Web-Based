@@ -1,0 +1,141 @@
+.staff-call-page {
+    width: min(980px, calc(100% - 36px));
+    margin: 72px auto 96px;
+    color: #fff;
+}
+
+.staff-call-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 420px;
+    padding: 54px 42px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 28px;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255, 190, 79, 0.28), transparent 28%),
+        radial-gradient(circle at 88% 12%, rgba(236, 91, 153, 0.28), transparent 30%),
+        linear-gradient(135deg, rgba(102, 126, 234, 0.92), rgba(118, 75, 162, 0.92));
+    box-shadow: 0 26px 70px rgba(12, 16, 36, 0.38);
+    text-align: center;
+}
+
+.staff-call-card::after {
+    content: "";
+    position: absolute;
+    inset: auto -80px -110px auto;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.staff-call-icon {
+    width: 92px;
+    height: 92px;
+    margin: 0 auto 22px;
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.2);
+}
+
+.staff-call-eyebrow {
+    margin: 0 0 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    opacity: 0.86;
+}
+
+.staff-call-card h1 {
+    margin: 0 0 14px;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    font-weight: 700;
+    line-height: 1.08;
+}
+
+.staff-call-message {
+    max-width: 660px;
+    margin: 0 auto 28px;
+    font-size: 1.08rem;
+    line-height: 1.65;
+    opacity: 0.92;
+}
+
+.staff-call-code {
+    width: min(360px, 100%);
+    margin: 0 auto 30px;
+    padding: 20px 24px;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.14);
+    display: grid;
+    gap: 6px;
+}
+
+.staff-call-code span,
+.staff-call-code small {
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.92rem;
+}
+
+.staff-call-code strong {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.staff-call-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.staff-call-btn {
+    min-height: 56px;
+    padding: 0 24px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.staff-call-btn:hover {
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.staff-call-btn.primary {
+    background: #fff;
+    color: #6b55c5;
+    box-shadow: 0 14px 28px rgba(255, 255, 255, 0.18);
+}
+
+.staff-call-btn.secondary {
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    color: #fff;
+}
+
+@media (max-width: 640px) {
+    .staff-call-page {
+        width: min(100% - 24px, 480px);
+        margin: 40px auto 70px;
+    }
+
+    .staff-call-card {
+        padding: 38px 22px;
+        border-radius: 22px;
+    }
+
+    .staff-call-btn {
+        width: 100%;
+    }
+}
