@@ -148,7 +148,7 @@ if ($error === '' && $step === 3 && isset($_POST['reset_password'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css_admin/auth-forgot.css">
+    <link rel="stylesheet" href="css_admin/auth-forgot.css?v=<?php echo filemtime(__DIR__ . '/css_admin/auth-forgot.css'); ?>">
 </head>
 <body>
     <div class="bg-shapes">
@@ -183,11 +183,17 @@ if ($error === '' && $step === 3 && isset($_POST['reset_password'])) {
             </div>
 
             <?php if ($error !== '') { ?>
-                <div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></div>
+                <div class="auth-alert auth-alert-danger" role="alert">
+                    <span class="auth-alert-icon"><i class="fas fa-triangle-exclamation"></i></span>
+                    <span><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></span>
+                </div>
             <?php } ?>
 
             <?php if ($success !== '') { ?>
-                <div class="alert alert-success"><i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($success, ENT_QUOTES, 'UTF-8'); ?></div>
+                <div class="auth-alert auth-alert-success" role="alert">
+                    <span class="auth-alert-icon"><i class="fas fa-circle-check"></i></span>
+                    <span><?php echo htmlspecialchars($success, ENT_QUOTES, 'UTF-8'); ?></span>
+                </div>
                 <a href="login.php" class="btn-action btn-success"><i class="fas fa-sign-in-alt me-2"></i>Đăng nhập ngay</a>
             <?php } elseif ($step === 1) { ?>
                 <form method="POST" novalidate>
