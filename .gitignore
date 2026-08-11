@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+/config/chatbot_ai_secret.php
 
 # Logs and runtime noise
 *.log
