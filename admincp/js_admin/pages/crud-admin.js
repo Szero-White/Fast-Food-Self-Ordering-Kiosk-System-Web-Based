@@ -1,4 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const requiredMessage = (field) => {
+        const label = field.closest('.form-group-custom')?.querySelector('.form-label-custom')?.textContent || 'trường bắt buộc';
+        const cleanLabel = label.replace('*', '').trim().toLowerCase();
+
+        if (field.tagName === 'SELECT') {
+            return 'Vui lòng chọn ' + cleanLabel + '.';
+        }
+
+        return 'Vui lòng nhập ' + cleanLabel + '.';
+    };
+
+    document.querySelectorAll('input[required], select[required], textarea[required]').forEach((field) => {
+        field.addEventListener('invalid', () => {
+            if (field.validity.valueMissing) {
+                field.setCustomValidity(requiredMessage(field));
+                return;
+            }
+
+            field.setCustomValidity('');
+        });
+
+        field.addEventListener('input', () => field.setCustomValidity(''));
+        field.addEventListener('change', () => field.setCustomValidity(''));
+    });
+
     document.querySelectorAll('[data-upload-target]').forEach((trigger) => {
         const targetId = trigger.getAttribute('data-upload-target');
         const input = targetId ? document.getElementById(targetId) : null;

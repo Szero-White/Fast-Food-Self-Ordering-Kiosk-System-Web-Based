@@ -50,6 +50,41 @@ function admin_csrf_field(): string
         . '">';
 }
 
+function admin_set_flash(string $type, string $message): void
+{
+    $_SESSION['admin_flash'] = [
+        'type' => $type,
+        'message' => $message,
+    ];
+}
+
+function admin_render_flash(): void
+{
+    $flash = $_SESSION['admin_flash'] ?? null;
+    unset($_SESSION['admin_flash']);
+
+    if (!is_array($flash)) {
+        return;
+    }
+
+    $type = (string)($flash['type'] ?? 'info');
+    $message = trim((string)($flash['message'] ?? ''));
+    $allowedTypes = ['success', 'danger', 'warning', 'info'];
+
+    if ($message === '') {
+        return;
+    }
+
+    if (!in_array($type, $allowedTypes, true)) {
+        $type = 'info';
+    }
+
+    echo '<div class="alert alert-' . htmlspecialchars($type, ENT_QUOTES, 'UTF-8') . ' admin-flash-alert" role="alert">'
+        . '<i class="fas fa-circle-info me-2"></i>'
+        . htmlspecialchars($message, ENT_QUOTES, 'UTF-8')
+        . '</div>';
+}
+
 function admin_verify_csrf_token(): bool
 {
     $expectedToken = admin_csrf_token();

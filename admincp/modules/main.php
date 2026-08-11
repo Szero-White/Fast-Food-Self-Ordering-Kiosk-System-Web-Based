@@ -1,5 +1,6 @@
 <div class="clear"></div>
 <div class="main">
+    <?php admin_render_flash(); ?>
     <?php
         if (isset($_GET['action'], $_GET['query'])) {
             $tam = (string)$_GET['action'];

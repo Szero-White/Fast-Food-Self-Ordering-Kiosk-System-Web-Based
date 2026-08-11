@@ -152,6 +152,34 @@ require_once __DIR__ . '/includes/admin_shell_data.php';
                                     </a>
                                 <?php } ?>
 
+                                <?php if ($unreadContacts > 0) { ?>
+                                    <a class="notification-item" href="<?php echo count($unreadContactItems) === 1 ? 'index.php?action=quanlylienhe&query=sua&idlienhe=' . (int)$unreadContactItems[0]['id_lienhe'] : 'index.php?action=quanlylienhe&query=lietke'; ?>">
+                                        <span class="notification-icon info"><i class="fas fa-envelope-open-text"></i></span>
+                                        <span class="notification-content">
+                                            <strong><?php echo $unreadContacts; ?> liên hệ chưa xem</strong>
+                                            <small>
+                                                <?php foreach ($unreadContactItems as $index => $contact) {
+                                                    echo $index > 0 ? ' · ' : '';
+                                                    $contactName = trim((string)($contact['ten'] ?? ''));
+                                                    $contactType = trim((string)($contact['loai'] ?? ''));
+                                                    echo htmlspecialchars($contactName !== '' ? $contactName : 'Khách hàng', ENT_QUOTES, 'UTF-8');
+                                                    if ($contactType !== '') {
+                                                        echo ' - ' . htmlspecialchars($contactType, ENT_QUOTES, 'UTF-8');
+                                                    }
+                                                } ?>
+                                                <?php if ($unreadContacts > count($unreadContactItems)) { ?>
+                                                    · còn <?php echo $unreadContacts - count($unreadContactItems); ?> liên hệ khác
+                                                <?php } ?>
+                                            </small>
+                                            <?php if (count($unreadContactItems) === 1) { ?>
+                                                <em><?php echo htmlspecialchars(mb_substr((string)$unreadContactItems[0]['noidung'], 0, 90, 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?></em>
+                                            <?php } else { ?>
+                                                <em>Mở danh sách liên hệ để xem và xử lý phản hồi mới</em>
+                                            <?php } ?>
+                                        </span>
+                                    </a>
+                                <?php } ?>
+
                                 <?php if ($lowStockProducts > 0) { ?>
                                     <a class="notification-item" href="<?php echo count($lowStockItems) === 1 ? 'index.php?action=quanlymonan&query=sua&idsanpham=' . (int)$lowStockItems[0]['id_sanpham'] : 'index.php?action=quanlymonan&query=them'; ?>">
                                         <span class="notification-icon warning"><i class="fas fa-box-open"></i></span>

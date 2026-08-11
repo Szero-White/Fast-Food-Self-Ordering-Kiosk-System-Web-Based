@@ -1,6 +1,5 @@
 <?php
 $ordersAdminCssVersion = filemtime(__DIR__ . '/../../css_admin/pages/orders-admin.css');
-$ordersAdminJsVersion = filemtime(__DIR__ . '/../../js_admin/pages/orders-admin.js');
 
 function order_list_status(int $status): array
 {
@@ -136,5 +135,3 @@ $orders = mysqli_query($mysqli, $ordersSql);
         </div>
     </div>
 </div>
-
-<script src="js_admin/pages/orders-admin.js?v=<?php echo $ordersAdminJsVersion; ?>"></script>

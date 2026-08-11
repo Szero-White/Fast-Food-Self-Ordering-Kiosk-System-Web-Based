@@ -48,6 +48,14 @@ if (
 
 $adminName = htmlspecialchars((string)$_SESSION['dangnhap'], ENT_QUOTES, 'UTF-8');
 $unreadContacts = admin_count_rows($mysqli, "SELECT COUNT(*) AS tong FROM tbl_lienhe WHERE trangthai = 'chua_xem'");
+$unreadContactItems = admin_fetch_rows(
+    $mysqli,
+    "SELECT id_lienhe, ten, loai, noidung, ngaygui
+     FROM tbl_lienhe
+     WHERE trangthai = 'chua_xem'
+     ORDER BY ngaygui DESC
+     LIMIT 3"
+);
 $pendingStaffCalls = staff_call_count_pending($mysqli);
 $pendingStaffCallItems = staff_call_fetch_pending($mysqli, 3);
 $newPaidOrders = admin_count_rows($mysqli, 'SELECT COUNT(*) AS tong FROM tbl_donhang WHERE trangthai = 1 AND admin_seen = 0');
@@ -77,7 +85,7 @@ $uncategorizedProducts = admin_count_rows(
 );
 $activeBanners = admin_count_rows($mysqli, 'SELECT COUNT(*) AS tong FROM tbl_banner WHERE is_active = 1');
 $missingActiveBanner = $activeBanners === 0 ? 1 : 0;
-$systemAlertCount = $pendingStaffCalls + $newPaidOrders + $lowStockProducts + $uncategorizedProducts + $missingActiveBanner;
+$systemAlertCount = $pendingStaffCalls + $newPaidOrders + $unreadContacts + $lowStockProducts + $uncategorizedProducts + $missingActiveBanner;
 $adminLogoUrl = site_asset_url($mysqli, 'admin_logo');
 $adminFaviconUrl = site_asset_url($mysqli, 'site_favicon');
 $adminCssVersion = filemtime(__DIR__ . '/../css_admin/admin_style.css');
