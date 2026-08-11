@@ -23,7 +23,7 @@ $uncategorizedProducts = dashboard_count(
 );
 $totalPosts = dashboard_count($mysqli, 'SELECT COUNT(*) AS tong FROM tbl_baiviet');
 $unreadContacts = dashboard_count($mysqli, "SELECT COUNT(*) AS tong FROM tbl_lienhe WHERE trangthai = 'chua_xem'");
-$newOrders = dashboard_count($mysqli, 'SELECT COUNT(*) AS tong FROM tbl_donhang WHERE trangthai = 0');
+$newOrders = dashboard_count($mysqli, 'SELECT COUNT(*) AS tong FROM tbl_donhang WHERE admin_seen = 0 AND trangthai = 1');
 
 $statCards = [
     [

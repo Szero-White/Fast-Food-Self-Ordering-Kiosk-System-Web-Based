@@ -527,7 +527,7 @@ Khuyến nghị khi public demo:
 ```text
 URL Admin: http://localhost/web_mysqli/admincp/login.php
 Username: toan
-Password: 123456
+Password: 12345678
 ```
 
 Đây là tài khoản demo để HR hoặc người xem dự án có thể đăng nhập nhanh. Khi deploy public lâu dài, nên đổi sang tài khoản demo riêng và giới hạn quyền nếu hệ thống được nâng cấp phân quyền.

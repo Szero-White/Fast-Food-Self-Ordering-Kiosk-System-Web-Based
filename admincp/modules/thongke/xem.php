@@ -44,7 +44,6 @@ $uncategorizedProducts = (int)statistic_value(
      WHERE tbl_danhmuc.id_danhmuc IS NULL'
 );
 $totalPosts = (int)statistic_value($mysqli, 'SELECT COUNT(*) AS tong FROM tbl_baiviet');
-$pendingOrders = (int)statistic_value($mysqli, 'SELECT COUNT(*) AS tong FROM tbl_donhang WHERE trangthai = 0');
 $monthlyRevenue = statistic_value(
     $mysqli,
     'SELECT SUM(tongtien) AS tong
@@ -72,14 +71,6 @@ $metrics = [
         'icon' => 'fa-newspaper',
         'label' => 'Tổng bài viết',
         'value' => $totalPosts,
-        'note' => '',
-        'note_class' => '',
-    ],
-    [
-        'class' => 'pending',
-        'icon' => 'fa-clock',
-        'label' => 'Đang chọn món',
-        'value' => $pendingOrders,
         'note' => '',
         'note_class' => '',
     ],
@@ -125,6 +116,7 @@ $recentOrdersSql = "
         FROM tbl_chitietdonhang
         GROUP BY id_donhang
     ) AS chitiet ON chitiet.id_donhang = donhang.id
+    WHERE donhang.trangthai <> 0
     ORDER BY donhang.ngaydat DESC
     LIMIT 10
 ";

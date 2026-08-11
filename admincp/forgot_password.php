@@ -190,13 +190,13 @@ if ($error === '' && $step === 3 && isset($_POST['reset_password'])) {
                 <div class="alert alert-success"><i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($success, ENT_QUOTES, 'UTF-8'); ?></div>
                 <a href="login.php" class="btn-action btn-success"><i class="fas fa-sign-in-alt me-2"></i>Đăng nhập ngay</a>
             <?php } elseif ($step === 1) { ?>
-                <form method="POST">
+                <form method="POST" novalidate>
                     <?php echo reset_csrf_field(); ?>
                     <div class="form-group">
                         <label class="form-label">Tên đăng nhập</label>
                         <div class="input-wrapper">
                             <i class="fas fa-user"></i>
-                            <input type="text" name="username" class="form-control" placeholder="Nhập tên đăng nhập" required>
+                            <input type="text" name="username" class="form-control" placeholder="Nhập tên đăng nhập" data-required="true">
                         </div>
                     </div>
                     <button type="submit" name="check_user" class="btn-action">
@@ -204,7 +204,7 @@ if ($error === '' && $step === 3 && isset($_POST['reset_password'])) {
                     </button>
                 </form>
             <?php } elseif ($step === 2) { ?>
-                <form method="POST">
+                <form method="POST" novalidate>
                     <?php echo reset_csrf_field(); ?>
                     <div class="question-box">
                         <i class="fas fa-question-circle"></i>
@@ -215,7 +215,7 @@ if ($error === '' && $step === 3 && isset($_POST['reset_password'])) {
                         <label class="form-label">Câu trả lời</label>
                         <div class="input-wrapper">
                             <i class="fas fa-key"></i>
-                            <input type="text" name="security_answer" class="form-control" placeholder="Nhập câu trả lời" required>
+                            <input type="text" name="security_answer" class="form-control" placeholder="Nhập câu trả lời" data-required="true">
                         </div>
                     </div>
                     <button type="submit" name="verify_answer" class="btn-action">
@@ -223,20 +223,20 @@ if ($error === '' && $step === 3 && isset($_POST['reset_password'])) {
                     </button>
                 </form>
             <?php } else { ?>
-                <form method="POST">
+                <form method="POST" novalidate>
                     <?php echo reset_csrf_field(); ?>
                     <div class="form-group">
                         <label class="form-label">Mật khẩu mới</label>
                         <div class="input-wrapper">
                             <i class="fas fa-lock"></i>
-                            <input type="password" name="new_password" class="form-control" placeholder="Nhập mật khẩu mới" minlength="8" required>
+                            <input type="password" name="new_password" class="form-control" placeholder="Nhập mật khẩu mới" data-required="true" data-min-length="8">
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Xác nhận mật khẩu</label>
                         <div class="input-wrapper">
                             <i class="fas fa-lock"></i>
-                            <input type="password" name="confirm_password" class="form-control" placeholder="Nhập lại mật khẩu mới" minlength="8" required>
+                            <input type="password" name="confirm_password" class="form-control" placeholder="Nhập lại mật khẩu mới" data-required="true" data-min-length="8">
                         </div>
                     </div>
                     <button type="submit" name="reset_password" class="btn-action">
@@ -250,5 +250,98 @@ if ($error === '' && $step === 3 && isset($_POST['reset_password'])) {
             </div>
         </div>
     </div>
+    <script>
+    function showFieldError(field, message) {
+        const group = field.closest('.form-group');
+        let error = group ? group.querySelector('.form-field-error') : null;
+
+        if (!error && group) {
+            error = document.createElement('div');
+            error.className = 'form-field-error';
+            group.appendChild(error);
+        }
+
+        if (group) {
+            group.classList.add('has-field-error');
+        }
+        field.classList.add('has-soft-error');
+        if (error) {
+            error.textContent = message;
+        }
+    }
+
+    function clearFieldError(field) {
+        const group = field.closest('.form-group');
+        const error = group ? group.querySelector('.form-field-error') : null;
+
+        if (group) {
+            group.classList.remove('has-field-error');
+        }
+        field.classList.remove('has-soft-error');
+        if (error) {
+            error.textContent = '';
+        }
+    }
+
+    function getForgotFieldMessage(field) {
+        var messages = {
+            username: 'Vui lòng nhập tên đăng nhập.',
+            security_answer: 'Vui lòng nhập câu trả lời bảo mật.',
+            new_password: 'Vui lòng nhập mật khẩu mới.',
+            confirm_password: 'Vui lòng nhập lại mật khẩu mới.'
+        };
+        const value = field.value.trim();
+        const minLength = Number(field.dataset.minLength || 0);
+
+        if (field.dataset.required === 'true' && value === '') {
+            return messages[field.name] || 'Vui lòng nhập đầy đủ thông tin.';
+        }
+
+        if (minLength > 0 && field.value.length > 0 && field.value.length < minLength) {
+            return 'Mật khẩu phải có ít nhất 8 ký tự.';
+        }
+
+        if (field.name === 'confirm_password') {
+            var newPassword = document.querySelector('input[name="new_password"]');
+            if (newPassword && field.value !== '' && field.value !== newPassword.value) {
+                return 'Mật khẩu xác nhận không khớp.';
+            }
+        }
+
+        return '';
+    }
+
+    document.querySelectorAll('form').forEach(function (form) {
+        const fields = form.querySelectorAll('input[data-required="true"], input[data-min-length]');
+
+        fields.forEach(function (field) {
+            field.addEventListener('input', function () {
+                const message = getForgotFieldMessage(field);
+                if (message === '') {
+                    clearFieldError(field);
+                }
+            });
+        });
+
+        form.addEventListener('submit', function (event) {
+            let firstInvalidField = null;
+
+            fields.forEach(function (field) {
+                const message = getForgotFieldMessage(field);
+                if (message !== '') {
+                    showFieldError(field, message);
+                    firstInvalidField = firstInvalidField || field;
+                } else {
+                    clearFieldError(field);
+                }
+            });
+
+            if (firstInvalidField) {
+                event.preventDefault();
+                firstInvalidField.focus();
+            }
+        });
+    });
+    </script>
 </body>
 </html>

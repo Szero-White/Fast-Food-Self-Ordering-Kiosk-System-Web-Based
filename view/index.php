@@ -10,6 +10,7 @@ require_once __DIR__ . '/../config/staff_call_repository.php';
 require_once __DIR__ . '/controllers/kiosk_session_controller.php';
 require_once __DIR__ . '/controllers/cart_controller.php';
 require_once __DIR__ . '/controllers/checkout_controller.php';
+require_once __DIR__ . '/controllers/contact_controller.php';
 
 ensure_order_notification_columns($mysqli);
 ensure_staff_call_table($mysqli);
@@ -35,6 +36,7 @@ $timeoutJsVersion = filemtime(__DIR__ . '/js/timeout.js');
 handle_kiosk_session_request($mysqli, $currentPage);
 handle_cart_request($mysqli, $currentPage);
 handle_checkout_request($mysqli, $currentPage);
+handle_contact_request($mysqli, $currentPage);
 ?>
 <!DOCTYPE html>
 <html lang="vi">

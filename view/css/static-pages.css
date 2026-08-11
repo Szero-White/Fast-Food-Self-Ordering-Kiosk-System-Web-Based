@@ -388,6 +388,14 @@
     transform: translateY(0);
 }
 
+.cf-submit:disabled,
+.cf-submit.is-submitting {
+    cursor: wait;
+    opacity: 0.82;
+    transform: none;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.24);
+}
+
 /* ══════════════════════════════════════════
    ABOUT PAGE (giữ nguyên cấu trúc cũ)
    ══════════════════════════════════════════ */

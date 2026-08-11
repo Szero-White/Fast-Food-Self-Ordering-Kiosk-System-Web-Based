@@ -5,12 +5,27 @@ require_once __DIR__ . '/../config/site_asset_repository.php';
 
 $adminLogoUrl = site_asset_url($mysqli, 'admin_logo');
 $adminFaviconUrl = site_asset_url($mysqli, 'site_favicon');
+$loginError = (string)($_SESSION['admin_login_error'] ?? '');
+$loginUsername = (string)($_SESSION['admin_login_username'] ?? '');
+unset($_SESSION['admin_login_error'], $_SESSION['admin_login_username']);
 
 if (isset($_POST['dangnhap'])) {
     $taikhoan = trim((string)($_POST['username'] ?? ''));
     $matkhau = (string)($_POST['password'] ?? '');
+    $_SESSION['admin_login_username'] = $taikhoan;
+
+    if ($taikhoan === '' || $matkhau === '') {
+        $_SESSION['admin_login_error'] = 'Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.';
+        header('Location:login.php');
+        exit;
+    }
 
     $stmt = $mysqli->prepare('SELECT id_admin, username, password FROM tbl_admin WHERE username = ? AND admin_status > 0 LIMIT 1');
+    if (!$stmt) {
+        $_SESSION['admin_login_error'] = 'Không thể đăng nhập lúc này, vui lòng thử lại sau.';
+        header('Location:login.php');
+        exit;
+    }
     $stmt->bind_param('s', $taikhoan);
     $stmt->execute();
     $admin = $stmt->get_result()->fetch_assoc();
@@ -35,10 +50,12 @@ if (isset($_POST['dangnhap'])) {
         session_regenerate_id(true);
         $_SESSION['dangnhap'] = $admin['username'];
         $_SESSION['admin_id'] = (int)$admin['id_admin'];
+        unset($_SESSION['admin_login_error'], $_SESSION['admin_login_username']);
         header('Location:index.php');
         exit;
     }
 
+    $_SESSION['admin_login_error'] = 'Tên đăng nhập hoặc mật khẩu không đúng.';
     header('Location:login.php');
     exit;
 }
@@ -74,12 +91,19 @@ if (isset($_POST['dangnhap'])) {
                 <p>Quản lý nhà hàng của bạn</p>
             </div>
 
-            <form action="" method="POST">
+            <?php if ($loginError !== '') { ?>
+                <div class="login-alert" role="alert">
+                    <span class="login-alert-icon"><i class="fas fa-triangle-exclamation"></i></span>
+                    <span><?php echo htmlspecialchars($loginError, ENT_QUOTES, 'UTF-8'); ?></span>
+                </div>
+            <?php } ?>
+
+            <form action="" method="POST" id="admin-login-form" novalidate>
                 <div class="form-group">
                     <label class="form-label">Tên đăng nhập</label>
                     <div class="input-wrapper">
                         <i class="fas fa-user"></i>
-                        <input type="text" name="username" class="form-control" placeholder="Nhập tên đăng nhập" required>
+                        <input type="text" name="username" class="form-control" placeholder="Nhập tên đăng nhập" value="<?php echo htmlspecialchars($loginUsername, ENT_QUOTES, 'UTF-8'); ?>" data-required="true">
                     </div>
                 </div>
 
@@ -87,7 +111,7 @@ if (isset($_POST['dangnhap'])) {
                     <label class="form-label">Mật khẩu</label>
                     <div class="input-wrapper">
                         <i class="fas fa-lock"></i>
-                        <input type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" required>
+                        <input type="password" name="password" class="form-control" placeholder="Nhập mật khẩu" data-required="true">
                     </div>
                 </div>
 
@@ -122,7 +146,7 @@ if (isset($_POST['dangnhap'])) {
                     <i class="fas fa-lock demo-row-icon"></i>
                     <div class="demo-field">
                         <span class="demo-field-label">Mật khẩu</span>
-                        <span class="demo-field-val" id="demo-pass">123456</span>
+                        <span class="demo-field-val" id="demo-pass">12345678</span>
                     </div>
                     <button type="button" class="demo-copy" onclick="copyDemo('demo-pass')" title="Sao chép">
                         <i class="fas fa-copy"></i>
@@ -136,6 +160,74 @@ if (isset($_POST['dangnhap'])) {
     </div>
 
     <script>
+    const loginForm = document.getElementById('admin-login-form');
+
+    function getLoginFieldMessage(field) {
+        return field.name === 'username'
+            ? 'Vui lòng nhập tên đăng nhập.'
+            : 'Vui lòng nhập mật khẩu.';
+    }
+
+    function showFieldError(field, message) {
+        const group = field.closest('.form-group');
+        let error = group ? group.querySelector('.form-field-error') : null;
+
+        if (!error && group) {
+            error = document.createElement('div');
+            error.className = 'form-field-error';
+            group.appendChild(error);
+        }
+
+        if (group) {
+            group.classList.add('has-field-error');
+        }
+        field.classList.add('has-soft-error');
+        if (error) {
+            error.textContent = message;
+        }
+    }
+
+    function clearFieldError(field) {
+        const group = field.closest('.form-group');
+        const error = group ? group.querySelector('.form-field-error') : null;
+
+        if (group) {
+            group.classList.remove('has-field-error');
+        }
+        field.classList.remove('has-soft-error');
+        if (error) {
+            error.textContent = '';
+        }
+    }
+
+    if (loginForm) {
+        loginForm.querySelectorAll('input[data-required="true"]').forEach(function (field) {
+            field.addEventListener('input', function () {
+                if (field.value.trim() !== '') {
+                    clearFieldError(field);
+                }
+            });
+        });
+
+        loginForm.addEventListener('submit', function (event) {
+            let firstInvalidField = null;
+
+            loginForm.querySelectorAll('input[data-required="true"]').forEach(function (field) {
+                if (field.value.trim() === '') {
+                    showFieldError(field, getLoginFieldMessage(field));
+                    firstInvalidField = firstInvalidField || field;
+                } else {
+                    clearFieldError(field);
+                }
+            });
+
+            if (firstInvalidField) {
+                event.preventDefault();
+                firstInvalidField.focus();
+            }
+        });
+    }
+
     function toggleDemo(btn) {
         const body = document.getElementById('demo-body');
         const expanded = btn.getAttribute('aria-expanded') === 'true';
@@ -144,9 +236,13 @@ if (isset($_POST['dangnhap'])) {
         btn.querySelector('.demo-chevron').style.transform = expanded ? '' : 'rotate(180deg)';
     }
     function fillDemo() {
-        document.querySelector('input[name="username"]').value = document.getElementById('demo-user').textContent;
-        document.querySelector('input[name="password"]').value = document.getElementById('demo-pass').textContent;
-        document.querySelector('input[name="username"]').focus();
+        const usernameInput = document.querySelector('input[name="username"]');
+        const passwordInput = document.querySelector('input[name="password"]');
+        usernameInput.value = document.getElementById('demo-user').textContent;
+        passwordInput.value = document.getElementById('demo-pass').textContent;
+        usernameInput.dispatchEvent(new Event('input'));
+        passwordInput.dispatchEvent(new Event('input'));
+        usernameInput.focus();
     }
     function copyDemo(id) {
         const text = document.getElementById(id).textContent;

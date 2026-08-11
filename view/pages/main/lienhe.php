@@ -1,28 +1,23 @@
 <?php
-if (isset($_POST['gui_lienhe'])) {
-    $ten        = trim((string)($_POST['ten']         ?? ''));
-    $email      = trim((string)($_POST['email']       ?? ''));
-    $sodienthoai= trim((string)($_POST['sodienthoai'] ?? ''));
-    $loai       = trim((string)($_POST['loai']        ?? ''));
-    $noidung    = trim((string)($_POST['noidung']     ?? ''));
-    $trangthai  = 'chua_xem';
+$thanhcong = (string)($_SESSION['contact_form_success'] ?? '');
+$loi = (string)($_SESSION['contact_form_error'] ?? '');
+$contactOld = $_SESSION['contact_form_old'] ?? [];
+unset($_SESSION['contact_form_success'], $_SESSION['contact_form_error'], $_SESSION['contact_form_old']);
 
-    $stmt = mysqli_prepare(
-        $mysqli,
-        'INSERT INTO tbl_lienhe (thongtinlienhe, hinhanh, ngaygui, trangthai, ten, email, sodienthoai, loai, noidung)
-         VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?)'
-    );
-    $thongtinlienhe = "$ten | $email | $sodienthoai | $loai";
-    $empty = '';
-    mysqli_stmt_bind_param($stmt, 'ssssssss', $thongtinlienhe, $empty, $trangthai, $ten, $email, $sodienthoai, $loai, $noidung);
+if (empty($_SESSION['contact_form_token'])) {
+    contact_generate_form_token();
+}
 
-    if (mysqli_stmt_execute($stmt)) {
-        $thanhcong = 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.';
-    } else {
-        $loi = 'Có lỗi xảy ra, vui lòng thử lại sau.';
-    }
+$contactToken = (string)$_SESSION['contact_form_token'];
 
-    mysqli_stmt_close($stmt);
+function contact_old_value(array $old, string $key): string
+{
+    return htmlspecialchars((string)($old[$key] ?? ''), ENT_QUOTES, 'UTF-8');
+}
+
+function contact_selected(array $old, string $key, string $value): string
+{
+    return (string)($old[$key] ?? '') === $value ? ' selected' : '';
 }
 ?>
 
@@ -142,20 +137,22 @@ if (isset($_POST['gui_lienhe'])) {
                 </div>
             <?php } ?>
 
-            <form method="POST" class="contact-form">
+            <form method="POST" class="contact-form" novalidate>
+                <input type="hidden" name="gui_lienhe" value="1">
+                <input type="hidden" name="contact_form_token" value="<?php echo htmlspecialchars($contactToken, ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="cf-row">
                     <div class="cf-group">
                         <label for="ten">Họ và tên <span class="cf-required">*</span></label>
                         <div class="cf-input-wrap">
                             <i class="fas fa-user"></i>
-                            <input type="text" id="ten" name="ten" placeholder="Nhập họ và tên" required>
+                            <input type="text" id="ten" name="ten" placeholder="Nhập họ và tên" value="<?php echo contact_old_value($contactOld, 'ten'); ?>" required>
                         </div>
                     </div>
                     <div class="cf-group">
                         <label for="email">Email <span class="cf-required">*</span></label>
                         <div class="cf-input-wrap">
                             <i class="fas fa-envelope"></i>
-                            <input type="email" id="email" name="email" placeholder="Nhập địa chỉ email" required>
+                            <input type="email" id="email" name="email" placeholder="Nhập địa chỉ email" value="<?php echo contact_old_value($contactOld, 'email'); ?>" required>
                         </div>
                     </div>
                 </div>
@@ -165,7 +162,7 @@ if (isset($_POST['gui_lienhe'])) {
                         <label for="sodienthoai">Số điện thoại</label>
                         <div class="cf-input-wrap">
                             <i class="fas fa-phone"></i>
-                            <input type="tel" id="sodienthoai" name="sodienthoai" placeholder="Nhập số điện thoại">
+                            <input type="tel" id="sodienthoai" name="sodienthoai" placeholder="Nhập số điện thoại" value="<?php echo contact_old_value($contactOld, 'sodienthoai'); ?>">
                         </div>
                     </div>
                     <div class="cf-group">
@@ -174,11 +171,11 @@ if (isset($_POST['gui_lienhe'])) {
                             <i class="fas fa-tag"></i>
                             <select id="loai" name="loai" required>
                                 <option value="">-- Chọn loại --</option>
-                                <option value="gap_loi">Gặp lỗi website</option>
-                                <option value="don_hang">Vấn đề đơn hàng</option>
-                                <option value="gop_y">Góp ý cải tiến</option>
-                                <option value="hop_tac">Hợp tác kinh doanh</option>
-                                <option value="khac">Khác</option>
+                                <option value="gap_loi"<?php echo contact_selected($contactOld, 'loai', 'gap_loi'); ?>>Gặp lỗi website</option>
+                                <option value="don_hang"<?php echo contact_selected($contactOld, 'loai', 'don_hang'); ?>>Vấn đề đơn hàng</option>
+                                <option value="gop_y"<?php echo contact_selected($contactOld, 'loai', 'gop_y'); ?>>Góp ý cải tiến</option>
+                                <option value="hop_tac"<?php echo contact_selected($contactOld, 'loai', 'hop_tac'); ?>>Hợp tác kinh doanh</option>
+                                <option value="khac"<?php echo contact_selected($contactOld, 'loai', 'khac'); ?>>Khác</option>
                             </select>
                         </div>
                     </div>
@@ -187,10 +184,10 @@ if (isset($_POST['gui_lienhe'])) {
                 <div class="cf-group">
                     <label for="noidung">Nội dung <span class="cf-required">*</span></label>
                     <textarea id="noidung" name="noidung" rows="5"
-                              placeholder="Mô tả chi tiết vấn đề hoặc câu hỏi của bạn..." required></textarea>
+                              placeholder="Mô tả chi tiết vấn đề hoặc câu hỏi của bạn..." required><?php echo contact_old_value($contactOld, 'noidung'); ?></textarea>
                 </div>
 
-                <button type="submit" name="gui_lienhe" class="cf-submit">
+                <button type="submit" class="cf-submit">
                     <i class="fas fa-paper-plane"></i>
                     Gửi liên hệ
                 </button>
@@ -199,3 +196,17 @@ if (isset($_POST['gui_lienhe'])) {
 
     </div>
 </div>
+<script>
+document.querySelectorAll('.contact-form').forEach(function (form) {
+    form.addEventListener('submit', function () {
+        const button = form.querySelector('.cf-submit');
+        if (!button || button.disabled) {
+            return;
+        }
+
+        button.disabled = true;
+        button.classList.add('is-submitting');
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+    });
+});
+</script>

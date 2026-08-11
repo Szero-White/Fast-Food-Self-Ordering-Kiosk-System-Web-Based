@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/paths.php';
 
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+
 $dbHost = getenv('DB_HOST') ?: 'localhost';
 $dbUser = getenv('DB_USER') ?: 'root';
 $dbPass = getenv('DB_PASS') ?: '';
@@ -19,3 +21,4 @@ if ($mysqli->connect_errno) {
 
 $mysqli->set_charset('utf8mb4');
 $mysqli->query('SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci');
+$mysqli->query("SET time_zone = '+07:00'");
