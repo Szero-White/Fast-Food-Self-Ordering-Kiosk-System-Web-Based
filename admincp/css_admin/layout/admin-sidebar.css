@@ -122,6 +122,10 @@
     overflow-x: hidden;
 }
 
+.sidebar-nav.is-restoring-scroll {
+    opacity: 0;
+}
+
 .sidebar-nav::-webkit-scrollbar {
     width: 6px;
 }

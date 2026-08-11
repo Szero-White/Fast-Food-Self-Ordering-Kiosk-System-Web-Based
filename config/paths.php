@@ -88,7 +88,7 @@ function ensure_upload_dir(string $category = ''): void
     $dir = upload_path($category);
 
     if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
-        throw new RuntimeException('Cannot create upload directory.');
+        throw new RuntimeException('Không thể tạo thư mục upload.');
     }
 }
 
@@ -127,11 +127,11 @@ function save_uploaded_image(array $file, string $category = 'misc', ?string $na
     }
 
     if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
-        throw new RuntimeException('Image upload failed.');
+        throw new RuntimeException('Tải ảnh lên thất bại.');
     }
 
     if (($file['size'] ?? 0) > 5 * 1024 * 1024) {
-        throw new RuntimeException('Image is too large. Max size is 5MB.');
+        throw new RuntimeException('Ảnh quá lớn. Dung lượng tối đa là 5MB.');
     }
 
     $allowed = [
@@ -141,10 +141,18 @@ function save_uploaded_image(array $file, string $category = 'misc', ?string $na
     ];
 
     $tmpPath = (string)($file['tmp_name'] ?? '');
+    if ($tmpPath === '' || !is_uploaded_file($tmpPath)) {
+        throw new RuntimeException('Ảnh tải lên không hợp lệ.');
+    }
+
     $mime = detect_image_mime($tmpPath);
 
     if (!isset($allowed[$mime])) {
-        throw new RuntimeException('Only JPG, PNG, and WEBP images are allowed.');
+        throw new RuntimeException('Chỉ cho phép ảnh JPG, PNG và WEBP.');
+    }
+
+    if (@getimagesize($tmpPath) === false) {
+        throw new RuntimeException('File tải lên không phải là ảnh hợp lệ.');
     }
 
     $category = clean_upload_path($category);
@@ -166,7 +174,7 @@ function save_uploaded_image(array $file, string $category = 'misc', ?string $na
     ensure_upload_dir($category);
 
     if (!move_uploaded_file($tmpPath, upload_path($storedPath))) {
-        throw new RuntimeException('Cannot move uploaded image.');
+        throw new RuntimeException('Không thể lưu ảnh đã tải lên.');
     }
 
     return $storedPath;

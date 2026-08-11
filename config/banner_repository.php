@@ -201,8 +201,12 @@ function find_banner(mysqli $mysqli, int $id): ?array
 {
     ensure_banner_table($mysqli);
 
-    $result = mysqli_query($mysqli, 'SELECT * FROM tbl_banner WHERE id_banner = ' . $id . ' LIMIT 1');
+    $stmt = mysqli_prepare($mysqli, 'SELECT * FROM tbl_banner WHERE id_banner = ? LIMIT 1');
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
     $banner = $result ? mysqli_fetch_assoc($result) : null;
+    mysqli_stmt_close($stmt);
 
     return $banner ?: null;
 }

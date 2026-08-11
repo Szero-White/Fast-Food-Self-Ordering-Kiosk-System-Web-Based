@@ -269,6 +269,11 @@
     color: var(--success-color);
 }
 
+.admin-notification-menu .notification-icon.info {
+    background: rgba(52, 152, 219, 0.14);
+    color: #3498db;
+}
+
 .admin-notification-menu .notification-icon.danger {
     background: rgba(231, 76, 60, 0.12);
     color: var(--danger-color);

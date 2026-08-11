@@ -59,6 +59,8 @@
                 <option value="api_price">💰 API - Giá</option>
                 <option value="api_promo">🎉 API - Khuyến mãi</option>
                 <option value="api_stock">📦 API - Tồn kho</option>
+                <option value="api_cart_add">🛒 API - Thêm giỏ hàng</option>
+                <option value="ai_gemini">✨ AI - Gemini</option>
                 <option value="fallback">❓ Không hiểu</option>
                 <option value="error">⚠️ Lỗi</option>
             </select>

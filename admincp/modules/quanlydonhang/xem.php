@@ -76,6 +76,7 @@ $payment = order_detail_payment($row['phuongthuc'] ?? null);
                     <?php echo htmlspecialchars($status['label'], ENT_QUOTES, 'UTF-8'); ?>
                 </div>
                 <form method="POST" action="modules/quanlydonhang/xuly.php?iddonhang=<?php echo (int)$row['id']; ?>" class="orders-status-form">
+                    <?php echo admin_csrf_field(); ?>
                     <div class="form-group-custom">
                         <label class="form-label-custom orders-status-label">Cập nhật trạng thái</label>
                         <select name="trangthai" class="form-control-custom orders-status-select">

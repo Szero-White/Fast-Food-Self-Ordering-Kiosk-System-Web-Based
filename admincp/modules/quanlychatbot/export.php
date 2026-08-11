@@ -1,19 +1,13 @@
 <?php
 declare(strict_types=1);
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-if (!isset($_SESSION['dangnhap'])) {
-    header('Location: ../../login.php');
-    exit;
-}
-
+require_once __DIR__ . '/../../includes/admin_security.php';
 require_once __DIR__ . '/../../config/config.php';
 
-$allowedTypes = ['static', 'api_products', 'api_price', 'api_promo', 'api_stock', 'fallback', 'error'];
-$type = $_GET['type'] ?? '';
+admin_require_login('../../login.php');
+
+$allowedTypes = ['static', 'api_products', 'api_price', 'api_promo', 'api_stock', 'api_cart_add', 'ai_gemini', 'fallback', 'error'];
+$type = (string)($_GET['type'] ?? '');
 $whereSql = in_array($type, $allowedTypes, true)
     ? "WHERE response_type = '" . mysqli_real_escape_string($mysqli, $type) . "'"
     : '';
@@ -24,6 +18,8 @@ $typeLabels = [
     'api_price' => 'API - Giá',
     'api_promo' => 'API - Khuyến mãi',
     'api_stock' => 'API - Tồn kho',
+    'api_cart_add' => 'API - Thêm giỏ hàng',
+    'ai_gemini' => 'AI - Gemini',
     'fallback' => 'Không hiểu',
     'error' => 'Lỗi',
 ];

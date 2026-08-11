@@ -207,28 +207,35 @@
         }
 
         .btn-action {
+            display: block;
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             border: none;
             border-radius: 12px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             font-weight: 600;
             font-size: 16px;
+            text-align: center;
+            text-decoration: none;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
         .btn-action:hover {
+            color: white;
             transform: translateY(-2px);
             box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
         }
-        .btn-success {
-            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%) !important;
-            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.4) !important;
+        .btn-action:active {
+            transform: translateY(0);
         }
-        .btn-success:hover {
-            box-shadow: 0 15px 40px rgba(78, 205, 196, 0.5) !important;
+        .btn-action.btn-success {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.4);
+        }
+        .btn-action.btn-success:hover {
+            box-shadow: 0 15px 40px rgba(78, 205, 196, 0.5);
         }
 
         .back-link {

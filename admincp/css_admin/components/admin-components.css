@@ -181,6 +181,11 @@
     gap: 8px;
 }
 
+.crud-inline-action {
+    display: inline-flex;
+    margin: 0;
+}
+
 .btn-action {
     width: 36px;
     height: 36px;

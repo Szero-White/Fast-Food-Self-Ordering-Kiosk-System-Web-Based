@@ -1,0 +1,172 @@
+.staff-call-hero-card {
+    border: 1px solid rgba(102, 126, 234, 0.16);
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+}
+
+.staff-call-page-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 14px 28px rgba(102, 126, 234, 0.22);
+}
+
+.staff-call-page-title {
+    margin: 0 0 4px;
+    color: var(--dark-color);
+    font-size: 1.45rem;
+    font-weight: 700;
+}
+
+.staff-call-page-subtitle {
+    margin: 0;
+    color: #858796;
+    font-size: 0.95rem;
+}
+
+.staff-call-summary {
+    min-width: 132px;
+    padding: 14px 20px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    text-align: center;
+}
+
+.staff-call-summary span {
+    display: block;
+    color: #858796;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.staff-call-summary strong {
+    color: var(--primary-color);
+    font-size: 2rem;
+    line-height: 1.1;
+}
+
+.staff-call-section-icon {
+    color: var(--accent-color);
+}
+
+.staff-call-table-body {
+    padding: 0;
+}
+
+.staff-call-table td small {
+    display: block;
+    margin-top: 4px;
+    color: #858796;
+    font-size: 0.78rem;
+}
+
+.staff-call-status-column,
+.staff-call-action-column,
+.staff-call-table td:nth-child(6),
+.staff-call-table td:nth-child(7) {
+    text-align: center;
+}
+
+.staff-call-time {
+    color: #2f3545;
+    font-weight: 500;
+}
+
+.staff-call-row-pending {
+    background: rgba(52, 152, 219, 0.045);
+}
+
+.staff-call-code {
+    display: inline-flex;
+    padding: 7px 13px;
+    border-radius: 999px;
+    background: rgba(102, 126, 234, 0.1);
+    color: var(--primary-color);
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.staff-call-muted {
+    color: #858796;
+    font-style: italic;
+}
+
+.staff-call-status,
+.staff-call-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 34px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.staff-call-status.pending {
+    background: #fff5df;
+    color: #c47a00;
+}
+
+.staff-call-status.handled {
+    background: #e8f8ef;
+    color: #27ae60;
+}
+
+.staff-call-action {
+    border: 0;
+    text-decoration: none;
+}
+
+.staff-call-action.done {
+    background: linear-gradient(135deg, #31c985, #20b36f);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(46, 204, 113, 0.18);
+    cursor: pointer;
+}
+
+.staff-call-action.done:hover {
+    color: #fff;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.staff-call-action.disabled {
+    background: #f6f7f9;
+    color: #9aa3ad;
+}
+
+.staff-call-empty {
+    min-height: 260px;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 10px;
+    color: #858796;
+    text-align: center;
+}
+
+.staff-call-empty i {
+    color: var(--success-color);
+    font-size: 48px;
+}
+
+.staff-call-empty strong {
+    color: var(--dark-color);
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .staff-call-summary {
+        width: 100%;
+    }
+}

@@ -3,8 +3,38 @@
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
+    const csrfTokenMeta = document.querySelector('meta[name="admin-csrf-token"]');
+    const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute('content') : '';
+
+    if (csrfToken) {
+        document.querySelectorAll('form[method="POST"], form[method="post"]').forEach(form => {
+            if (!form.querySelector('input[name="csrf_token"]')) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'csrf_token';
+                input.value = csrfToken;
+                form.appendChild(input);
+            }
+        });
+
+        document.querySelectorAll('a[href*="xuly.php"]').forEach(link => {
+            const href = link.getAttribute('href') || '';
+            if (!href || href.includes('csrf_token=')) {
+                return;
+            }
+
+            const hashIndex = href.indexOf('#');
+            const baseHref = hashIndex >= 0 ? href.slice(0, hashIndex) : href;
+            const hash = hashIndex >= 0 ? href.slice(hashIndex) : '';
+            const separator = baseHref.includes('?') ? '&' : '?';
+
+            link.setAttribute('href', `${baseHref}${separator}csrf_token=${encodeURIComponent(csrfToken)}${hash}`);
+        });
+    }
+
     // Sidebar Toggle
     const sidebar = document.getElementById('sidebar');
+    const sidebarNav = document.querySelector('.sidebar-nav');
     const mainContent = document.getElementById('mainContent');
     const sidebarToggle = document.getElementById('sidebarToggle');
     
@@ -58,6 +88,39 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     } else {
         sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+    }
+
+    // Restore sidebar scroll position after navigating between admin modules
+    if (sidebarNav) {
+        const savedSidebarScroll = sessionStorage.getItem('adminSidebarScrollTop');
+        const savedClickedOffset = sessionStorage.getItem('adminSidebarClickedOffset');
+        const activeMenuLink = sidebarNav.querySelector('a.nav-link.active');
+
+        if (activeMenuLink && savedClickedOffset !== null) {
+            const navTop = sidebarNav.getBoundingClientRect().top;
+            const linkTop = activeMenuLink.getBoundingClientRect().top;
+            const targetOffset = parseInt(savedClickedOffset, 10) || 0;
+            sidebarNav.scrollTop += linkTop - navTop - targetOffset;
+        } else if (savedSidebarScroll !== null && sidebarNav.classList.contains('is-restoring-scroll')) {
+            sidebarNav.scrollTop = parseInt(savedSidebarScroll, 10) || 0;
+        }
+
+        if (sidebarNav.classList.contains('is-restoring-scroll')) {
+            sidebarNav.classList.remove('is-restoring-scroll');
+        }
+
+        sidebarNav.addEventListener('scroll', function() {
+            sessionStorage.setItem('adminSidebarScrollTop', String(sidebarNav.scrollTop));
+        }, { passive: true });
+
+        sidebarNav.querySelectorAll('a.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                const navTop = sidebarNav.getBoundingClientRect().top;
+                const linkTop = this.getBoundingClientRect().top;
+                sessionStorage.setItem('adminSidebarScrollTop', String(sidebarNav.scrollTop));
+                sessionStorage.setItem('adminSidebarClickedOffset', String(Math.max(0, linkTop - navTop)));
+            });
+        });
     }
     
     // Active menu item
@@ -156,6 +219,27 @@ document.addEventListener('DOMContentLoaded', function() {
             const message = this.getAttribute('data-confirm') || 'Bạn có chắc chắn muốn xóa?';
             if (!confirm(message)) {
                 e.preventDefault();
+                return;
+            }
+
+            const href = this.getAttribute('href') || '';
+            const isDeleteLink = this.tagName === 'A' && href.includes('xuly.php');
+            if (isDeleteLink && csrfToken) {
+                e.preventDefault();
+
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = href;
+                form.style.display = 'none';
+
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'csrf_token';
+                input.value = csrfToken;
+                form.appendChild(input);
+
+                document.body.appendChild(form);
+                form.submit();
             }
         });
     });

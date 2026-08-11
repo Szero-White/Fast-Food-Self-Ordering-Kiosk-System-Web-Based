@@ -1,16 +1,10 @@
 <?php
 declare(strict_types=1);
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-if (!isset($_SESSION['dangnhap'])) {
-    header('Location: ../../login.php');
-    exit;
-}
-
+require_once __DIR__ . '/../../includes/admin_security.php';
 require_once __DIR__ . '/../../config/config.php';
+
+admin_require_login('../../login.php');
 
 function order_export_text(?string $value): string
 {

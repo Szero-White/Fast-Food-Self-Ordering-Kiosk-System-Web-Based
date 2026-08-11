@@ -3,6 +3,19 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/order_notification_repository.php';
 
+function kiosk_clamp_cart_quantity(int $quantity, ?int $stock = null): int
+{
+    if ($stock !== null && $stock <= 0) {
+        return 0;
+    }
+
+    if ($stock !== null) {
+        return max(1, min($stock, $quantity));
+    }
+
+    return max(1, $quantity);
+}
+
 function kiosk_generate_order_code(): string
 {
     return 'FF' . date('YmdHis') . random_int(100, 999);
@@ -18,7 +31,9 @@ function kiosk_cart_total(array $cart): float
     $total = 0;
 
     foreach ($cart as $item) {
-        $total += (float)($item['gia'] ?? 0) * (int)($item['soluong'] ?? 0);
+        $price = max(0, (float)($item['gia'] ?? 0));
+        $quantity = max(0, (int)($item['soluong'] ?? 0));
+        $total += $price * $quantity;
     }
 
     return $total;
@@ -106,18 +121,50 @@ function kiosk_complete_order(mysqli $mysqli, ?int $orderId, ?string $orderCode,
             throw new RuntimeException('Không thể lưu chi tiết đơn hàng.');
         }
 
+        $savedDetails = 0;
         foreach ($cart as $item) {
             $productId = (int)($item['id'] ?? 0);
-            $productName = (string)($item['ten'] ?? '');
-            $price = (float)($item['gia'] ?? 0);
+            $productName = trim((string)($item['ten'] ?? ''));
+            $price = max(0, (float)($item['gia'] ?? 0));
             $quantity = (int)($item['soluong'] ?? 0);
+
+            if ($productId <= 0 || $productName === '' || $quantity <= 0) {
+                continue;
+            }
+
             $lineTotal = $price * $quantity;
+
+            $stockStmt = mysqli_prepare(
+                $mysqli,
+                'UPDATE tbl_sanpham
+                 SET soluong = soluong - ?
+                 WHERE id_sanpham = ? AND soluong >= ?'
+            );
+
+            if (!$stockStmt) {
+                throw new RuntimeException('Không thể cập nhật tồn kho.');
+            }
+
+            mysqli_stmt_bind_param($stockStmt, 'iii', $quantity, $productId, $quantity);
+            mysqli_stmt_execute($stockStmt);
+            $stockUpdated = mysqli_stmt_affected_rows($stockStmt);
+            mysqli_stmt_close($stockStmt);
+
+            if ($stockUpdated !== 1) {
+                throw new RuntimeException('Món "' . $productName . '" không đủ số lượng tồn kho.');
+            }
 
             mysqli_stmt_bind_param($detailStmt, 'iisdid', $orderId, $productId, $productName, $price, $quantity, $lineTotal);
             mysqli_stmt_execute($detailStmt);
+            $savedDetails++;
         }
 
         mysqli_stmt_close($detailStmt);
+
+        if ($savedDetails === 0) {
+            throw new RuntimeException('Không có sản phẩm hợp lệ để lưu đơn hàng.');
+        }
+
         mysqli_commit($mysqli);
 
         return [

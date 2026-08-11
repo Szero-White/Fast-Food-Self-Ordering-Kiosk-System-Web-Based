@@ -12,6 +12,8 @@ const typeLabels = {
     'api_price': '<span class="badge-custom badge-price"><i class="fas fa-tag me-1"></i>Giá</span>',
     'api_promo': '<span class="badge-custom badge-promo"><i class="fas fa-gift me-1"></i>Khuyến mãi</span>',
     'api_stock': '<span class="badge-custom badge-stock"><i class="fas fa-box me-1"></i>Tồn kho</span>',
+    'api_cart_add': '<span class="badge-custom badge-cart"><i class="fas fa-cart-plus me-1"></i>Thêm giỏ hàng</span>',
+    'ai_gemini': '<span class="badge-custom badge-ai"><i class="fas fa-sparkles me-1"></i>AI Gemini</span>',
     'fallback': '<span class="badge-custom badge-fallback"><i class="fas fa-question me-1"></i>Không hiểu</span>',
     'error': '<span class="badge-custom badge-error"><i class="fas fa-exclamation me-1"></i>Lỗi</span>'
 };
@@ -36,7 +38,12 @@ function loadChatHistory(reset = true) {
                 } else {
                     document.getElementById('loadMoreContainer').style.display = 'block';
                 }
+            } else {
+                renderHistoryError(data.message || 'Không thể tải lịch sử chatbot.');
             }
+        })
+        .catch(() => {
+            renderHistoryError('Không thể kết nối API lịch sử chatbot.');
         });
 }
 
@@ -66,6 +73,31 @@ function renderTable(rows) {
         `;
         tbody.appendChild(tr);
     });
+}
+
+function renderHistoryError(message) {
+    const tbody = document.getElementById('chatHistoryBody');
+    const emptyState = document.getElementById('emptyState');
+    const loadMore = document.getElementById('loadMoreContainer');
+
+    if (emptyState) {
+        emptyState.style.display = 'none';
+    }
+    if (loadMore) {
+        loadMore.style.display = 'none';
+    }
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7">
+                    <div class="chatbot-admin-error">
+                        <i class="fas fa-circle-exclamation"></i>
+                        ${escapeHtml(message)}
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
 }
 
 function escapeHtml(text) {
