@@ -1,549 +1,553 @@
-# 🍔 FastFood Kiosk - Hệ Thống Gọi Món Tự Động + AI Chatbot 
+# 🍔 FastFood Kiosk - Hệ Thống Gọi Món Tự Động + AI Chatbot
 
 <p align="center">
-  <img src="https://img.shields.io/badge/PHP-8.3-777BB4?logo=php&logoColor=white&style=for-the-badge" />
-  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white&style=for-the-badge" />
+  <img src="https://img.shields.io/badge/PHP-8.x-777BB4?logo=php&logoColor=white&style=for-the-badge" />
+  <img src="https://img.shields.io/badge/MySQL-8.x-4479A1?logo=mysql&logoColor=white&style=for-the-badge" />
   <img src="https://img.shields.io/badge/Bootstrap-5.3-7952B3?logo=bootstrap&logoColor=white&style=for-the-badge" />
-  <img src="https://img.shields.io/badge/AI_Chatbot-Active-success?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Gemini_AI-Enabled-34A853?style=for-the-badge" />
 </p>
 
-> 🎯 **Mô phỏng trải nghiệm gọi món tự động** tương tự máy order trong cửa hàng McDonald's  
-> 🤖 **Chatbot AI thông minh** hỗ trợ khách hàng 24/7 - Trả lời tự động về thực đơn, giá cả, khuyến mãi!
-
----
-
-## 📸 Ảnh Minh Họa Hệ Thống
-
-### 🔐 Khu Vực Admin
-
-**Trang Đăng Nhập Admin:**
-
-<img src="./view/assets/screenshots/admin-login.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
-
-**Dashboard Admin (Trang Chủ):**
-
-<img src="./view/assets/screenshots/admin-dashboard.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
-
-### 👥 Khu Vực Customer (Kiosk)
-
-**Trang Chào Mừng (Welcome):**
-
-<img src="./view/assets/screenshots/customer-welcome.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
-
-**Trang Chủ - Chọn Món (Menu):**
-
-<img src="./view/assets/screenshots/customer-menu-1.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
-<img src="./view/assets/screenshots/customer-menu-2.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
-<img src="./view/assets/screenshots/customer-menu-3.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
-<img src="./view/assets/screenshots/customer-menu-4.jpg" width="500" style="display:block; margin:10px auto; border-radius:8px;">
+> 🎯 Hệ thống mô phỏng kiosk gọi món tự động cho cửa hàng thức ăn nhanh, có khu vực quản trị, giỏ hàng, thanh toán giả lập, quản lý hình ảnh động, gọi nhân viên và AI chatbot hỗ trợ khách hàng.
 
 ---
 
 ## 📋 Mục Lục
 
-- [🧠 Tổng Quan Hệ Thống](#-tổng-quan-hệ-thống)
-- [🔄 Luồng Hoạt Động](#-luồng-hoạt-động)
-- [📁 Cấu Trúc Dự Án](#-cấu-trúc-dự-án)
-- [⚙️ CÀI ĐẶT & CHẠY HỆ THỐNG](#️-cài-đặt--chạy-hệ-thống)
-  - [📦 Bước 1: Clone Project](#-bước-1-clone-hoặc-giải-nén-project)
-  - [🗄️ Bước 2: Import Database](#️-bước-2-import-database)
-  - [⚙️ Bước 3: Cấu Hình Database](#️-bước-3-cấu-hình-kết-nối-database)
-  - [🖥️ CÁCH CHẠY 2 TRANG](#️-cách-chạy-2-trang-admin--customer)
-- [🤖 TÍNH NĂNG CHATBOT AI](#-tính-năng-chatbot-ai)
-- [🔐 TÍNH NĂNG QUÊN MẬT KHẨU](#-tính-năng-quên-mật-khẩu)
-- [👤 Khu Vực Khách Hàng (Kiosk)](#-khu-vực-khách-hàng-kiosk)
-- [🔐 Khu Vực Quản Trị (Admin)](#-khu-vực-quản-trị-admin)
-- [🛡️ Nguyên Tắc Bảo Mật](#️-nguyên-tắc-bảo-mật)
-- [📸 Demo Giao Diện](#-demo-giao-diện)
-- [🧑‍💻 Tác Giả](#-tác-giả)
+- [🧠 Tổng quan hệ thống](#-tổng-quan-hệ-thống)
+- [📸 Ảnh minh họa](#-ảnh-minh-họa)
+- [🔄 Luồng hoạt động](#-luồng-hoạt-động)
+- [✨ Chức năng chính](#-chức-năng-chính)
+- [📁 Cấu trúc dự án](#-cấu-trúc-dự-án)
+- [🖼️ Cách lưu trữ hình ảnh](#️-cách-lưu-trữ-hình-ảnh)
+- [⚙️ Cài đặt và chạy local](#️-cài-đặt-và-chạy-local)
+- [🤖 Cấu hình Gemini AI](#-cấu-hình-gemini-ai)
+- [🔐 Tính năng quên mật khẩu](#-tính-năng-quên-mật-khẩu)
+- [🛡️ Bảo mật hệ thống](#️-bảo-mật-hệ-thống)
+- [🧪 Smoke test tự động](#-smoke-test-tự-động)
+- [✅ Checklist test thủ công](#-checklist-test-thủ-công)
+- [🌐 Deploy demo 24/7](#-deploy-demo-247)
+- [🚀 Demo trực tuyến](#-demo-trực-tuyến)
+- [👤 Tài khoản demo](#-tài-khoản-demo)
+- [🧑‍💻 Tác giả](#-tác-giả)
 
 ---
 
 ## 🧠 Tổng Quan Hệ Thống
 
-### 💡 Ý Tưởng
+FastFood Kiosk được xây dựng để mô phỏng trải nghiệm đặt món tại màn hình kiosk trong cửa hàng thức ăn nhanh. Khách hàng có thể xem món, lọc danh mục, thêm vào giỏ hàng, thanh toán giả lập và nhận mã đơn. Admin có thể quản lý dữ liệu vận hành như món ăn, banner, hình ảnh hệ thống, đơn hàng, bài viết, liên hệ, chatbot và yêu cầu gọi nhân viên.
 
-FastFood Kiosk là hệ thống **mô phỏng máy tự order** trong cửa hàng thức ăn nhanh, được thiết kế để chạy trên **một thiết bị duy nhất**, phục vụ từng người dùng lần lượt.
+### ✨ Điểm nổi bật
 
-### ✨ Đặc Điểm Nổi Bật
+| Điểm nổi bật | Mô tả |
+| --- | --- |
+| 🖥️ Kiosk tự phục vụ | Giao diện lớn, rõ, phù hợp màn hình cảm ứng hoặc demo desktop |
+| 🧩 Quản trị đầy đủ | Admin có CRUD cho món ăn, danh mục, bài viết, banner, logo và đơn hàng |
+| 🖼️ Ảnh upload động | Ảnh sản phẩm, banner, logo được quản lý qua Admin và lưu trong `storage/uploads/` |
+| 🤖 AI Chatbot | Tích hợp Gemini, có fallback rule/database khi API lỗi hoặc chưa cấu hình key |
+| 🔔 Gọi nhân viên | Khách bấm gọi nhân viên, Admin nhận thông báo và xử lý |
+| ⏱️ Timeout kiosk | Tự động quay về màn hình chờ khi không thao tác |
+| 📤 Xuất dữ liệu | Admin có thể xuất CSV ở đơn hàng và lịch sử chatbot |
+| 🛡️ Bảo mật tốt hơn | Admin action có login guard, CSRF token, prepared statement ở các luồng nhạy cảm |
 
-| Đặc Điểm | Mô Tả |
-|---------|-------|
-| 🎯 **Đơn Giản** | Giao diện trực quan, nút bấm lớn phù hợp màn hình cảm ứng |
-| ⚡ **Nhanh Chóng** | Chọn món → Giỏ hàng → Thanh toán trong vài bước |
-| 🔄 **Tự Động Reset** | Sau mỗi phiên, hệ thống tự động xóa dữ liệu và quay về màn hình chờ |
-| 👤 **Tách Biệt Phiên** | Mỗi người dùng có phiên riêng, không lưu dữ liệu lâu dài |
-| ⏱️ **Timeout Thông Minh** | Tự động reset khi không có thao tác |
+---
+
+## 📸 Ảnh Minh Họa
+
+### 🔐 Khu vực Admin
+
+**Trang đăng nhập Admin**
+
+<img src="./view/assets/screenshots/admin-login.jpg" width="600" style="display:block; margin:10px auto; border-radius:8px;">
+
+**Dashboard Admin**
+
+<img src="./view/assets/screenshots/admin-dashboard.jpg" width="600" style="display:block; margin:10px auto; border-radius:8px;">
+
+### 👥 Khu vực khách hàng / Kiosk
+
+**Màn hình chào mừng**
+
+<img src="./view/assets/screenshots/customer-welcome.jpg" width="600" style="display:block; margin:10px auto; border-radius:8px;">
+
+**Trang chọn món**
+
+<img src="./view/assets/screenshots/customer-menu-1.jpg" width="600" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/assets/screenshots/customer-menu-2.jpg" width="600" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/assets/screenshots/customer-menu-3.jpg" width="600" style="display:block; margin:10px auto; border-radius:8px;">
+<img src="./view/assets/screenshots/customer-menu-4.jpg" width="600" style="display:block; margin:10px auto; border-radius:8px;">
 
 ---
 
 ## 🔄 Luồng Hoạt Động
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  1️⃣  MÀN HÌNH CHỜ (Welcome)                               │
-│     ├─ 🎨 Logo + Slogan                                   │
-│     ├─ 👆 Nút "BẮT ĐẦU" nổi bật                            │
-│     └─ ✨ Hiệu ứng động thu hút                           │
-└──────────────────────────┬────────────────────────────────┘
-                           │ Bấm BẮT ĐẦU
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│  2️⃣  CHỌN MÓN (Menu)                                       │
-│     ├─ 🍕 Hiển thị danh sách món ăn (hình, tên, giá)      │
-│     ├─ 🛒 Thêm vào giỏ hàng                               │
-│     └─ 🔍 Lọc theo danh mục                               │
-└──────────────────────────┬────────────────────────────────┘
-                           │ Chọn xong → Thanh toán
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│  3️⃣  GIỎ HÀNG (Cart)                                       │
-│     ├─ 📋 Xem lại các món đã chọn                         │
-│     ├─ ➕➖ Thay đổi số lượng                              │
-│     ├─ 🗑️ Xóa món không muốn                              │
-│     └─ 💰 Hiển thị tổng tiền cập nhật                     │
-└──────────────────────────┬────────────────────────────────┘
-                           │ Xác nhận thanh toán
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│  4️⃣  THANH TOÁN (Payment)                                  │
-│     ├─ 💳 Chọn phương thức thanh toán                     │
-│     ├─ 🧾 Xác nhận đơn hàng                               │
-│     └─ ✅ Giả lập thanh toán (không cần kết nối thật)     │
-└──────────────────────────┬────────────────────────────────┘
-                           │ Thanh toán thành công
-                           ▼
-┌─────────────────────────────────────────────────────────────┐
-│  5️⃣  HOÀN TẤT (Thank You)                                  │
-│     ├─ 🎉 Thông báo thành công                            │
-│     ├─ 📄 Mã đơn hàng để nhận món                        │
-│     ├─ 📋 Hướng dẫn nhận món                              │
-│     └─ ⏱️ Tự động về màn hình chờ sau 10 giây             │
-└─────────────────────────────────────────────────────────────┘
+```text
+Màn hình chờ
+    |
+    v
+Trang chọn món
+    |
+    |-- Lọc danh mục
+    |-- Xem chi tiết món
+    |-- Thêm món vào giỏ
+    |-- Chatbot hỗ trợ
+    |-- Gọi nhân viên
+    v
+Giỏ hàng
+    |
+    |-- Cập nhật số lượng
+    |-- Xóa món
+    v
+Thanh toán
+    |
+    |-- QR / Chuyển khoản
+    |-- Tiền mặt
+    v
+Hoàn tất đơn hàng
+    |
+    v
+Tự động quay về màn hình chờ
 ```
 
-### ⏳ Xử Lý Trường Hợp Đặc Biệt
+### 🔐 Luồng quản trị
 
-| Tình Huống | Hệ Thống Phản Ứng |
-|-----------|------------------|
-| 🚶 Người dùng bỏ đi giữa chừng | ⏱️ Sau timeout → Auto reset |
-| 😴 Đứng lâu không thao tác | ⏱️ Cảnh báo → Auto reset |
-| ❌ Thanh toán thất bại | 🔙 Cho phép quay lại giỏ hàng |
-| 🔄 Refresh trang | 🛡️ Giữ nguyên giỏ hàng (trong cùng phiên) |
+```text
+Admin đăng nhập
+    |
+    v
+Dashboard
+    |
+    |-- Quản lý món ăn / danh mục
+    |-- Quản lý banner / logo / favicon
+    |-- Quản lý bài viết / liên hệ
+    |-- Quản lý đơn hàng / xuất file
+    |-- Theo dõi chatbot / xuất lịch sử
+    |-- Nhận yêu cầu gọi nhân viên
+    v
+Cập nhật dữ liệu hiển thị cho kiosk
+```
+
+---
+
+## ✨ Chức Năng Chính
+
+### 👥 Khách hàng / Kiosk
+
+| Chức năng | Mô tả |
+| --- | --- |
+| 🏁 Welcome screen | Màn hình chờ trước khi bắt đầu phiên đặt món |
+| 🍽️ Danh sách món | Hiển thị món theo danh mục, có ảnh, giá, tồn kho và nút thêm |
+| 🧭 Lọc danh mục | Chuyển nhanh tới nhóm món tương ứng |
+| 🔎 Chi tiết món | Hiển thị ảnh lớn, mã món, giá, tồn kho, tóm tắt và nội dung chi tiết |
+| 🛒 Giỏ hàng | Thêm món, sửa số lượng, xóa món, tính tổng tiền |
+| 💳 Thanh toán | Giả lập thanh toán bằng QR/chuyển khoản hoặc tiền mặt |
+| 🔔 Gọi nhân viên | Tạo yêu cầu hỗ trợ để Admin xử lý |
+| 🤖 Chatbot | Hỏi về món ăn, giá, tồn kho, khuyến mãi và thông tin cửa hàng |
+| ⏱️ Timeout | Tự reset phiên để phù hợp mô hình kiosk công cộng |
+
+### 🔐 Admin
+
+| Module | Chức năng |
+| --- | --- |
+| 🏠 Trang chủ | Dashboard tổng quan và cảnh báo hệ thống |
+| 📊 Thống kê | Theo dõi dữ liệu vận hành |
+| ℹ️ Giới thiệu | Quản lý nội dung giới thiệu website |
+| 🖼️ Hình ảnh hệ thống | CRUD logo website, logo admin, favicon |
+| 🏷️ Banner trang chủ | CRUD banner và cấu hình số banner hiển thị |
+| 📂 Danh mục món ăn | Thêm, sửa, xóa danh mục thực đơn |
+| 🍔 Món ăn | Thêm, sửa, xóa món; upload ảnh; quản lý giá, tồn kho, mô tả |
+| 🗂️ Danh mục bài viết | Quản lý nhóm bài viết |
+| 📰 Bài viết | Quản lý tin tức, khuyến mãi, nội dung marketing |
+| 🧾 Đơn hàng | Xem đơn, xem chi tiết, xóa dòng rác, xuất CSV |
+| ✉️ Liên hệ | Quản lý phản hồi khách hàng |
+| 🤖 Chatbot | Xem lịch sử hội thoại, lọc theo loại, thống kê, xuất CSV |
+| 🔔 Gọi nhân viên | Theo dõi và xử lý yêu cầu hỗ trợ từ kiosk |
 
 ---
 
 ## 📁 Cấu Trúc Dự Án
 
+```text
+web_mysqli/
+|-- admincp/
+|   |-- css_admin/
+|   |   |-- layout/                 # CSS layout dùng chung admin
+|   |   |-- pages/                  # CSS riêng từng trang admin
+|   |   `-- admin_style.css
+|   |-- includes/
+|   |   |-- admin_security.php      # Login guard + CSRF helper
+|   |   `-- admin_shell_data.php    # Dữ liệu dùng chung cho admin shell
+|   |-- js_admin/
+|   |   |-- pages/                  # JS riêng từng trang admin
+|   |   `-- admin_script.js
+|   |-- modules/
+|   |   |-- quanlysp/               # Quản lý món ăn
+|   |   |-- quanlydanhmuc/          # Quản lý danh mục món
+|   |   |-- quanlybanner/           # Quản lý banner
+|   |   |-- quanlyhinhanh/          # Quản lý logo/favicon
+|   |   |-- quanlydonhang/          # Quản lý đơn hàng
+|   |   |-- quanlychatbot/          # Quản lý chatbot
+|   |   `-- quanlyhotro/            # Quản lý gọi nhân viên
+|   |-- forgot_password.php
+|   |-- index.php
+|   `-- login.php
+|
+|-- config/
+|   |-- database.php
+|   |-- paths.php
+|   |-- site_asset_repository.php
+|   |-- banner_repository.php
+|   |-- kiosk_order_repository.php
+|   |-- order_notification_repository.php
+|   |-- staff_call_repository.php
+|   |-- chatbot_ai_config.php
+|   |-- chatbot_ai_secret.example.php
+|   |-- chatbot_context_repository.php
+|   `-- gemini_chatbot_client.php
+|
+|-- storage/
+|   `-- uploads/                   # Ảnh upload khi chạy hệ thống
+|
+|-- view/
+|   |-- assets/                    # Ảnh tĩnh, screenshot, seed asset
+|   |-- css/                       # CSS frontend/kiosk
+|   |-- js/                        # JS frontend/kiosk
+|   |-- pages/
+|   |   |-- header.php
+|   |   |-- footer.php
+|   |   `-- main/                  # Các trang chính của khách hàng
+|   `-- index.php
+|
+|-- web_sqli.sql
+|-- .gitignore
+`-- README.md
 ```
-Fast-Food-Self-Ordering-Kiosk-System-Web-Based/
-│
-├── 🗄️ web_sqli.sql                    # Database MySQL
-├── ⚙️ config/
-│   └── database.php                   # Kết nối database dùng chung
-│
-├── 🔐 admincp/                        # Khu vực quản trị
-│   ├── ⚙️ config/
-│   │   └── config.php                 # Wrapper config cho admin
-│   ├── 🎨 css_admin/
-│   │   ├── admin_style.css            # Style giao diện admin
-│   │   └── admin_script.js            # JavaScript admin
-│   ├── 📦 modules/                    # Các module quản lý
-│   ├── 🔑 login.php                   # Trang đăng nhập
-│   └── 🏠 index.php                   # Dashboard chính
-│
-└── 👤 view/                           # Khu vực khách hàng/kiosk
-    ├── ⚙️ config/
-    │   └── config.php                 # Wrapper config cho kiosk
-    ├── 🎨 css/
-    │   └── styl.css                   # Style giao diện kiosk
-    ├── 📁 pages/                      # Layout và các trang giao diện
-    ├── 🖼️ assets/                     # Hình ảnh tĩnh đã phân loại
-    ├── 📜 js/
-    │   └── timeout.js                 # Xử lý auto timeout
-    └── 🏠 index.php                   # Entry point kiosk
+
+---
+
+## 🖼️ Cách Lưu Trữ Hình Ảnh
+
+Dự án không lưu binary ảnh trực tiếp trong database. Cách làm hiện tại chuyên nghiệp hơn cho demo và deploy:
+
+- File ảnh upload từ Admin lưu trong `storage/uploads/`.
+- Database chỉ lưu tên file hoặc đường dẫn tương đối.
+- Frontend và Admin cùng đọc ảnh qua helper/repository dùng chung.
+- Ảnh tĩnh phục vụ giao diện, screenshot hoặc dữ liệu seed được đặt trong `view/assets/`.
+- `storage/uploads/` là dữ liệu runtime, không nên commit toàn bộ ảnh upload lên Git.
+- Khi deploy, server phải cấp quyền ghi cho `storage/uploads/`.
+
+### 🧩 Các nhóm ảnh Admin có thể chỉnh
+
+| Nhóm ảnh | Nơi quản lý | Ảnh hưởng |
+| --- | --- | --- |
+| 🍔 Ảnh món ăn | Admin > Món ăn | Hiển thị ở trang chủ, danh mục, chi tiết món và giỏ hàng |
+| 🏷️ Banner trang chủ | Admin > Banner trang chủ | Hiển thị ở carousel/banner frontend |
+| 🖥️ Logo website | Admin > Hình ảnh hệ thống | Hiển thị ở frontend |
+| 🔐 Logo admin | Admin > Hình ảnh hệ thống | Hiển thị ở sidebar/trang đăng nhập admin |
+| ⭐ Favicon | Admin > Hình ảnh hệ thống | Hiển thị trên tab trình duyệt |
+
+---
+
+## ⚙️ Cài Đặt Và Chạy Local
+
+### 📌 Yêu cầu
+
+| Thành phần | Phiên bản khuyến nghị |
+| --- | --- |
+| PHP | 8.x |
+| MySQL / MariaDB | MySQL 5.7+ hoặc MariaDB tương đương |
+| XAMPP | Bản mới ổn định |
+| Trình duyệt | Chrome, Edge hoặc Firefox |
+
+### 🚀 Các bước chạy
+
+1. Đặt source vào:
+
+```text
+C:\xampp\htdocs\web_mysqli
 ```
 
----
+2. Mở XAMPP Control Panel và start:
 
-## ⚙️ CÀI ĐẶT & CHẠY HỆ THỐNG
-
-### 📋 Yêu Cầu Hệ Thống
-
-| Yêu Cầu | Phiên Bản | Link Tải |
-|---------|-----------|----------|
-| ✅ PHP | 8.0+ | https://windows.php.net/download |
-| ✅ MySQL | 5.7+ hoặc MariaDB | https://www.apachefriends.org (XAMPP) |
-| ✅ Trình duyệt | Chrome/Firefox/Edge | Bất kỳ phiên bản nào |
-
-> 💡 **Khuyến nghị**: Dùng **XAMPP** cho dễ cài đặt (đã bao gồm PHP + MySQL + Apache)
-
----
-
-### 🚀 HƯỚNG DẪN CÀI ĐẶT CHI TIẾT
-
-#### 📦 Bước 1: Clone hoặc Giải nén Project
-
-```bash
-# Nếu dùng Git
-git clone https://github.com/Szero-White/Fast-Food-Self-Ordering-Kiosk-System-Web-Based.git
-cd Fast-Food-Self-Ordering-Kiosk-System-Web-Based
-
-# Hoặc giải nén file ZIP vào thư mục
+```text
+Apache
+MySQL
 ```
 
-#### 🗄️ Bước 2: Import Database
+3. Vào phpMyAdmin:
 
-**Cách : Dùng phpMyAdmin**
-1. Mở XAMPP Control Panel → Start Apache + MySQL
-2. Truy cập: http://localhost/phpmyadmin
-3. Click **"Import"** tab
-4. Chọn file `web_sqli.sql`
-5. Click **"Go"**
+```text
+http://localhost/phpmyadmin
+```
 
+4. Tạo database:
 
-## 🖥️ CÁCH CHẠY ADMIN & CUSTOMER
+```text
+web_sqli
+```
 
-### 🚀 Khuyến nghị: Chạy bằng XAMPP
+5. Import file:
 
-Đặt project trong thư mục `htdocs`, ví dụ: `C:\xampp\htdocs\web_mysqli`.
-Mở XAMPP Control Panel và start **Apache** + **MySQL**.
+```text
+web_sqli.sql
+```
 
-**Tổng kết URL khi chạy bằng XAMPP:**
-| Trang | URL | Mô tả |
-|-------|-----|-------|
-| 🖥️ **Customer** | `http://localhost/web_mysqli/view/` | Kiosk đặt món + Chatbot AI |
-| 🔐 **Admin** | `http://localhost/web_mysqli/admincp/login.php` | Quản lý hệ thống |
+6. Kiểm tra cấu hình database:
 
----
+```text
+config/database.php
+```
 
-### 🧪 HƯỚNG DẪN TEST CHỨC NĂNG
+7. Mở hệ thống:
 
-**Luồng test cơ bản:**
-
-| Bước | Thao tác | URL | Kết quả mong đợi |
-|------|----------|-----|------------------|
-| 1 | Mở Admin | `http://localhost/web_mysqli/admincp/login.php` | Trang login hiện ra |
-| 2 | Đăng nhập | Nhập: **toan** / **123456** | Vào Dashboard |
-| 3 | Mở Customer | `http://localhost/web_mysqli/view/` | Màn hình Welcome |
-| 4 | Bấm "BẮT ĐẦU" | Ở Customer | Vào trang chọn món |
-| 5 | Chatbot | Click icon 🤖 ở góc phải | Chatbot mở, hỏi "Thực đơn" |
-| 6 | Chọn món | Thêm Burger vào giỏ | Giỏ hàng cập nhật |
-| 7 | Thanh toán | Bấm "Thanh toán" | Hoàn tất đơn hàng |
-| 8 | Kiểm tra Admin | Qua tab Admin → "Đơn hàng" | Đơn mới hiện ra |
-
-> 💡 **Mẹo:** Dùng **2 tab trình duyệt** hoặc **cửa sổ ẩn danh (Incognito)** để test song song!
+| Khu vực | URL |
+| --- | --- |
+| Customer / Kiosk | `http://localhost/web_mysqli/view/` |
+| Admin | `http://localhost/web_mysqli/admincp/login.php` |
 
 ---
 
-## 🤖 TÍNH NĂNG CHATBOT AI
+## 🤖 Cấu Hình Gemini AI
 
-### 🎯 Tổng Quan
+Chatbot dùng mô hình hybrid:
 
-Chatbot AI được tích hợp vào trang Customer, hỗ trợ khách hàng tự động 24/7!
+1. Ưu tiên rule nội bộ và dữ liệu trong database.
+2. Nếu câu hỏi cần suy luận hơn, hệ thống gọi Gemini.
+3. Nếu API lỗi, hết quota hoặc chưa cấu hình key, chatbot vẫn fallback về rule/database để demo không bị chết.
 
-### 💬 Chức Năng Chatbot
+### 🔑 Tạo file secret local
 
-| Lệnh | Ví dụ câu hỏi | Phản hồi |
-|------|--------------|----------|
-| 🍕 **Thực đơn** | "Thực đơn có gì?", "Có món gì?" | Liệt kê món từ database |
-| � **Giá cả** | "Giá Burger bao nhiêu?", "Đắt không?" | Giá sản phẩm |
-| 🎉 **Khuyến mãi** | "Khuyến mãi", "Giảm giá" | Tin khuyến mãi từ database |
-| 📦 **Tồn kho** | "Còn gà rán không?", "Hết chưa?" | Số lượng còn lại |
-| 📍 **Địa chỉ** | "Địa chỉ", "Ở đâu?" | Địa chỉ cửa hàng |
-| ⏰ **Giờ mở cửa** | "Mở cửa lúc mấy giờ?" | Thời gian hoạt động |
+Chạy trong PowerShell tại thư mục dự án:
 
-### 🎨 Giao Diện Chatbot
+```powershell
+Copy-Item config\chatbot_ai_secret.example.php config\chatbot_ai_secret.php
+```
 
-- **Icon tròn** 🤖 ở góc phải màn hình
-- **Kéo thả** được (drag & drop)
-- **Hiện/ẩn** khi click vào icon
-- **Nút tắt nhanh** cho các câu hỏi phổ biến
+Mở file:
 
-### 📊 Quản Lý Chatbot (Admin)
+```text
+config/chatbot_ai_secret.php
+```
 
-Truy cập: `http://localhost/web_mysqli/admincp/index.php?action=quanlychatbot&query=lietke`
-
-| Chức năng | Mô tả |
-|-----------|-------|
-| 📈 **Thống kê** | Số lượt chat hôm nay, tổng |
-| 📜 **Lịch sử** | Xem từng câu hỏi & trả lời |
-| 🔥 **Từ khóa** | Top câu hỏi phổ biến nhất |
-| � **Biểu đồ** | Lượt chat 7 ngày gần nhất |
-
----
-
-## 🔐 TÍNH NĂNG QUÊN MẬT KHẨU
-
-### 🎯 Cách Hoạt Động
-
-Hệ thống sử dụng **câu hỏi xác thực** để khôi phục mật khẩu:
-
-1. **Bước 1:** Nhập tên đăng nhập
-2. **Bước 2:** Trả lời câu hỏi bảo mật
-3. **Bước 3:** Đặt mật khẩu mới
-
-### 📝 Câu Hỏi Mặc Định
-
-| Câu hỏi | Đáp án mặc định |
-|---------|----------------|
-| "Thú cưng yêu thích của bạn là gì?" | `cat` |
-
-> ⚠️ **Lưu ý:** Đổi đáp án sau khi đăng nhập để bảo mật!
-
-### 🔧 Thay Đổi Câu Hỏi/Đáp Án
-
-1. Đăng nhập Admin
-2. Vào phpMyAdmin
-3. Tìm bảng `tbl_admin`
-4. Sửa cột `security_question` và `security_answer` (MD5 hash)
-
----
-
-## 👤 Khu Vực Khách Hàng (Kiosk)
-
-### 🎯 Đặc Điểm Thiết Kế
-
-| Yếu Tố | Triển Khai |
-|--------|-----------|
-| 🖐️ **Cảm ứng** | Nút bấm lớn, khoảng cách phù hợp ngón tay |
-| 👁️ **Trực quan** | Hình ảnh món ăn rõ nét, giá hiển thị nổi bật |
-| 🔄 **Luồng rõ ràng** | Welcome → Menu → Cart → Payment → Thank You |
-| ⏱️ **Tự động** | Auto-reset sau 10s khi hoàn tất |
-
-### 🛒 Chức Năng Giỏ Hàng
+Điền key:
 
 ```php
-// 📝 Session-based Cart (Không lưu database)
-$_SESSION['cart'] = [
-    [
-        'id' => 1,
-        'ten' => 'Burger Gà',
-        'gia' => 45000,
-        'hinhanh' => 'burger.jpg',
-        'soluong' => 2
-    ],
-    // ...
+<?php
+return [
+    'api_key' => 'GEMINI_API_KEY_CUA_BAN',
 ];
 ```
 
-✅ **Thêm món** - Từ trang menu  
-✅ **Xóa món** - Nút 🗑️ trong giỏ hàng  
-✅ **Thay đổi SL** - Input number + Cập nhật  
-✅ **Tổng tiền** - Auto-calculate real-time  
+### 🧪 Kiểm tra key local
 
-### 💳 Thanh Toán
+```powershell
+php -r "require 'config/chatbot_ai_config.php'; `$c = chatbot_ai_config(); echo `$c['api_key'] ? 'KEY_OK' : 'NO_KEY';"
+```
 
-Hệ thống hỗ trợ 2 phương thức thanh toán:
+Nếu trả về `KEY_OK` là đã đọc được key.
 
-- 📱 **Quét mã QR / Chuyển khoản** (`transfer`) - Mặc định
-- 💵 **Tiền mặt tại quầy** (`cash`)
+### 💬 Test chatbot API thủ công
 
-**Quy trình thanh toán:**
+```powershell
+$body = @{ message = "Tôi muốn món nhẹ, rẻ, còn hàng thì nên chọn gì?" } | ConvertTo-Json
 
-1. Khách hàng chọn phương thức thanh toán từ 2 lựa chọn
-2. Nếu chọn **QR**: Hiển thị mã QR để quét thanh toán
-3. Nếu chọn **Tiền mặt**: Hướng dẫn thanh toán tại quầy
-4. Bấm "✅ Hoàn tất thanh toán" để xác nhận
-
-> ⚠️ **Lưu ý**: Đây là hệ thống **giả lập thanh toán**, không kết nối với cổng thanh toán thật. Mã QR là mô phỏng, không có giá trị thực tế.
-
-### 🔄 Reset Phiên
-
-Hệ thống tự động xóa sạch dữ liệu khi:
-- ✅ Thanh toán hoàn tất → Redirect về welcome
-- ⏱️ Timeout không hoạt động
-- 🖱️ Người dùng bấm nút "Bắt đầu" mới
-
-```php
-// reset_session.php
-<?php
-$_SESSION = array();
-session_destroy();
-echo json_encode(['success' => true]);
-?>
+Invoke-WebRequest `
+  -Uri "http://localhost/web_mysqli/view/pages/main/chatbot_api.php?action=ai_chat" `
+  -Method POST `
+  -Body $body `
+  -ContentType "application/json; charset=utf-8" `
+  -UseBasicParsing
 ```
 
 ---
 
-## 🔐 Khu Vực Quản Trị (Admin)
+## 🔐 Tính Năng Quên Mật Khẩu
 
-### 📊 Dashboard Tổng Quan
+Trang quên mật khẩu nằm tại:
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Thống kê doanh thu-28a745?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Quản lý đơn hàng-ffc107?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Quản lý thực đơn-17a2b8?style=for-the-badge" />
-</p>
-
-### 📦 Các Module Quản Lý
-
-| Module | Chức Năng |
-|--------|-----------|
-| 🍔 **Quản lý sản phẩm** | Thêm/sửa/xóa món ăn, upload hình, đặt giá |
-| 📁 **Quản lý danh mục** | Phân loại món (Burger, Gà rán, Đồ uống...) |
-| 📰 **Quản lý bài viết** | Tin tức, khuyến mãi, giới thiệu |
-| 📦 **Quản lý đơn hàng** | Xem đơn từ kiosk, cập nhật trạng thái |
-| 📈 **Thống kê** | Biểu đồ doanh thu, món bán chạy |
-| ⚙️ **Thông tin web** | Cấu hình logo, liên hệ, mạng xã hội |
-
-### 🔑 Đăng Nhập Admin
-
-```
-📍 URL: http://localhost/web_mysqli/admincp/login.php
-
-👤 Tài khoản mặc định:
-   - Username: toan
-  - Password: 123456
+```text
+http://localhost/web_mysqli/admincp/forgot_password.php
 ```
 
-### 🛡️ Bảo Mật Admin
+Luồng xử lý:
 
-- 🔒 Mật khẩu mã hóa MD5
-- 📝 Session kiểm tra mỗi trang
-- 🚫 Auto-redirect về login nếu chưa đăng nhập
-- 🔓 Nút đăng xuất xóa session hoàn toàn
+1. Admin nhập tên đăng nhập.
+2. Hệ thống hiển thị câu hỏi bảo mật nếu tài khoản có cấu hình.
+3. Admin nhập câu trả lời và mật khẩu mới.
+4. Hệ thống cập nhật mật khẩu mới bằng `password_hash`.
+
+Lưu ý:
+
+- Tài khoản cũ dùng MD5 vẫn có đường nâng cấp khi đăng nhập thành công.
+- Không nên dùng câu trả lời bảo mật mặc định.
+- Nếu tài khoản chưa có câu hỏi/câu trả lời bảo mật, cần cập nhật dữ liệu trong database trước.
 
 ---
 
-## 🛡️ Nguyên Tắc Bảo Mật
+## 🛡️ Bảo Mật Hệ Thống
 
-### 🔐 Nguyên Tắc Kiosk
+Các điểm đã được gia cố:
 
-| Nguyên Tắc | Giải Thích |
-|-----------|-----------|
-| 👤 **Một người - Một phiên** | Mỗi người dùng có session riêng biệt |
-| 🗑️ **Không lưu dữ liệu** | Giỏ hàng chỉ tồn tại trong phiên hiện tại |
-| 🚫 **Không đa nhiệm** | Thiết kế cho 1 người dùng tại 1 thời điểm |
-| 🔄 **Luôn reset sạch** | Sau hoàn tất/hết giờ → Xóa toàn bộ dữ liệu |
+- `admincp/index.php` yêu cầu đăng nhập admin.
+- Tất cả file xử lý trong `admincp/modules/**/xuly.php` có login guard.
+- Các hành động thêm/sửa/xóa trong Admin có CSRF token.
+- Endpoint lịch sử/thống kê chatbot yêu cầu đăng nhập admin.
+- Endpoint chatbot public chỉ phục vụ chức năng khách hàng cần dùng.
+- Login và quên mật khẩu dùng prepared statement.
+- Mật khẩu mới dùng `password_hash`.
+- File secret Gemini được tách riêng và bị ignore khỏi Git.
+- Upload runtime tách khỏi source code trong `storage/uploads/`.
 
-### 📊 Cấu Trúc Database
+Những điểm nên cải thiện tiếp nếu nâng cấp thành sản phẩm thật:
 
-```sql
--- Bảng đơn hàng (Chỉ lưu khi thanh toán thành công)
-tbl_donhang (
-    id_donhang      INT AUTO_INCREMENT PRIMARY KEY,
-    madon           VARCHAR(50),        -- Mã đơn: DH20240505123456
-    tenkhach        VARCHAR(255),       -- Tên khách
-    tongtien        DECIMAL(10,2),      -- Tổng tiền
-    trangthai       TINYINT,            -- 0: Chờ, 1: Hoàn thành
-    ngaydat         DATETIME            -- Thời gian đặt
-);
-
--- Bảng chi tiết đơn hàng
-tbl_chitietdonhang (
-    id_chitiet      INT AUTO_INCREMENT PRIMARY KEY,
-    id_donhang      INT,                -- FK đến tbl_donhang
-    id_sanpham      INT,                -- FK đến tbl_sanpham
-    ten_sanpham     VARCHAR(255),
-    gia             DECIMAL(10,2),
-    soluong         INT,
-    thanhtien       DECIMAL(10,2)
-);
-```
+- Phân quyền theo vai trò admin.
+- Rate limit login, forgot password và chatbot.
+- Log audit cho thao tác thêm/sửa/xóa.
+- Chuẩn hóa toàn bộ SQL cũ sang prepared statement.
+- Tách service layer rõ hơn hoặc nâng cấp sang Laravel nếu muốn mở rộng lâu dài.
 
 ---
 
-## 📸 Demo Giao Diện Minh Họa
+## 🧪 Smoke Test Tự Động
 
-### 🖥️ Màn Hình Chờ (Welcome)
+Bộ test nhanh nằm trong `tests/smoke/`, dùng để kiểm tra dự án còn chạy ổn trước khi commit hoặc deploy demo.
 
-```
-┌─────────────────────────────────────┐
-│                                     │
-│           🍔 FastFood Kiosk         │
-│      Đặt món dễ dàng - Nhanh chóng  │
-│                                     │
-│         ┌───────────────┐           │
-│         │   👆 BẮT ĐẦU  │           │
-│         └───────────────┘           │
-│                                     │
-│   🍕 Chọn món    ⚡ Thanh toán      │
-│                                     │
-└─────────────────────────────────────┘
+Chạy local với XAMPP:
+
+```powershell
+php tests/smoke/run_smoke_tests.php
 ```
 
-### 🛒 Giỏ Hàng
+Nếu dự án chạy ở URL khác:
 
-```
-┌─────────────────────────────────────┐
-│  🛒 Giỏ hàng của bạn               │
-├─────────────────────────────────────┤
-│ [🍔] Burger Gà          45.000đ  🗑️│
-│      Số lượng: [ 2 ]  [Cập nhật]   │
-├─────────────────────────────────────┤
-│ [🍟] Khoai tây chiên    25.000đ  🗑️│
-│      Số lượng: [ 1 ]  [Cập nhật]   │
-├─────────────────────────────────────┤
-│  TỔNG: 115.000đ                     │
-│                                     │
-│  [← Tiếp tục chọn]  [Thanh toán →]  │
-└─────────────────────────────────────┘
+```powershell
+php tests/smoke/run_smoke_tests.php http://localhost/web_mysqli
 ```
 
-### 🎉 Hoàn Tất
+Smoke test hiện tại kiểm tra:
 
+- Các file PHP quan trọng không lỗi cú pháp.
+- Trang public chính trả về HTTP hợp lệ và không có lỗi PHP.
+- Chatbot API trả về JSON hợp lệ.
+- Các endpoint xử lý Admin bị chặn khi chưa đăng nhập.
+- File secret AI được Git ignore.
+- Thư mục upload có `.htaccess` và `.gitkeep`.
+
+Đây là smoke test thực dụng cho dự án PHP/MySQLi, không thay thế PHPUnit đầy đủ nhưng đủ giúp phát hiện lỗi nghiêm trọng trước khi demo.
+
+---
+
+## ✅ Checklist Test Thủ Công
+
+### 🖥️ Test kiosk
+
+| Bước | Thao tác | Kết quả mong đợi |
+| --- | --- | --- |
+| 1 | Mở `http://localhost/web_mysqli/view/` | Hiện màn hình welcome |
+| 2 | Bấm `Bắt đầu` | Vào trang chọn món |
+| 3 | Lọc danh mục | Danh sách món cuộn/chuyển đúng nhóm |
+| 4 | Thêm món | Số lượng giỏ hàng cập nhật đúng |
+| 5 | Vào giỏ hàng | Hiển thị đúng món, số lượng và tổng tiền |
+| 6 | Cập nhật số lượng | Tổng tiền thay đổi đúng |
+| 7 | Thanh toán | Tạo đơn hàng và hiển thị hoàn tất |
+| 8 | Chờ timeout | Quay về màn hình welcome |
+| 9 | Bấm `Gọi NV` | Admin nhận được yêu cầu hỗ trợ |
+
+### 🔐 Test admin
+
+| Bước | Thao tác | Kết quả mong đợi |
+| --- | --- | --- |
+| 1 | Đăng nhập Admin | Vào dashboard |
+| 2 | Thêm/sửa món ăn | Dữ liệu cập nhật ở frontend |
+| 3 | Upload ảnh món | Ảnh lưu trong `storage/uploads/` và hiển thị đúng |
+| 4 | Sửa banner | Banner frontend thay đổi |
+| 5 | Sửa logo/favicon | Giao diện dùng ảnh mới |
+| 6 | Kiểm tra đơn hàng | Đơn từ kiosk xuất hiện trong Admin |
+| 7 | Xuất đơn hàng | Tải CSV thành công |
+| 8 | Mở chatbot Admin | Xem được lịch sử và lọc theo loại |
+| 9 | Xuất lịch sử chatbot | Tải CSV thành công |
+| 10 | Xử lý gọi nhân viên | Trạng thái yêu cầu được cập nhật |
+
+### 🛡️ Test bảo mật nhanh
+
+| Kiểm tra | Kết quả mong đợi |
+| --- | --- |
+| Mở trực tiếp `admincp/modules/.../xuly.php` khi chưa login | Bị chuyển về login |
+| Gọi API lịch sử chatbot khi chưa login | Trả về `401` |
+| Submit form Admin không có CSRF token | Bị chặn |
+| File `config/chatbot_ai_secret.php` | Không xuất hiện trong commit |
+
+---
+
+## 🌐 Deploy Demo 24/7
+
+Khi đưa lên hosting free hoặc hosting demo:
+
+1. Tạo database MySQL trên hosting.
+2. Import `web_sqli.sql`.
+3. Cập nhật thông tin kết nối trong `config/database.php`.
+4. Upload source lên hosting.
+5. Đảm bảo `storage/uploads/` có quyền ghi.
+6. Cấu hình Gemini API key bằng biến môi trường hoặc file secret không public.
+7. Kiểm tra lại các URL:
+
+| Khu vực | Đường dẫn |
+| --- | --- |
+| Kiosk | `/view/` |
+| Admin | `/admincp/login.php` |
+
+Lưu ý quan trọng:
+
+- Nếu hosting không cho ghi file, upload ảnh từ Admin sẽ lỗi.
+- Không đưa API key vào GitHub public.
+- Nên đổi mật khẩu admin trước khi gửi link demo cho HR.
+- Nên test trên một trình duyệt ẩn danh để chắc chắn demo không phụ thuộc session local.
+
+---
+
+## 🚀 Demo Trực Tuyến
+
+Sau khi deploy lên hosting, cập nhật link demo tại đây để HR hoặc nhà tuyển dụng có thể truy cập nhanh:
+
+| Khu vực | Link demo |
+| --- | --- |
+| Kiosk khách hàng | `Đang cập nhật sau khi deploy` |
+| Trang quản trị | `Đang cập nhật sau khi deploy` |
+
+Khuyến nghị khi public demo:
+
+- Dùng tài khoản admin demo riêng, không dùng tài khoản cá nhân.
+- Cấp quyền vừa đủ cho tài khoản demo nếu sau này hệ thống có phân quyền.
+- Không hiển thị API key, mật khẩu database hoặc thông tin nhạy cảm trong repository.
+- Đổi mật khẩu mặc định trước khi gửi link demo.
+
+---
+
+## 👤 Tài Khoản Demo
+
+```text
+URL Admin: http://localhost/web_mysqli/admincp/login.php
+Username: toan
+Password: 123456
 ```
-┌─────────────────────────────────────┐
-│           🎉 Thanh toán thành công! │
-│                                     │
-│      Mã đơn hàng: DH20240505123456  │
-│                                     │
-│  📋 Hướng dẫn nhận món:             │
-│  1. Đến quầy phục vụ                │
-│  2. Đọc mã đơn hàng                 │
-│  3. Nhận món và thưởng thức!        │
-│                                     │
-│  ⏱️ Tự động về màn hình chính       │
-│     sau 10 giây...                  │
-└─────────────────────────────────────┘
-```
+
+Đây là tài khoản demo để HR hoặc người xem dự án có thể đăng nhập nhanh. Khi deploy public lâu dài, nên đổi sang tài khoản demo riêng và giới hạn quyền nếu hệ thống được nâng cấp phân quyền.
 
 ---
 
 ## 🧑‍💻 Tác Giả
 
-<table>
-<tr>
-<td align="center">
-<img src="https://img.shields.io/badge/Nguyễn_Công_Toàn-52200271-blue?style=flat-square" />
-<br>
-<strong>📧 Liên hệ:</strong> congtoan2k4@gmail.com
-<br>
-<strong🔗 GitHub:</strong> <a href="https://github.com/Szero-White">@Szero-White</a>
-</td>
-</tr>
-</table>
-
-### 📚 Tài Liệu Tham Khảo
-
-| File | Mô Tả |
-|------|-------|
-| 📄 [52200271_NguyenCongToan.docx](./52200271_NguyenCongToan.docx) | Báo cáo đồ án Word |
-| 📄 [52200271_NguyenCongToan.pdf](./52200271_NguyenCongToan.pdf) | Báo cáo đồ án PDF |
-| 🗄️ [web_sqli.sql](./web_sqli.sql) | Script database |
+```text
+Nguyễn Công Toàn
+GitHub: https://github.com/Szero-White
+Email: congtoan2k4@gmail.com
+```
 
 ---
 
-<p align="center">
-⭐ <strong>Nếu dự án hữu ích, hãy để lại một Star nhé!</strong> ⭐
-</p>
+## 📚 Tài Liệu Tham Khảo
 
-<p align="center">
-<img src="https://img.shields.io/badge/Made%20with-❤️-red?style=for-the-badge" />
-<img src="https://img.shields.io/badge/FastFood-Kiosk-orange?style=for-the-badge" />
-</p>
-
-
----
-
-## Deployment Notes
-
-- Product, article, and site images uploaded from Admin are stored in `storage/uploads/`.
-- The database stores only the image filename/path, not the binary image content.
-- `storage/uploads/` must be writable on the hosting server.
-- Runtime uploaded images are ignored by Git. Keep only `.gitkeep` and `.htaccess` in the repository.
-- Existing seed images referenced by `web_sqli.sql` should be uploaded to `storage/uploads/` on the demo server.
-- Uploaded image validation allows JPG, PNG, and WEBP up to 5MB.
-- Static UI assets are organized in `view/assets/` by purpose: `brand`, `banners`, `placeholders`, `screenshots`, and `seed/uploads`.
-- Admin can manage content images through CRUD modules: product images, article images, introduction image, site logo, and homepage banners.
+| File | Mô tả |
+| --- | --- |
+| `52200271_NguyenCongToan.docx` | Báo cáo đồ án Word |
+| `52200271_NguyenCongToan.pdf` | Báo cáo đồ án PDF |
+| `web_sqli.sql` | Script database |
