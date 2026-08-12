@@ -2,7 +2,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/PHP-8.x-777BB4?logo=php&logoColor=white&style=for-the-badge" />
-  <img src="https://img.shields.io/badge/MySQL-8.x-4479A1?logo=mysql&logoColor=white&style=for-the-badge" />
+  <img src="https://img.shields.io/badge/MySQL%20%2F%20MariaDB-Compatible-4479A1?logo=mysql&logoColor=white&style=for-the-badge" />
   <img src="https://img.shields.io/badge/Bootstrap-5.3-7952B3?logo=bootstrap&logoColor=white&style=for-the-badge" />
   <img src="https://img.shields.io/badge/Gemini_AI-Enabled-34A853?style=for-the-badge" />
 </p>
@@ -52,7 +52,7 @@ FastFood Kiosk được xây dựng để mô phỏng trải nghiệm đặt mó
 | Điểm nổi bật | Mô tả |
 | --- | --- |
 | 🖥️ Kiosk tự phục vụ | Giao diện lớn, rõ, phù hợp màn hình cảm ứng hoặc demo desktop |
-| 🧩 Quản trị đầy đủ | Admin có CRUD cho món ăn, danh mục, bài viết, banner, logo và đơn hàng |
+| 🧩 Quản trị đầy đủ | Admin quản lý món ăn, danh mục, bài viết, banner, hình ảnh hệ thống, đơn hàng, liên hệ, chatbot và yêu cầu hỗ trợ |
 | 🖼️ Ảnh upload động | Ảnh sản phẩm, banner, logo được quản lý qua Admin và lưu trong `storage/uploads/` |
 | 🤖 AI Chatbot | Tích hợp Gemini, có fallback rule/database khi API lỗi hoặc chưa cấu hình key |
 | 🔔 Gọi nhân viên | Khách bấm gọi nhân viên, Admin nhận thông báo và xử lý |
@@ -168,7 +168,7 @@ Cập nhật dữ liệu hiển thị cho kiosk
 | 🍔 Món ăn | Thêm, sửa, xóa món; upload ảnh; quản lý giá, tồn kho, mô tả |
 | 🗂️ Danh mục bài viết | Quản lý nhóm bài viết |
 | 📰 Bài viết | Quản lý tin tức, khuyến mãi, nội dung marketing |
-| 🧾 Đơn hàng | Xem đơn, xem chi tiết, xóa dòng rác, xuất CSV |
+| 🧾 Đơn hàng | Xem danh sách, xem chi tiết, xóa đơn hàng, xuất CSV |
 | ✉️ Liên hệ | Quản lý phản hồi khách hàng |
 | 🤖 Chatbot | Xem lịch sử hội thoại, lọc theo loại, thống kê, xuất CSV |
 | 🔔 Gọi nhân viên | Theo dõi và xử lý yêu cầu hỗ trợ từ kiosk |
@@ -178,31 +178,49 @@ Cập nhật dữ liệu hiển thị cho kiosk
 ## 📁 Cấu Trúc Dự Án
 
 ```text
-web_mysqli/
-|-- admincp/
+Fast-Food-Self-Ordering-Kiosk-System-Web-Based/
+|
+|-- admincp/                         # Khu vực quản trị
+|   |-- config/
+|   |   `-- config.php
+|   |
 |   |-- css_admin/
-|   |   |-- layout/                 # CSS layout dùng chung admin
-|   |   |-- pages/                  # CSS riêng từng trang admin
+|   |   |-- base/                    # CSS nền tảng Admin
+|   |   |-- components/              # CSS component dùng chung
+|   |   |-- layout/                  # Sidebar, topbar và layout Admin
+|   |   |-- pages/                   # CSS riêng từng trang/module
+|   |   |-- admin-responsive.css
+|   |   |-- auth-forgot.css
+|   |   |-- auth-login.css
 |   |   `-- admin_style.css
+|   |
 |   |-- includes/
-|   |   |-- admin_security.php      # Login guard + CSRF helper
-|   |   `-- admin_shell_data.php    # Dữ liệu dùng chung cho admin shell
+|   |   |-- admin_security.php       # Login guard + CSRF helper
+|   |   `-- admin_shell_data.php     # Dữ liệu dùng chung Admin
+|   |
 |   |-- js_admin/
-|   |   |-- pages/                  # JS riêng từng trang admin
+|   |   |-- pages/                   # JS riêng từng trang Admin
 |   |   `-- admin_script.js
+|   |
 |   |-- modules/
-|   |   |-- quanlysp/               # Quản lý món ăn
-|   |   |-- quanlydanhmuc/          # Quản lý danh mục món
-|   |   |-- quanlybanner/           # Quản lý banner
-|   |   |-- quanlyhinhanh/          # Quản lý logo/favicon
-|   |   |-- quanlydonhang/          # Quản lý đơn hàng
-|   |   |-- quanlychatbot/          # Quản lý chatbot
-|   |   `-- quanlyhotro/            # Quản lý gọi nhân viên
+|   |   |-- quanlysp/                # Quản lý món ăn
+|   |   |-- quanlydanhmuc/           # Quản lý danh mục món
+|   |   |-- quanlybaiviet/           # Quản lý bài viết
+|   |   |-- quanlydanhmucbaiviet/    # Quản lý danh mục bài viết
+|   |   |-- quanlybanner/            # Quản lý banner
+|   |   |-- quanlyhinhanh/           # Quản lý logo/favicon
+|   |   |-- quanlydonhang/           # Quản lý đơn hàng
+|   |   |-- quanlylienhe/            # Quản lý liên hệ
+|   |   |-- quanlychatbot/           # Quản lý chatbot
+|   |   |-- quanlyhotro/             # Quản lý gọi nhân viên
+|   |   |-- thongke/                 # Thống kê
+|   |   `-- thongtinweb/             # Quản lý thông tin website
+|   |
 |   |-- forgot_password.php
 |   |-- index.php
 |   `-- login.php
 |
-|-- config/
+|-- config/                           # Cấu hình và repository dùng chung
 |   |-- database.php
 |   |-- paths.php
 |   |-- site_asset_repository.php
@@ -216,19 +234,66 @@ web_mysqli/
 |   `-- gemini_chatbot_client.php
 |
 |-- storage/
-|   `-- uploads/                   # Ảnh upload khi chạy hệ thống
+|   `-- uploads/                      # Ảnh upload khi chạy hệ thống
+|       |-- banners/
+|       |-- posts/
+|       |-- products/
+|       `-- site/
 |
-|-- view/
-|   |-- assets/                    # Ảnh tĩnh, screenshot, seed asset
-|   |-- css/                       # CSS frontend/kiosk
-|   |-- js/                        # JS frontend/kiosk
+|-- tests/
+|   `-- smoke/                        # Smoke test tự động
+|       |-- README.md
+|       |-- SmokeTestResult.php
+|       `-- run_smoke_tests.php
+|
+|-- view/                             # Giao diện khách hàng / kiosk
+|   |-- assets/
+|   |   |-- banners/
+|   |   |-- brand/
+|   |   |-- placeholders/
+|   |   |-- screenshots/
+|   |   `-- seed/
+|   |
+|   |-- config/
+|   |   `-- config.php
+|   |
+|   |-- controllers/
+|   |   |-- cart_controller.php
+|   |   |-- checkout_controller.php
+|   |   |-- contact_controller.php
+|   |   `-- kiosk_session_controller.php
+|   |
+|   |-- css/                          # CSS frontend/kiosk
+|   |-- images/                       # Ảnh giao diện/dữ liệu cũ
+|   |-- js/                           # JavaScript frontend/kiosk
+|   |
 |   |-- pages/
-|   |   |-- header.php
+|   |   |-- chatbot.php
 |   |   |-- footer.php
-|   |   `-- main/                  # Các trang chính của khách hàng
+|   |   |-- header.php
+|   |   |-- main.php
+|   |   |-- menu.php
+|   |   `-- main/
+|   |       |-- welcome.php
+|   |       |-- index.php
+|   |       |-- sanpham.php
+|   |       |-- danhmuc.php
+|   |       |-- danhmuc_page_data.php
+|   |       |-- giohang.php
+|   |       |-- thanhtoan.php
+|   |       |-- camon.php
+|   |       |-- baiviet.php
+|   |       |-- danhmucbaiviet.php
+|   |       |-- gioithieu.php
+|   |       |-- contact.php
+|   |       |-- lienhe.php
+|   |       |-- goinhanvien.php
+|   |       |-- reset_session.php
+|   |       `-- chatbot_api.php
+|   |
 |   `-- index.php
 |
-|-- web_sqli.sql
+|-- web_sqli.sql                      # Script database
 |-- .gitignore
 `-- README.md
 ```
@@ -308,6 +373,8 @@ web_sqli.sql
 config/database.php
 ```
 
+File này hỗ trợ các biến môi trường `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`, `DB_PORT`. Nếu không khai báo, cấu hình local mặc định là `localhost`, user `root`, password rỗng và database `web_sqli`.
+
 7. Mở hệ thống:
 
 | Khu vực | URL |
@@ -384,13 +451,12 @@ Luồng xử lý:
 1. Admin nhập tên đăng nhập.
 2. Hệ thống hiển thị câu hỏi bảo mật nếu tài khoản có cấu hình.
 3. Admin nhập câu trả lời và mật khẩu mới.
-4. Hệ thống cập nhật mật khẩu mới bằng `password_hash`.
+4. Mật khẩu mới phải có ít nhất 8 ký tự và được lưu bằng `password_hash`.
 
 Lưu ý:
 
 - Tài khoản cũ dùng MD5 vẫn có đường nâng cấp khi đăng nhập thành công.
-- Không nên dùng câu trả lời bảo mật mặc định.
-- Nếu tài khoản chưa có câu hỏi/câu trả lời bảo mật, cần cập nhật dữ liệu trong database trước.
+- Tài khoản cần có câu hỏi và câu trả lời bảo mật để sử dụng chức năng quên mật khẩu.
 
 ---
 
@@ -407,14 +473,6 @@ Các điểm đã được gia cố:
 - Mật khẩu mới dùng `password_hash`.
 - File secret Gemini được tách riêng và bị ignore khỏi Git.
 - Ảnh upload được quản lý trong `storage/uploads/`; một số ảnh demo cần thiết có thể được Git theo dõi để phục vụ backup và deploy.
-
-Những điểm nên cải thiện tiếp nếu nâng cấp thành sản phẩm thật:
-
-- Phân quyền theo vai trò admin.
-- Rate limit login, forgot password và chatbot.
-- Log audit cho thao tác thêm/sửa/xóa.
-- Chuẩn hóa toàn bộ SQL cũ sang prepared statement.
-- Tách service layer rõ hơn hoặc nâng cấp sang Laravel nếu muốn mở rộng lâu dài.
 
 ---
 
@@ -436,7 +494,7 @@ php tests/smoke/run_smoke_tests.php http://localhost/web_mysqli
 
 Smoke test hiện tại kiểm tra:
 
-- Các file PHP quan trọng không lỗi cú pháp.
+- Các file PHP quan trọng được chọn không có lỗi cú pháp.
 - Trang public chính trả về HTTP hợp lệ và không có lỗi PHP.
 - Chatbot API trả về JSON hợp lệ.
 - Các endpoint xử lý Admin bị chặn khi chưa đăng nhập.
@@ -491,7 +549,7 @@ Smoke test hiện tại kiểm tra:
 
 ## 🌐 Deploy Demo 24/7
 
-Khi đưa lên hosting free hoặc hosting demo:
+Cấu hình deploy trên hosting demo gồm:
 
 1. Tạo database MySQL/MariaDB trên hosting.
 2. Import `web_sqli.sql`.
