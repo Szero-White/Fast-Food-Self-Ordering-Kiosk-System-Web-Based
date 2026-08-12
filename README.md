@@ -232,7 +232,8 @@ Dự án không lưu binary ảnh trực tiếp trong database. Cách làm hiệ
 - Database chỉ lưu tên file hoặc đường dẫn tương đối.
 - Frontend và Admin cùng đọc ảnh qua helper/repository dùng chung.
 - Ảnh tĩnh phục vụ giao diện, screenshot hoặc dữ liệu seed được đặt trong `view/assets/`.
-- `storage/uploads/` là dữ liệu runtime, không nên commit toàn bộ ảnh upload lên Git.
+- `storage/uploads/` là nơi lưu ảnh upload khi hệ thống đang chạy.
+- Với bản demo/portfolio, một số ảnh demo cần thiết có thể được Git theo dõi để khi clone/deploy lại vẫn hiển thị đầy đủ dữ liệu mẫu; các ảnh runtime phát sinh mới vẫn có thể được `.gitignore` bỏ qua.
 - Khi deploy, server phải cấp quyền ghi cho `storage/uploads/`.
 
 ### 🧩 Các nhóm ảnh Admin có thể chỉnh
@@ -482,10 +483,15 @@ Smoke test hiện tại kiểm tra:
 
 Khi đưa lên hosting free hoặc hosting demo:
 
-1. Tạo database MySQL trên hosting.
+1. Tạo database MySQL/MariaDB trên hosting.
 2. Import `web_sqli.sql`.
-3. Cập nhật thông tin kết nối trong `config/database.php`.
-4. Upload source lên hosting.
+3. Cấu hình kết nối database bằng biến môi trường, không hard-code mật khẩu vào source:
+   - `DB_HOST`
+   - `DB_PORT`
+   - `DB_NAME`
+   - `DB_USER`
+   - `DB_PASS`
+4. Deploy source từ GitHub lên hosting.
 5. Đảm bảo `storage/uploads/` có quyền ghi.
 6. Cấu hình Gemini API key bằng biến môi trường hoặc file secret không public.
 7. Kiểm tra lại các URL:
@@ -499,7 +505,7 @@ Lưu ý quan trọng:
 
 - Nếu hosting không cho ghi file, upload ảnh từ Admin sẽ lỗi.
 - Không đưa API key vào GitHub public.
-- Nên đổi mật khẩu admin trước khi gửi link demo cho HR.
+- Nên dùng tài khoản admin demo riêng khi gửi link cho HR; không public tài khoản quản trị cá nhân.
 - Nên test trên một trình duyệt ẩn danh để chắc chắn demo không phụ thuộc session local.
 
 ---
@@ -510,8 +516,8 @@ Sau khi deploy lên hosting, cập nhật link demo tại đây để HR hoặc 
 
 | Khu vực | Link demo |
 | --- | --- |
-| Kiosk khách hàng | `Đang cập nhật sau khi deploy` |
-| Trang quản trị | `Đang cập nhật sau khi deploy` |
+| Kiosk khách hàng | `https://workflow-erp.alwaysdata.net/fastfood/view/` |
+| Trang quản trị | `https://workflow-erp.alwaysdata.net/fastfood/admincp/login.php` |
 
 Khuyến nghị khi public demo:
 
@@ -525,7 +531,7 @@ Khuyến nghị khi public demo:
 ## 👤 Tài Khoản Demo
 
 ```text
-URL Admin: http://localhost/web_mysqli/admincp/login.php
+URL Admin: https://workflow-erp.alwaysdata.net/fastfood/admincp/login.php
 Username: toan
 Password: 12345678
 ```
@@ -548,6 +554,4 @@ Email: congtoan2k4@gmail.com
 
 | File | Mô tả |
 | --- | --- |
-| `52200271_NguyenCongToan.docx` | Báo cáo đồ án Word |
-| `52200271_NguyenCongToan.pdf` | Báo cáo đồ án PDF |
 | `web_sqli.sql` | Script database |
