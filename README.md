@@ -54,7 +54,7 @@ FastFood Kiosk được xây dựng để mô phỏng trải nghiệm đặt mó
 | 🖥️ Kiosk tự phục vụ | Giao diện lớn, rõ, phù hợp màn hình cảm ứng hoặc demo desktop |
 | 🧩 Quản trị đầy đủ | Admin quản lý món ăn, danh mục, bài viết, banner, hình ảnh hệ thống, đơn hàng, liên hệ, chatbot và yêu cầu hỗ trợ |
 | 🖼️ Ảnh upload động | Ảnh sản phẩm, banner, logo được quản lý qua Admin và lưu trong `storage/uploads/` |
-| 🤖 AI Chatbot | Tích hợp Gemini, có fallback rule/database khi API lỗi hoặc chưa cấu hình key |
+| 🤖 AI Chatbot | Chatbot hybrid kết hợp Gemini AI với rule/database, hỗ trợ context hội thoại và fallback khi AI không khả dụng |
 | 🔔 Gọi nhân viên | Khách bấm gọi nhân viên, Admin nhận thông báo và xử lý |
 | ⏱️ Timeout kiosk | Tự động quay về màn hình chờ khi không thao tác |
 | 📤 Xuất dữ liệu | Admin có thể xuất CSV ở đơn hàng và lịch sử chatbot |
@@ -265,7 +265,22 @@ Fast-Food-Self-Ordering-Kiosk-System-Web-Based/
 |   |
 |   |-- css/                          # CSS frontend/kiosk
 |   |-- images/                       # Ảnh giao diện/dữ liệu cũ
+|   |
 |   |-- js/                           # JavaScript frontend/kiosk
+|   |   |-- chatbot-widget.js        # UI và tương tác widget chatbot
+|   |   |-- checkout-page.js         # Xử lý giao diện thanh toán
+|   |   |-- home-page.js             # Xử lý giao diện trang chọn món
+|   |   |-- order-success.js         # Xử lý trang hoàn tất đơn hàng
+|   |   |-- timeout.js               # Quản lý timeout phiên kiosk
+|   |   `-- chatbot/
+|   |       |-- chatbot-utils.js      # Chuẩn hóa văn bản và tiện ích dùng chung
+|   |       |-- chatbot-context.js    # Quản lý context hội thoại/localStorage
+|   |       |-- chatbot-intents.js    # Nhận diện intent người dùng
+|   |       |-- chatbot-catalog.js    # Tìm kiếm món ăn và danh mục
+|   |       |-- chatbot-api.js        # Giao tiếp với backend PHP API
+|   |       |-- chatbot-responses.js  # Xử lý phản hồi rule/database/AI
+|   |       `-- chatbot-response-service.js
+|   |                                    # Điều phối luồng xử lý chatbot
 |   |
 |   |-- pages/
 |   |   |-- chatbot.php
@@ -386,11 +401,29 @@ File này hỗ trợ các biến môi trường `DB_HOST`, `DB_USER`, `DB_PASS`,
 
 ## 🤖 Cấu Hình Gemini AI
 
-Chatbot dùng mô hình hybrid:
+Chatbot sử dụng kiến trúc hybrid giữa rule/database và Gemini AI:
 
-1. Ưu tiên rule nội bộ và dữ liệu trong database.
-2. Nếu câu hỏi cần suy luận hơn, hệ thống gọi Gemini.
-3. Nếu API lỗi, hết quota hoặc chưa cấu hình key, chatbot vẫn fallback về rule/database để demo không bị chết.
+1. Các yêu cầu cần dữ liệu chính xác như giá, tồn kho, danh mục và đặt món được xử lý trực tiếp bằng rule và dữ liệu trong database.
+2. Các câu hỏi mang tính tư vấn hoặc gợi ý món được ưu tiên xử lý bằng Gemini để tạo phản hồi tự nhiên hơn.
+3. Các câu hỏi mở không khớp với rule cụ thể có thể được chuyển tiếp sang Gemini.
+4. Nếu Gemini không khả dụng, API lỗi, hết quota hoặc chưa cấu hình key, hệ thống sử dụng rule/database fallback để chatbot vẫn hoạt động.
+
+### 🧩 Kiến trúc Chatbot
+
+Frontend chatbot được tách thành các module độc lập theo trách nhiệm:
+
+| Module | Trách nhiệm |
+| --- | --- |
+| `chatbot-utils.js` | Chuẩn hóa văn bản, xử lý keyword, số lượng và các hàm tiện ích dùng chung |
+| `chatbot-context.js` | Quản lý context hội thoại và ghi nhớ món/danh mục bằng `localStorage` |
+| `chatbot-intents.js` | Phân loại ý định như đặt món, hỏi giá, tồn kho, tư vấn và gợi ý |
+| `chatbot-catalog.js` | Tìm kiếm và đối chiếu món ăn/danh mục từ dữ liệu sản phẩm |
+| `chatbot-api.js` | Giao tiếp giữa frontend với PHP API |
+| `chatbot-responses.js` | Xử lý phản hồi từ rule, database, giỏ hàng và Gemini |
+| `chatbot-response-service.js` | Điều phối thứ tự xử lý và cơ chế fallback của chatbot |
+| `chatbot-widget.js` | Quản lý giao diện và tương tác của widget chatbot |
+
+Luồng xử lý được thiết kế để các thao tác cần độ chính xác cao như giá, tồn kho và đặt món sử dụng dữ liệu hệ thống, trong khi các yêu cầu tư vấn hoặc hội thoại mở có thể sử dụng Gemini AI.
 
 ### 🔑 Tạo file secret local
 
