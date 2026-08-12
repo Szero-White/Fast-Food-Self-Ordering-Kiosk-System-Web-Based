@@ -11,8 +11,20 @@
 
 ---
 
+## 🚀 Demo Trực Tuyến
+
+HR hoặc nhà tuyển dụng có thể truy cập trực tiếp bản demo tại:
+
+| Khu vực | Link demo |
+| --- | --- |
+| Kiosk khách hàng | [👉 Mở Kiosk Demo](https://workflow-erp.alwaysdata.net/fastfood/view/) |
+| Trang quản trị | [👉 Mở Admin Demo](https://workflow-erp.alwaysdata.net/fastfood/admincp/login.php) |
+
+---
+
 ## 📋 Mục Lục
 
+- [🚀 Demo trực tuyến](#-demo-trực-tuyến)
 - [🧠 Tổng quan hệ thống](#-tổng-quan-hệ-thống)
 - [📸 Ảnh minh họa](#-ảnh-minh-họa)
 - [🔄 Luồng hoạt động](#-luồng-hoạt-động)
@@ -26,9 +38,8 @@
 - [🧪 Smoke test tự động](#-smoke-test-tự-động)
 - [✅ Checklist test thủ công](#-checklist-test-thủ-công)
 - [🌐 Deploy demo 24/7](#-deploy-demo-247)
-- [🚀 Demo trực tuyến](#-demo-trực-tuyến)
 - [👤 Tài khoản demo](#-tài-khoản-demo)
-- [🧑‍💻 Tác giả](#-tác-giả)
+- [🧑‍💻 Tác giả](#tac-gia)
 
 ---
 
@@ -232,8 +243,7 @@ Dự án không lưu binary ảnh trực tiếp trong database. Cách làm hiệ
 - Database chỉ lưu tên file hoặc đường dẫn tương đối.
 - Frontend và Admin cùng đọc ảnh qua helper/repository dùng chung.
 - Ảnh tĩnh phục vụ giao diện, screenshot hoặc dữ liệu seed được đặt trong `view/assets/`.
-- `storage/uploads/` là nơi lưu ảnh upload khi hệ thống đang chạy.
-- Với bản demo/portfolio, một số ảnh demo cần thiết có thể được Git theo dõi để khi clone/deploy lại vẫn hiển thị đầy đủ dữ liệu mẫu; các ảnh runtime phát sinh mới vẫn có thể được `.gitignore` bỏ qua.
+- Với bản demo/portfolio, một số ảnh demo cần thiết trong `storage/uploads/` được Git theo dõi để khi clone/deploy lại vẫn hiển thị đầy đủ dữ liệu mẫu; các ảnh runtime phát sinh mới vẫn có thể được `.gitignore` bỏ qua.
 - Khi deploy, server phải cấp quyền ghi cho `storage/uploads/`.
 
 ### 🧩 Các nhóm ảnh Admin có thể chỉnh
@@ -396,7 +406,7 @@ Các điểm đã được gia cố:
 - Login và quên mật khẩu dùng prepared statement.
 - Mật khẩu mới dùng `password_hash`.
 - File secret Gemini được tách riêng và bị ignore khỏi Git.
-- Upload runtime tách khỏi source code trong `storage/uploads/`.
+- Ảnh upload được quản lý trong `storage/uploads/`; một số ảnh demo cần thiết có thể được Git theo dõi để phục vụ backup và deploy.
 
 Những điểm nên cải thiện tiếp nếu nâng cấp thành sản phẩm thật:
 
@@ -505,28 +515,9 @@ Lưu ý quan trọng:
 
 - Nếu hosting không cho ghi file, upload ảnh từ Admin sẽ lỗi.
 - Không đưa API key vào GitHub public.
-- Nên dùng tài khoản admin demo riêng khi gửi link cho HR; không public tài khoản quản trị cá nhân.
-- Nên test trên một trình duyệt ẩn danh để chắc chắn demo không phụ thuộc session local.
 
 ---
 
-## 🚀 Demo Trực Tuyến
-
-Sau khi deploy lên hosting, cập nhật link demo tại đây để HR hoặc nhà tuyển dụng có thể truy cập nhanh:
-
-| Khu vực | Link demo |
-| --- | --- |
-| Kiosk khách hàng | `https://workflow-erp.alwaysdata.net/fastfood/view/` |
-| Trang quản trị | `https://workflow-erp.alwaysdata.net/fastfood/admincp/login.php` |
-
-Khuyến nghị khi public demo:
-
-- Dùng tài khoản admin demo riêng, không dùng tài khoản cá nhân.
-- Cấp quyền vừa đủ cho tài khoản demo nếu sau này hệ thống có phân quyền.
-- Không hiển thị API key, mật khẩu database hoặc thông tin nhạy cảm trong repository.
-- Đổi mật khẩu mặc định trước khi gửi link demo.
-
----
 
 ## 👤 Tài Khoản Demo
 
@@ -536,9 +527,11 @@ Username: toan
 Password: 12345678
 ```
 
-Đây là tài khoản demo để HR hoặc người xem dự án có thể đăng nhập nhanh. Khi deploy public lâu dài, nên đổi sang tài khoản demo riêng và giới hạn quyền nếu hệ thống được nâng cấp phân quyền.
+Đây là tài khoản demo dành cho HR hoặc người xem dự án đăng nhập nhanh, phục vụ mục đích demo/portfolio.
 
 ---
+
+<a id="tac-gia"></a>
 
 ## 🧑‍💻 Tác Giả
 
