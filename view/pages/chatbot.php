@@ -32,11 +32,27 @@ $chatbot_api = 'pages/main/chatbot_api.php';
 </div>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <?php
 $chatbotWidgetCssVersion = filemtime(__DIR__ . '/../css/chatbot-widget.css');
-$chatbotResponseServiceVersion = filemtime(__DIR__ . '/../js/chatbot-response-service.js');
 $chatbotWidgetJsVersion = filemtime(__DIR__ . '/../js/chatbot-widget.js');
+
+$chatbotJsFiles = [
+    'js/chatbot/chatbot-utils.js',
+    'js/chatbot/chatbot-context.js',
+    'js/chatbot/chatbot-intents.js',
+    'js/chatbot/chatbot-catalog.js',
+    'js/chatbot/chatbot-api.js',
+    'js/chatbot/chatbot-responses.js',
+    'js/chatbot/chatbot-response-service.js',
+];
 ?>
+
 <link rel="stylesheet" href="css/chatbot-widget.css?v=<?php echo $chatbotWidgetCssVersion; ?>">
-<script src="js/chatbot-response-service.js?v=<?php echo $chatbotResponseServiceVersion; ?>"></script>
+
+<?php foreach ($chatbotJsFiles as $chatbotJsFile): ?>
+    <?php $chatbotJsVersion = filemtime(__DIR__ . '/../' . $chatbotJsFile); ?>
+    <script src="<?php echo htmlspecialchars($chatbotJsFile, ENT_QUOTES, 'UTF-8'); ?>?v=<?php echo $chatbotJsVersion; ?>"></script>
+<?php endforeach; ?>
+
 <script src="js/chatbot-widget.js?v=<?php echo $chatbotWidgetJsVersion; ?>"></script>
