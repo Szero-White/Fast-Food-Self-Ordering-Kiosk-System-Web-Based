@@ -17,7 +17,7 @@ HR hoặc nhà tuyển dụng có thể truy cập trực tiếp bản demo tạ
 
 | Khu vực | Link demo |
 | --- | --- |
-| Kiosk khách hàng | [👉 Mở Kiosk Demo](https://workflow-erp.alwaysdata.net/fastfood/view/) |
+| Kiosk khách hàng | [👉 Mở Kiosk Demo](https://workflow-erp.alwaysdata.net/fastfood/view/index.php?reset=1) |
 | Trang quản trị | [👉 Mở Admin Demo](https://workflow-erp.alwaysdata.net/fastfood/admincp/login.php) |
 
 ---
