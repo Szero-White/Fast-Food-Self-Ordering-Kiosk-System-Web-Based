@@ -17,8 +17,8 @@ HR hoặc nhà tuyển dụng có thể truy cập trực tiếp bản demo tạ
 
 | Khu vực | Link demo |
 | --- | --- |
-| Kiosk khách hàng | [👉 Mở Kiosk Demo](https://workflow-erp.alwaysdata.net/fastfood/view/index.php?reset=1) |
-| Trang quản trị | [👉 Mở Admin Demo](https://workflow-erp.alwaysdata.net/fastfood/admincp/login.php) |
+| Kiosk khách hàng | [👉 Mở Kiosk Demo](https://demo-projects.alwaysdata.net/view/index.php?reset=1) |
+| Trang quản trị | [👉 Mở Admin Demo](https://demo-projects.alwaysdata.net/admincp/login.php) |
 
 ---
 
@@ -613,7 +613,7 @@ Lưu ý quan trọng:
 ## 👤 Tài Khoản Demo
 
 ```text
-URL Admin: https://workflow-erp.alwaysdata.net/fastfood/admincp/login.php
+URL Admin: https://demo-projects.alwaysdata.net/admincp/login.php
 Username: toan
 Password: 12345678
 ```
